@@ -1,7 +1,9 @@
 # RP-Malcomb
 
 This is an early draft of a research compendium for a Reproduction study of:
-Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30.
+Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004)
+
+Replication authors: Joseph Holler, Kufre Udoh, Peter Kedron, and Middlebury [GEOG0323](https://gis4dev.github.io) Class of Fall 2019.
 
 As of 4/9/2021, the RP-Malcomb.R script needs all path names to be customized to the new compendium folder structure.
 
