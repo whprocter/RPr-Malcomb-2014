@@ -7,8 +7,8 @@ Replication authors: Joseph Holler, Kufre Udoh, Peter Kedron, and Middlebury [GE
 
 As of 4/9/2021, the RP-Malcomb.R script needs all path names to be customized to the new compendium folder structure.
 
-# Templates for Reproducible and Replicable Research
-A template repository that contains a folder structure, template documents, and best practice suggestions for conducting reproducible geographic research. The folder structure presented here can be used to
+# Template for Reproducible and Replicable Research
+This repository is based on a template that contains a folder structure, template documents, and suggestions for best practices for conducting reproducible geographic research. The folder structure presented here can be used to:
 
 1. pre-register, document, and share original research, or
 2. document, organize, and share a reproduction and/or replication of original research.
