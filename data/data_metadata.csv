@@ -1,0 +1,5 @@
+path,name,format,sources,metadata
+raw/private/MWI_adm.gpkg,MWI_adm MWI_adm2,geopackage,,gadm_license.txt
+,livelihood zones,,https://fews.net/fews-data/335,
+,DHS Surveys,,USAID DHS,dhs-data.md
+,GPS Points,,USAID DHS,dhs-data.md
