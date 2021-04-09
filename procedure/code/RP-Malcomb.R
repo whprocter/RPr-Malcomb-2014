@@ -23,6 +23,8 @@ library(ggplot2)
 
 # download and unzip data  ------------------------------------------------
 
+setwd("../../") #set working directory to root of the repository
+
 if (!"zip_files" %in% list.files("data")){
   dir.create("data/zip_files")
 }
