@@ -661,10 +661,10 @@ save(
 message("calculating vunerability scores...")
 
 # UNEP layers
-dr = read_stars(here(private_r, "dr1010ipeykx.tif")) %>% 
+dr = read_stars(here(public_r, "dr1010ipeykx.tif")) %>% 
   st_set_crs(4326) 
 
-fl = read_stars(here(private_r, "fl1010irmt.tif")) %>% 
+fl = read_stars(here(public_r, "fl1010irmt.tif")) %>% 
   st_set_crs(4326) 
 
 # creating blank raster in extent
