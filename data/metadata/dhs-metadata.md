@@ -19,6 +19,8 @@ Note: These instructions were developed for students in a course at Middlebury. 
 
 See maps and boundaries guiding the DHS Surveys for Malawi here: [http://spatialdata.dhsprogram.com/boundaries/#view=table&countryId=MW](http://spatialdata.dhsprogram.com/boundaries/#view=table&countryId=MW)
 
+And the boundaries for the 2010 Level 2 survey here: [http://spatialdata.dhsprogram.com/boundaries/#view=map&countryId=MW&surveyId=333&level=2](http://spatialdata.dhsprogram.com/boundaries/#view=map&countryId=MW&surveyId=333&level=2)
+
 ## Extract of the SPSS Data Structure for 2010
 
 ### VARIABLE LABELS
