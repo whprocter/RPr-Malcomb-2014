@@ -15,6 +15,10 @@ Note: These instructions were developed for students in a course at Middlebury. 
 1. Read and agree to the conditions of use for the DHS Program datasets and save these conditions for your metadata records.
 1. Enter a **Justification for using DHS Program Geographic Datasets:** The research aim is to reproduce Malcomb et al (2014) in which GPS Datasets are used to spatially join DHS Survey data to Malawi's Districts for the purpose of sub-national climate change vulnerability mapping. Therefore, the research will not be reproducible without the geographic datasets.
 
+## Geographic Structure of DHS Surveys
+
+See maps and boundaries guiding the DHS Surveys for Malawi here: [http://spatialdata.dhsprogram.com/boundaries/#view=table&countryId=MW](http://spatialdata.dhsprogram.com/boundaries/#view=table&countryId=MW)
+
 ## Extract of the SPSS Data Structure for 2010
 
 ### VARIABLE LABELS

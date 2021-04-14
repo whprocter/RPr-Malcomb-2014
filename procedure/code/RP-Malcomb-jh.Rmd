@@ -35,7 +35,6 @@ sf_use_s2(T)
 
 ```{r download data}
 
-data = here("data")
 private_r = here("data","raw","private")
 public_r = here("data","raw","public")
 
@@ -244,7 +243,7 @@ ta = mutate(ta, capacity_2010_brks = case_when(
 ```{r saving adaptive capacity scores}
 save(
   ta_capacity_2010,
-  file = here("data/derived/public/adaptive_capacity.Rdata")
+  file = here("data", "derived", "public", "adaptive_capacity.rData")
 )
 ```
 
@@ -298,7 +297,7 @@ ta_2010 = st_clip(st_transform(filter(ta, is.na(capacity_2010) == F), 3395), st_
 
 # making capacity rasters 
 ta_capacity = st_rasterize(ta_2010[, 'capacity_2010'], blank)
-lhz_capacity = st_rasterize(lhz[,'capacity'], blank) 
+#lhz_capacity = st_rasterize(lhz[,'capacity'], blank) 
 ```
 
 ```{r function to calculate vulnerability}
