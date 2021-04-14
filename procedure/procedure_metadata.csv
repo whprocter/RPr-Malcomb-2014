@@ -1,3 +1,2 @@
 Directory,File Name,Purpose
-protocols,fig3.points,Points for QGIS Georeferencer to georeference figure 3
-code,RP-Malcomb.R,"download data, analyze, and output final results"
+code,RP-Malcomb-jh.R,"download data, analyze, and output final results"
