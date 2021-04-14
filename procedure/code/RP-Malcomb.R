@@ -24,7 +24,6 @@ library(s2)
 
 sf_use_s2(T)
 # download and unzip data  ------------------------------------------------
-data = here("data")
 private_r = here("data/raw/private")
 zip_files = here(private_r,"zip_files")
 public_r = here("data/raw/public")
@@ -36,7 +35,7 @@ if (!"zip_files" %in% list.files(private_r)){
 if (!"traditional_authorities" %in% list.files(private_r)){
   # Malawi administrative areas from GADM version 2.8 https://gadm.org/download_country_v2.html
   download("https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip", here(zip_files, "MWI_adm_shp.zip"))
-  unzip(here(zip_files, "MWI_adm_shp.zip"), exdir = here(private,"traditional_authorities"))
+  unzip(here(zip_files, "MWI_adm_shp.zip"), exdir = here(private_r,"traditional_authorities"))
 }
 
 if (!"livelihood_zones" %in% list.files(private_r)){
@@ -858,7 +857,7 @@ vuln_map = ggplot() +
 
 message("saving maps...")
 
-maps = here("results/maps")
+maps = here("results/figures")
 
 save(map_2004, map_2010, vuln_map, file = here(maps,"maps.Rdata"))
 
