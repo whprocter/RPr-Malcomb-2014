@@ -36,48 +36,45 @@ sf_use_s2(T)
 ```{r download data}
 
 data = here("data")
-private_r = here("data/raw/private")
-zip_files = here(private_r,"zip_files")
-public_r = here("data/raw/public")
+private_r = here("data","raw","private")
+public_r = here("data","raw","public")
 
-if (!"zip_files" %in% list.files(private_r)){
-  dir.create(zip_files)
-}
-
-if (!"traditional_authorities" %in% list.files(private_r)){
+if (!"traditional_authorities" %in% list.files(public_r)){
   # Malawi administrative areas from GADM version 2.8 https://gadm.org/download_country_v2.html
-  download("https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip", here(zip_files, "MWI_adm_shp.zip"))
-  unzip(here(zip_files, "MWI_adm_shp.zip"), exdir = here(private,"traditional_authorities"))
+  download("https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip", here("data","raw","private", "MWI_adm_shp.zip"))
+  unzip(here("data","raw","private", "MWI_adm_shp.zip"), exdir = here("data","raw","public","traditional_authorities"))
 }
 
-if (!"livelihood_zones" %in% list.files(private_r)){
+if (!"livelihood_zones" %in% list.files(public_r)){
   # Malawi livelihood zones from FEWS NET Data Center https://fews.net/fews-data/335
-  download("https://fews.net/data_portal_download/download?data_file_path=http%3A//shapefiles.fews.net.s3.amazonaws.com/LHZ/MW_LHZ_2009.zip", here(zip_files,"MW_LHZ_2009.zip"))
-  unzip(here(zip_files,"MW_LHZ_2009.zip"), exdir = here(private_r,"livelihood_zones"))
+  download("https://fews.net/data_portal_download/download?data_file_path=http%3A//shapefiles.fews.net.s3.amazonaws.com/LHZ/MW_LHZ_2009.zip", here("data","raw","private","MW_LHZ_2009.zip"))
+  unzip(here("data","raw","private","MW_LHZ_2009.zip"), exdir = here("data","raw","public","livelihood_zones"))
 }
 
 if (!"major_lakes.csv" %in% list.files(public_r)) {
   # major lakes in malawi: http://www.masdap.mw/
   download(
     "http://www.masdap.mw/geoserver/ows?outputFormat=csv&service=WFS&srs=EPSG%3A4326&request=GetFeature&typename=geonode%3Amajor_lakes&version=1.0.0",
-    here(public_r,"major_lakes.csv")
+    here("data","raw","public","major_lakes.csv")
   )
 }
 ```
 
-```{r dhs configuration}
+```{r dhs data access configuration}
 email = readline(prompt="Enter DHS Login Email: ")
 project = readline(prompt="Enter Project Name: ")
-rdhs_json = here("data/scratch/rdhs.json")
+rdhs_json = here("data","raw","private","rdhs.json")
 
 if (!file.exists(rdhs_json)) file.create(rdhs_json)
 
+# the information here was established through DHS project approval. See dhs-metadata.md in the data/metadata folder for details.
+# running this function will prompt you to enter email and project information in the Console and password in a popup
 set_rdhs_config(
   email = email,
   project = project,
   config_path = rdhs_json,
   global = FALSE,
-  cache_path = here(private_r, "dhs")
+  cache_path = here("data","raw","private")
 )
 
 ```
@@ -91,10 +88,10 @@ dhs_downloads = get_datasets(
 ```
 
 ```{r 2010 adaptive capacity data}
-ta = read_sf(here(private_r,"traditional_authorities/MWI_adm2.shp")) %>%
+ta = read_sf(here("data", "raw", "public","traditional_authorities", "MWI_adm2.shp")) %>%
   st_make_valid() 
 
-lhz = read_sf(here(private_r, "livelihood_zones/MW_LHZ_2009.shp")) %>% st_make_valid()
+lhz = read_sf(here("data", "raw", "public", "livelihood_zones", "MW_LHZ_2009.shp")) %>% st_make_valid()
 
 dhsclusters_2010 = readRDS(dhs_downloads$MWGE62FL) %>%
   as("sf") %>% 

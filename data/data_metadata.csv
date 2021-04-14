@@ -3,3 +3,5 @@ raw/private/MWI_adm.gpkg,MWI_adm MWI_adm2,geopackage,,gadm_license.txt
 ,livelihood zones,,https://fews.net/fews-data/335,
 ,DHS Surveys,,USAID DHS,dhs-data.md
 ,GPS Points,,USAID DHS,dhs-data.md
+,flood risk,,https://preview.grid.unep.ch/index.php?preview=data&events=floods&evcat=5&lang=eng,
+,drought exposure,,https://preview.grid.unep.ch/index.php?preview=data&events=droughts&evcat=4&lang=eng,

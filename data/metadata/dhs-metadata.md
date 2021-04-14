@@ -1,6 +1,6 @@
 ## DHS Data Access Instructions
 
-Note: these instructions are for current course students only, whose email addresses have been shared with the DHS Survey program. The instructions will be removed once all the current students have gained access.
+Note: These instructions were developed for students in a course at Middlebury.  There is no guarantee that the DHS program will continue to approve projects for replication of this study in the future.
 
 1. Go to [https://dhsprogram.com/Data/](https://dhsprogram.com/Data/) 
 1. Create an account with your college e-mail address
