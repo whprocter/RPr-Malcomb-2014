@@ -102,9 +102,10 @@ lhz = read_sf(here(private_r, "livelihood_zones/MW_LHZ_2009.shp")) %>% st_make_v
   
 dhsclusters_2010 = readRDS(dhs_downloads$MWGE62FL) %>%
   as("sf") %>%
+  st_transform(3395) %>%
   # joining id for traditional authorities and livelihood zones to dhs clusters
-  st_join(select(ta, ID_2)) %>%
-  st_join(select(lhz, FNID)) %>%
+  st_join(st_transform(select(ta, ID_2), 3395)) %>%
+  st_join(st_transform(select(lhz, FNID), 3395)) %>%
   rename(ta_id = ID_2,
          lhz_id = FNID,
          urban_rural = URBAN_RURA)
@@ -356,8 +357,9 @@ message("calculating 2004 adaptive capacity...")
 
 dhsclusters_2004 = readRDS(dhs_downloads$MWGE4BFL) %>% 
   as("sf")%>%
+  st_transform(3395) %>% 
   # joining id for traditional authorities to dhs clusters
-  st_join(select(ta, ID_2)) %>%
+  st_join(st_transform(select(ta, ID_2),3395)) %>%
   rename(ta_id = ID_2,
          urban_rural = URBAN_RURA)
 
@@ -695,7 +697,8 @@ st_clip = function(x,y) st_intersection(x, st_union(st_geometry(y)))
 st_agr(ta) = "constant"
 
 
-ta_2010 = st_clip(filter(ta, !is.na(capacity_2010)), st_buffer(lhz, .01))
+ta_2010 = st_clip(st_transform(filter(ta, !is.na(capacity_2010)), 3395), st_buffer(st_transform(lhz, 3395), .01)) %>%
+  st_transform(4326)
 # 222 features 
 
 # making capacity rasters 
@@ -741,7 +744,8 @@ ta_2010$vuln = aggregate(ta_final,ta_2010,mean)$capacity_2010
 lhz$vuln = aggregate(lhz_final,lhz,mean)$capacity
 
 # clipping traditional authorities for 2004 surveys -----------------------
-ta_2004 = st_clip(filter(ta, !is.na(capacity_2004)), st_buffer(lhz, .01))
+ta_2004 = st_clip(st_transform(filter(ta, !is.na(capacity_2004)), 3395), st_buffer(st_transform(lhz, 3395), .01)) %>%
+  st_transform(4326)
 
 # creating maps -----------------------------------------------------------
 message("creating maps...")
@@ -755,9 +759,11 @@ lakes = st_as_sf(read_csv(here(public_r, "major_lakes.csv"))[, c("name", "the_ge
   mutate(EA = "Major Lakes of Malawi")
 
 ea = lhz %>%
+  st_transform(3395) %>%
   summarize %>%
   st_geometry %>%
-  st_intersection(st_geometry(ta)) %>%
+  st_intersection(st_geometry(st_transform(ta, 3395))) %>%
+  st_transform(4326) %>%
   st_sf %>%
   mutate(EA = case_when(
     grepl("Reserve", ta[["NAME_2"]]) | grepl("Park", ta[["NAME_2"]]) ~ "National Parks and Reserves",
