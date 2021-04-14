@@ -1,16 +1,13 @@
 ---
 layout: page
-title: RE- Replication of Rosgen Stream Classification
+title: RP- Vulnerability modeling for sub-Saharan Africa
 ---
 
 
 **Replication of**
-# A classification of natural rivers
+# Vulnerability modeling for sub-Saharan Africa
 
-Original study *by* Rosgen, D. L.
-*in* *CATENA* 22 (3):169–199. https://linkinghub.elsevier.com/retrieve/pii/0341816294900019.
-
-and Replication by: Kasprak, A., N. Hough-Snee, T. Beechie, N. Bouwes, G. Brierley, R. Camp, K. Fryirs, H. Imaki, M. Jensen, G. O’Brien, D. Rosgen, and J. Wheaton. 2016. The Blurred Line between Form and Process: A Comparison of Stream Channel Classification Frameworks ed. J. A. Jones. *PLOS ONE* 11 (3):e0150293. https://dx.plos.org/10.1371/journal.pone.0150293.
+Original study *by* Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004)
 
 Replication Authors:
 Your Name, Joseph Holler, Kufre Udoh, Open Source GIScience students of fall 2019 and Spring 2021
@@ -22,15 +19,14 @@ Revised: `DD Month YYYY`
 
 ## Abstract 
 
-Briefly describe the original analysis – type of study, research design, analytical approach, and results; motivation of the replication; and outline of the replication study
+The original study is a multi-criteria analysis of vulnerability to Climate Change in Malawi, and is one of the earliest sub-national geographic models of climate change vulnerability for an African country. The study aims to be replicable, and had 40 citations in Google Scholar as of April 8, 2021. 
 
 ## Original Study Information
 
-Description: Present a short narrative that summarizes key information about the original study. Include information about all of the following 
-1.	Provide a written description of the study location and extent. Whenever possible, provide specific geographic coordinates bounding the study extent or a spatial reference file. 
-2.	Identify and describe the spatial support (spatial resolution, unit of analysis) of the original analysis was conducted
-3.	What type of sample/data did the original study use?
-4.	Are the data and code used in the original analysis available/used in this replication?
+The study region is the country of Malawi. The spatial support of input data includes DHS survey points, Traditional Authority boundaries, and raster grids of flood risk (0.833 degree resolution) and drought exposure (0.416 degree resolution). 
+
+The original study was published without data or code, but has detailed narrative description of the methodology. The methods used are feasible for undergraduate students to implement following completion of one introductory GIS course. The study states that its data is available for replication in 23 African countries.
+
 
 ### Data Description and Variables
 
@@ -44,7 +40,7 @@ This part may be compiled collaboratively as a group!
 
 ### Analytical Specification
 
-The original study was conducted using ... and ... .
+The original study was conducted using ArcGIS and STATA, but does not state which versions of these software were used.
 The replication study will use R.
 
 ## Materials and Procedure
