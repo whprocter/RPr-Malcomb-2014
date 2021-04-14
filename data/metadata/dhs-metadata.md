@@ -21,6 +21,8 @@ See maps and boundaries guiding the DHS Surveys for Malawi here: [http://spatial
 
 And the boundaries for the 2010 Level 2 survey here: [http://spatialdata.dhsprogram.com/boundaries/#view=map&countryId=MW&surveyId=333&level=2](http://spatialdata.dhsprogram.com/boundaries/#view=map&countryId=MW&surveyId=333&level=2)
 
+And Summary of the 2010 Survey here: [https://www.dhsprogram.com/methodology/survey/survey-display-333.cfm](https://www.dhsprogram.com/methodology/survey/survey-display-333.cfm)
+
 ## Extract of the SPSS Data Structure for 2010
 
 ### VARIABLE LABELS
