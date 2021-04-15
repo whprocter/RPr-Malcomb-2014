@@ -160,7 +160,8 @@ ta_capacity_2010 = dhshh_2010 %>%
   # removing any surveys where all livestock values were NA
   filter(!(is.na(HV246A) & is.na(HV246D) & is.na(HV246E)  & is.na(HV246G) )) %>% 
   # 24028 obs. of 19 variables 
-  # using rowwise() to find sum of livestock by household 
+  # using rowwise() to find sum of livestock by household --> go through every row of table
+  # and calulate something for each one
   rowwise %>%
   mutate(hhlivestock = sum(HV246A, HV246D, HV246E, HV246G, na.rm = T)) %>%
   ungroup %>%
@@ -173,6 +174,8 @@ ta_capacity_2010 = dhshh_2010 %>%
     wealth = percent_rank(HV271) * 4 + 1,
     orphans = percent_rank(desc(HV251)) * 4 + 1,
     # changing 996 to 0 as it takes no time to get water on premises
+    # percenrank sets values 0 to 1, then * 4 + 1 makes the range 1-5
+    # sexcat male = 1, female = 2, run 0 to 2.81 is the binary
     HV204 = ifelse(HV204 == 996, 0, HV204),
     water = percent_rank(desc(HV204)) * 4 + 1,
     electricity = percent_rank(HV206) * 4 + 1,
@@ -249,6 +252,7 @@ save(
 
 ```{r reading rasters into r}
 # UNEP layers
+# set CRS for raster
 dr = read_stars(here("data", "raw", "public", "dr1010ipeykx.tif")) %>% 
   st_set_crs(4326) 
 
@@ -259,6 +263,7 @@ fl = read_stars(here("data", "raw", "public",  "fl1010irmt.tif")) %>%
 
 ```{r cleaning and reprojecting rasters}
 # creating blank raster in extent
+# extent of the raster layers
 b = st_bbox(
   c(
     xmin = 35.9166666666658188,
@@ -270,23 +275,30 @@ b = st_bbox(
 ) %>%
   st_as_sfc()
 
+# where raster = 1, you have flood visualized
 blank = st_as_stars(st_bbox(b), dx = 0.041667, dy = 0.041667)
 blank[[1]][] = NA
 
 # reprojecting, clipping, and resampling rasters to new extent and cell size
-# use bilinear for drought to average continuous population exposure values
+# use bilinear for drought to average continuous population exposure values (resampling?)
+# (object, destination, logical operator, usable b/c of GDAL)
 dr = st_warp(dr, blank, use_gdal = T, method = "bilinear")
 # use nearest neighbor for flood risk to preserve integer values
 fl = st_warp(fl, blank, method = "near")  
 
 # removing factors from fl
+# You can use double brackets to select elements in more or less the same way as single brackets. The difference between single and double is that with double brackets any element names are not displayed:
+# bracket list, find rows with a double bracket??? ([1] is the first band, brackets filter down)
+# rasters are a raised matrix (multiple layer) access first level of the array, second bracket editing values into the array
 nmrc = as.numeric(levels(fl[[1]]))[fl[[1]]]
 fl = blank
+# single bracket gives you meta data (first layer), double brackets gives it to you as a matrix
 fl[[1]][] = nmrc
 ```
 
 ```{r rasterizing geometries}
 # clipping traditional authorities with livelihood zones in order to remove lake
+# building a clip function in R [x,y are parameters]
 st_clip = function(x,y) st_intersection(x, st_union(st_geometry(y)))
 
 st_agr(ta) = "constant"
@@ -308,12 +320,14 @@ vulnerability = function(geo) {
   mask[mask == 0] = NA
   
   # masking flood and drought 
+  #reclassify drought & flood already has classification
   flood = fl * mask * 4
   drought = dr * mask
   
   # reclassifying drought layer
   qt = quantile(drought[[1]], probs = seq(0, 1, 0.2), na.rm = T)
   
+  # 5 * 4 = 20 
   drought = drought %>%
     mutate(
       recoded = case_when(
