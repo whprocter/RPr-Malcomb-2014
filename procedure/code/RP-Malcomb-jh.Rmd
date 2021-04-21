@@ -264,6 +264,7 @@ fl = read_stars(here("data", "raw", "public",  "fl1010irmt.tif")) %>%
 ```{r cleaning and reprojecting rasters}
 # creating blank raster in extent
 # extent of the raster layers
+# units used for bounding box = decimal degrees, long-lat
 b = st_bbox(
   c(
     xmin = 35.9166666666658188,
@@ -359,6 +360,7 @@ lakes = st_as_sf(read_csv(here(public_r, "major_lakes.csv"))[, c("name", "the_ge
   st_sf %>%
   mutate(EA = "Major Lakes of Malawi")
 
+#ea used to retrieve national parks (conservation areas) + lakes
 ea = lhz %>%
   st_transform(3395) %>%  #transform to world mercator (jh: not sure if we need to transform to 3395 and back here?)
   summarize %>%  
