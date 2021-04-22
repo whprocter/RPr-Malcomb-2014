@@ -4,8 +4,31 @@ author: "Drew AP + Malawi Peers"
 date: "4/21/2021"
 output: html_document
 ---
+```{R processing FEWSNet Data}
 
-read.csv(")
+lhz_scores = read.csv(here(private_r, "lhz.csv"))
+
+lhz_sensitivity = lhz %>%
+  right_join(lhz_scores, by = ("LZCODE" = "LZCODE")) %>%
+
+  mutate(
+    ownCrops = percent_rank(pctOwnCrops) * 4 + 1,
+    wageIncome = percent_rank(pctIncWage) * 4 + 1,
+    cashCropIncome = percent_rank(desc(pctIncCashCrops)) * 4 + 1,
+    newDisaster = percent_rank(desc(disasterCoping)) * 4 + 1,
+  ) %>%
+  
+  rowwise %>%
+  mutate(
+    livelihoodSensitivity = sum(
+      ownCrops * .06,
+      wageIncome * .06,
+      cashCropIncome * .04,
+      newDisaster * .04)
+  )
+
+```
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
