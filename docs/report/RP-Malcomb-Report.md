@@ -12,10 +12,10 @@ Original study *by* Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vuln
 Replication Authors:
 Your Name, Joseph Holler, Kufre Udoh, Open Source GIScience students of fall 2019 and Spring 2021
 
-Replication Materials Available at: [github repository name](github repository link)
+Replication Materials Available at: [RP-Malcomb](https://github.com/daptx/RP-Malcomb)
 
-Created: `DD Month YYYY`
-Revised: `DD Month YYYY`
+Created: `14 Month YYYY`
+Revised: `27 April 2021`
 
 ## Abstract
 
@@ -29,6 +29,62 @@ The original study was published without data or code, but has detailed narrativ
 
 
 ### Data Description and Variables
+
+###*Access & Assets Data*
+
+Demographic and Health Survey data are a product of the United States Agency for International Development (USAID). Variables contained in this dataset are used to represent adaptive capacity (access + assets) in the Malcomb et al.’s (2014) study. These data come from survey questionnaires with large sample sizes.
+The DHS data used in our study were collected in 2010. In Malawi, the provenance of the DHA data dates back as far as 1992, but has not been collected consistently every year. Each point in the household dataset represents a cluster of households with each cluster corresponding to some form of census enumeration units, such as villages in rural areas or city blocks in urban areas [DHS GPS Manual](/data/metadata/DHS_GPS_Manual_English_A4_24May2013_DHSM9.pdf). This means that each household in each cluster has the same GPS data. This data is collected by trained [USAID](https://www.usaid.gov/) staff using GPS receivers.
+Missing data is a common occurrence in this dataset as a result of negligence or incorrect naming. However, according to the [DHS GPS Manual](/data/metadata/DHS_GPS_Manual_English_A4_24May2013_DHSM9.pdf), these issues are easily rectified and typically sites for which data does not exist are recollected. Sometimes, however, missing information is coded in as such or assigned a proxy location.
+The DHS website acknowledges the high potential for inconsistent or incomplete data in such broad and expansive survey sets. Missing survey data (responses) are never estimated or made up; they are instead coded as a special response indicating the absence of data. As well, there are clear policies in place to ensure the data’s accuracy. More information about data validity can be found on the [DHS’s Data Quality and Use site](https://www.dhsprogram.com/data/Data-Quality-and-Use.cfm).
+
+In this analysis, we use the variables listed in **Table 1** to determine the average adaptive capacity of each TA area. Data transformations are outlined below.
+
+**Table 1**
+| Variable Code | Definition |
+| ------------- | ------------- |
+| HHID | "Case Identification" |
+| HV001 | "Cluster number" |
+|HV002 | Household number |
+| HV246A |"Cattle own" |
+|HV246D | "Goats own"|
+|HV246E | "Sheep own" |
+|HV246G | "Pigs own" |
+| HV248 |"Number of sick people 18-59"|
+| HV245 | "Hectares for agricultural land"|
+|HV271 | "Wealth index factor score (5 decimals)"|
+|HV251 | "Number of orphans and vulnerable children"|
+|HV207 | “Has Radio” |
+| HV243A | “Has a Mobile Telephone”|
+|HV219 | Sex of Head of Household”|
+|HV226 | “Type of Cooking Fuel” |
+| HV206 |"Has electricty” |
+|HV204 |“Time to get to Water Source”|
+
+**Variable Transformations**
+
+Eliminate households with null and/or missing values
+Join TA and LHZ ID data to the DHS clusters
+Eliminate NA values for livestock
+Sum counts of all different kinds of livestock into a single variable
+Apply weights to normalized indicator variables to get scores for each category (assets, access)
+find the stats of the capacity of each TA (min, max, mean, sd)
+Join ta_capacity to TA based on ta_id
+Prepare breaks for mapping
+Class intervals based on capacity_2010 field
+Take the values and round them to 2 decimal places
+Put data in 4 classes based on break values
+
+##*Livelihood Zones Data*
+The Livelihood zone data is created by aggregating general regions where similar crops are grown and similar ecological patterns exist. This data exists originally at the household level and was aggregated into Livelihood Zones. To construct the aggregation used for “Livelihood Sensitivity” in this analysis, we use these household points from the FEWSnet data that had previously been aggregated into livelihood zones. The four Livelihood Sensitivity categories are 1) Percent of food from own farm (6%); 2) Percent of income from wage labor (6%); 3) Percent of income from cash crops (4%); and 4) Disaster coping strategy (4%). In the original R script, household data from the DHS survey was used as a proxy for the specific data points in the livelihood sensitivity analysis (transformation: Join with DHS clusters to apply LHZ FNID variables). With this additional FEWSnet data at the household level, we can construct these four livelihood sensitivity categories using existing variables (Table 1).
+
+**Table 2: Constructing livelihood sensitivity categories**
+
+| Livelihood Sensitivity Category (LSC)  | Percent Contributing  | How LSC was constructed  |
+| ------------- | ------------- | ------------- |
+| Percent of food from own farm  |  6%  | Sources of food: crops + livestock  |
+| Percent of income from wage labor  | 6%  | Sources of cash: labour etc. / total * 100  |
+| Percent of income from cash crops  | 4%  | sources of cash (Crops): (tobacco + sugar + tea + coffee) + / total sources of cash * 100  |
+| Disaster coping strategy  | 4%  | Self-employment & small business and trade: (firewood + sale of wild food + grass + mats + charcoal) / total sources of cash * 100  |
 
 Outline the data used in the study, including:
 
