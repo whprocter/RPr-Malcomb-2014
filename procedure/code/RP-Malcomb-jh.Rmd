@@ -33,11 +33,8 @@ lhz_sensitivity = lhz %>%
       wageIncome * .06,
       cashCropIncome * .04,
       newDisaster * .04)
-  )
+  ) # %>% ungroup
 
-```
-
-```{R Rasterize + Joining FEWSNet Data to TA Stuff}
 ```
 
 ```{r libraries, include = F}
@@ -338,7 +335,7 @@ ta_2010 = st_clip(st_transform(filter(ta, is.na(capacity_2010) == F), 3395), st_
 
 # making capacity rasters 
 ta_capacity = st_rasterize(ta_2010[, 'capacity_2010'], blank)
-#lhz_capacity = st_rasterize(lhz[,'capacity'], blank) 
+lhz_capacity = st_rasterize(lhz_sensitivity[,'livelihoodSensitivity'], blank)  
 ```
 
 ```{r function to calculate vulnerability}
@@ -369,7 +366,7 @@ vulnerability = function(geo) {
     ) %>% select(recoded) * 4
   
   # final output (adding component rasters)
-  final = (40 - geo) * 0.40 + drought * 0.20 + flood * 0.20
+  final = (40 - geo) * 0.40 + drought * 0.20 + flood * 0.20 + lhz_capacity * 0.20
 }
 ```
 
@@ -456,11 +453,11 @@ vuln_map = ggplot() +
   scale_fill_gradient(
     low = "#FFFF75",
     high = "#CF4611",
-    breaks = c(9.968335,  17.99652),
+    breaks = c(16.52158,  23.01283),
     labels = c("Lower Vulnerability", "Higher Vulnerability"),
     na.value = "transparent",
     guide = "colourbar",
-    limits = c(16, 23)
+    limits = c(16.52158, 23.01283)
   ) +
   scale_x_continuous(breaks = c(33,34,35,36)) +
   labs(title = "Malawi Vulnerability to Climate Change") +
@@ -479,14 +476,14 @@ vuln_map
 save(map_2010, vuln_map, file = here("results","maps","maps.Rdata"))
 
 ggsave(
-  here("results","maps","ac_2010.png"),
+  here("results","assets","fig4rep.png"),
   plot = map_2010,
   width = 8.5,
   height = 11,
   units = "in"
 )
 ggsave(
-  here("results","maps","vulnerability2.png"),
+  here("results","assets","fig5rep.png"),
   plot = vuln_map,
   width = 8.5,
   height = 11,
@@ -506,7 +503,7 @@ write_sf(lhz, results, "lhz")
 
 ```{R Sample Code for Comparing Discrete Choropleth Maps}
 or_fig4 = # load original figure 4 data
-  read_sf(here("data", "derived", "public", "georeferencing.gpkg"), 
+  read_sf(here("data", "derived", "public", "georeferencingB.gpkg"), 
           layer="ta_resilience") %>% 
   # load ta_resilience layer from georeferencing geopackage
   st_drop_geometry() %>%
@@ -544,21 +541,12 @@ cor.test(fig4compare$resilience,fig4compare$rp_res,method="spearman")
 
 fig4compare = mutate(fig4compare, difference = rp_res - resilience) 
 # Calculate difference between the maps so that you can create a difference map
-
-save(fig4compare, file = here("results","figures"))
-ggsave(
-  here("results","figures","spearmantable.png"),
-  plot = map_2010,
-  width = 8.5,
-  height = 11,
-  units = "in"
-)
 ```
 
 ```{R Sample Code for Comparing Continuous Raster Maps}
 orfig5vect = 
-  read_sf(here("data", "derived", "public", "georeferencing.gpkg"), 
-          layer="vulerability_grid")
+  read_sf(here("data", "derived", "public", "georeferencingB.gpkg"), 
+          layer="vulnerability_grid")
 # load original figure 5 data
 
 orfig5rast = st_rasterize(orfig5vect["bmean"], template=ta_final)
@@ -601,4 +589,88 @@ cor.test(fig5comppts$or, fig5comppts$rp, method="spearman")
 
 # Hint for mapping raster results: refer to the diff raster attribute
 # in the fig5comp stars object like this: fig5comp["diff"]
+```
+
+```{r 2010 adaptive capacity difference map}
+ac_diff_map = ggplot() +
+  geom_sf(data = ea,
+          aes(fill = EA),
+          color = NA) +
+  geom_sf(
+    data = fig4compare,
+    aes(fill = factor(difference)),
+    color = "white",
+    lwd = .2
+  ) + scale_fill_manual(limits = c("-2","-1","0","1","Missing Data","Major Lakes of Malawi","National Parks and Reserves"),
+    values = list(
+      "Missing Data" = "#FFFFFF",
+      "National Parks and Reserves" = "#D9EABB",
+      "Major Lakes of Malawi" = "lightblue",
+      "-2" = "#e66101",
+      "-1" = "#fdb863",
+      "0" = "#cccccc",
+      "1" = "#b2abd2"
+    )
+  ) +
+  scale_x_continuous(breaks = c(33,34,35,36)) +
+  labs(title = "Fig. 4 Replication Comparison") +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+
+ac_diff_map
+```
+
+```{r vulnerability difference map}
+clrs = mutate(
+  ea,
+  colors = case_when(
+    EA == "Missing Data" ~ "#999999",
+    EA == "National Parks and Reserves" ~ "#D9EABB",
+    EA == "Major Lakes of Malawi" ~ "lightblue"
+  
+  )
+)$colors
+vuln_diff_map = ggplot() +
+  geom_sf(data = ea,
+          fill = clrs,
+          color = NA) +
+  geom_stars(data = fig5comp["diff"]) +
+  scale_fill_gradient2(
+    low = "#e9a3c9",
+    high = "#beaed4",
+    breaks = c(-0.9798226,0.72041740),
+    labels = c("Negative Difference", "Positive Difference"),
+    na.value = "transparent",
+    guide = "colourbar",
+    limits = c(-0.9798226,0.72041740)
+  ) +
+  scale_x_continuous(breaks = c(33,34,35,36)) +
+  labs(title = "Fig. 5 Replication Comparison") +
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  )
+vuln_diff_map
+```
+
+```{r saving maps}
+
+save(ac_diff_map, vuln_diff_map, file = here("results","maps","maps.Rdata"))
+
+ggsave(
+  here("results","assets","fig4comp.png"),
+  plot = ac_diff_map,
+  width = 11,
+  height = 8.5,
+  units = "in"
+)
+ggsave(
+  here("results","assets","fig5comp.png"),
+  plot = vuln_diff_map,
+  width = 11,
+  height = 8.5,
+  units = "in"
+)
 ```
