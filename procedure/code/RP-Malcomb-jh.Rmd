@@ -662,15 +662,15 @@ save(ac_diff_map, vuln_diff_map, file = here("results","maps","maps.Rdata"))
 ggsave(
   here("results","assets","fig4comp.png"),
   plot = ac_diff_map,
-  width = 11,
-  height = 8.5,
+  width = 8.5,
+  height = 11,
   units = "in"
 )
 ggsave(
   here("results","assets","fig5comp.png"),
   plot = vuln_diff_map,
-  width = 11,
-  height = 8.5,
+  width = 8.5,
+  height = 11,
   units = "in"
 )
 ```
