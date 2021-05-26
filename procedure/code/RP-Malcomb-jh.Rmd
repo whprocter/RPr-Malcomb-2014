@@ -582,6 +582,7 @@ fig5comppts = st_as_sf(fig5comp)
 # convert raster to vector points to simplify plotting and correlation testing
 
 plot(fig5comppts$or, fig5comppts$rp, xlab="Original Study", ylab="Reproduction")
+title("Comparing Vulnerability Scores")
 # create scatterplot of original results and reproduction results
 
 cor.test(fig5comppts$or, fig5comppts$rp, method="spearman")
