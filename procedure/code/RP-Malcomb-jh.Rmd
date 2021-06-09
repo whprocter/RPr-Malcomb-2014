@@ -111,6 +111,11 @@ dhs_downloads = get_datasets(
 )
 ```
 
+```{crerates RDS file for DHS downloaded}
+saveRDS(dhs_downloads,"data/raw/private/datasets/dhs_downloads.rds")
+# saveRDS(dhs_downloads, here("data","raw","private","dhs_downloads.rds"))
+```
+
 ```{r 2010 adaptive capacity data}
 ta = read_sf(here("data", "raw", "public","traditional_authorities", "MWI_adm2.shp")) %>%
   st_make_valid() 
