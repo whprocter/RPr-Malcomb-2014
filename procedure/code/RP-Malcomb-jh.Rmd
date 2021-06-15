@@ -261,6 +261,7 @@ ta = left_join(
 # 256 features 
 
 # preparing breaks for mapping using natural jenks method
+# USE MANUAL BREAKS HERE
 ta_brks = filter(ta, !is.na(capacity_2010)) %>% {classIntervals(.$capacity_2010, 4, style = "jenks")$brks}
 
 ta_int = lapply(1:4, function(x) paste0(round(ta_brks[x],2)," - ", round(ta_brks[x +1],2))) %>% unlist()
@@ -557,6 +558,7 @@ orfig5vect =
 orfig5rast = st_rasterize(orfig5vect["bmean"], template=ta_final)
 # convert mean of blue values into a raster using ta_final as a reference for raster
 # extent, cell size, CRS, etc.
+# blue + green [LOOK BACK AT ZONAL STATS]
 
 orfig5rast = orfig5rast %>% 
   mutate(or = 1-
