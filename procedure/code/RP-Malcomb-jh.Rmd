@@ -20,12 +20,11 @@ lhz_sensitivity = lhz %>%
   right_join(lhz_scores, by = ("LZCODE" = "LZCODE")) %>%
 
   mutate(
-    ownCrops = percent_rank(pctOwnCrops) * 4 + 1,
-    wageIncome = percent_rank(pctIncWage) * 4 + 1,
-    cashCropIncome = percent_rank(desc(pctIncCashCrops)) * 4 + 1,
-    newDisaster = percent_rank(desc(disasterCoping)) * 4 + 1,
+    ownCrops = percent_rank(pctOwnCrops) * 4,
+    wageIncome = percent_rank(pctIncWage) * 4,
+    cashCropIncome = percent_rank(desc(pctIncCashCrops)) * 4,
+    newDisaster = percent_rank(desc(disasterCoping)) * 4,
   ) %>%
-  
   rowwise %>%
   mutate(
     livelihoodSensitivity = sum(
@@ -34,7 +33,8 @@ lhz_sensitivity = lhz %>%
       cashCropIncome * .04,
       newDisaster * .04)
   ) # %>% ungroup
-
+# the theoretical range is 0 to 0.8 [rescale & multiply by 25 20/.8]
+# livelihood sensitivity range iis now .235 to .490
 ```
 
 ```{r libraries, include = F}
@@ -367,13 +367,13 @@ vulnerability = function(geo) {
   drought = drought %>%
     mutate(
       recoded = case_when(
-        drought[[1]] <= qt[[2]] ~ 1,
-        drought[[1]] <= qt[[3]] ~ 2,
-        drought[[1]] <= qt[[4]] ~ 3,
-        drought[[1]] <= qt[[5]] ~ 4,
-        drought[[1]] > qt[[5]] ~ 5
+        drought[[1]] <= qt[[2]] ~ 0,
+        drought[[1]] <= qt[[3]] ~ 1,
+        drought[[1]] <= qt[[4]] ~ 2,
+        drought[[1]] <= qt[[5]] ~ 3,
+        drought[[1]] > qt[[5]] ~ 4
       )
-    ) %>% select(recoded) * 4
+    ) %>% select(recoded) * 5
   
   # final output (adding component rasters)
   final = (40 - geo) * 0.40 + drought * 0.20 + flood * 0.20 + lhz_capacity * 0.20
