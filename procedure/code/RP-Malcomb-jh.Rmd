@@ -551,18 +551,18 @@ fig4compare = mutate(fig4compare, difference = rp_res - resilience)
 
 ```{R Sample Code for Comparing Continuous Raster Maps}
 orfig5vect = 
-  read_sf(here("data", "derived", "public", "georeferencingB.gpkg"), 
-          layer="vulnerability_grid")
+  read_sf(here("data", "derived", "public", "georef_bg.gpkg"), 
+          layer="georef_bg")
 # load original figure 5 data
 
-orfig5rast = st_rasterize(orfig5vect["bmean"], template=ta_final)
+orfig5rast = st_rasterize(orfig5vect["bg_mean"], template=ta_final)
 # convert mean of blue values into a raster using ta_final as a reference for raster
 # extent, cell size, CRS, etc.
 # blue + green [LOOK BACK AT ZONAL STATS]
 
 orfig5rast = orfig5rast %>% 
   mutate(or = 1-
-           (bmean - min(orfig5rast[[1]], na.rm= TRUE)) /
+           (bg_mean - min(orfig5rast[[1]], na.rm= TRUE)) /
            (max(orfig5rast[[1]], na.rm= TRUE) -
             min(orfig5rast[[1]], na.rm= TRUE)
         )
