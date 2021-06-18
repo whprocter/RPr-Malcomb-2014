@@ -23,7 +23,7 @@ The original study is a multi-criteria analysis of vulnerability to Climate Chan
 
 ## Original Study Information
 
-The study region is the country of Malawi. The spatial support of input data includes DHS survey points, Traditional Authority boundaries, and raster grids of flood risk (0.833 degree resolution) and drought exposure (1/24 = 0.0416 degree resolution).
+The study region is the country of Malawi. The spatial support of input data includes DHS survey points, Traditional Authority boundaries, and raster grids of flood risk (0.0833 degree resolution) and drought exposure (1/24 = 0.0416 degree resolution).
 
 The original study was published without data or code, but has detailed narrative description of the methodology. The methods used are feasible for undergraduate students to implement following completion of one introductory GIS course. The study states that its data is available for replication in 23 African countries.
 
