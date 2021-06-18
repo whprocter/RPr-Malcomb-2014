@@ -235,7 +235,7 @@ ta_capacity_2010 = dhshh_2010 %>%
       # NAs are not removed here to filter out incomplete surveys later on
       # multiple by ratio that adds everything to 40% of 5 --> max is going to be 2, 2*20 = 40%
       # at this point, values have possible range of 0 to 2 -- but capacity has actual range of 0.471 to 1.454 for 1-5 rnage
-      # 0.071 to 1.054 when adjusted range of 0-4
+      # values have possible range of 0 to 1.6, 0.071 to 1.054 when adjusted range of 0-4
       na.rm = F
     ) 
   ) %>%  
@@ -261,7 +261,7 @@ ta = left_join(
 )
 
 # making capacity score resemble malcomb et al's work 
-ta = mutate(ta, capacity_2010 = capacity_2010 * 20) # --> THIS LINE IS NOW REMOVED
+ta = mutate(ta, capacity_2010 = capacity_2010 * 25) # --> THIS LINE IS NOW REMOVED
 # 256 features 
 
 # preparing breaks for mapping using natural jenks method
@@ -427,10 +427,10 @@ map_2010 = ggplot() +
       "Missing Data" = "#FFC389",
       "National Parks and Reserves" = "#D9EABB",
       "Major Lakes of Malawi" = "lightblue",
-      "5.95 - 7.84" = "#333333",
-      "7.84 - 9.13" = "#666666",
-      "9.13 - 10.89" = "#999999",
-      "10.89 - 13.36" = "#CCCCCC"
+      "7.44 - 9.8" = "#333333",
+      "9.8 - 11.41" = "#666666",
+      "11.41 - 13.62" = "#999999",
+      "13.62 - 16.7" = "#CCCCCC"
     )
   ) +
   scale_x_continuous(breaks = c(33,34,35,36)) +
@@ -463,11 +463,11 @@ vuln_map = ggplot() +
   scale_fill_gradient(
     low = "#FFFF75",
     high = "#CF4611",
-    breaks = c(12.50633,  20.50952),
+    breaks = c(11.39842, 19.80864),
     labels = c("Lower Vulnerability", "Higher Vulnerability"),
     na.value = "transparent",
     guide = "colourbar",
-    limits = c(12.50633, 20.50952)
+    limits = c(11.39842, 19.80864)
   ) +
   scale_x_continuous(breaks = c(33,34,35,36)) +
   labs(title = "Malawi Vulnerability to Climate Change") +
@@ -486,14 +486,14 @@ vuln_map
 save(map_2010, vuln_map, file = here("results","maps","maps.Rdata"))
 
 ggsave(
-  here("results","assets","fig4rep.png"),
+  here("results","assets","fig4rep_04BG.png"),
   plot = map_2010,
   width = 8.5,
   height = 11,
   units = "in"
 )
 ggsave(
-  here("results","assets","fig5rep.png"),
+  here("results","assets","fig5rep_04BG.png"),
   plot = vuln_map,
   width = 8.5,
   height = 11,
@@ -672,14 +672,14 @@ vuln_diff_map
 save(ac_diff_map, vuln_diff_map, file = here("results","maps","maps.Rdata"))
 
 ggsave(
-  here("results","assets","fig4comp.png"),
+  here("results","assets","fig4comp_04BG.png"),
   plot = ac_diff_map,
   width = 8.5,
   height = 11,
   units = "in"
 )
 ggsave(
-  here("results","assets","fig5comp_bg.png"),
+  here("results","assets","fig5comp_04BG.png"),
   plot = vuln_diff_map,
   width = 8.5,
   height = 11,
