@@ -214,6 +214,7 @@ ta_capacity_2010 = dhshh_2010 %>%
     cellphone = percent_rank(desc(HV243A)) * 4 + 1,
     radio = percent_rank(HV207) * 4 + 1,
     urbanruralscore = ifelse(urban_rural == "U", 5, 1)
+    # everything is now on a 0-5 scale
   ) %>%
   # calculating capacity score based on table 2 in malcomb et al 
   rowwise %>%
@@ -232,6 +233,7 @@ ta_capacity_2010 = dhshh_2010 %>%
       radio * 0.03,
       urbanruralscore * 0.02,
       # NAs are not removed here to filter out incomplete surveys later on
+      # multiple by ratio that adds everything to 40% of 5 --> max is going to be 2, 2*20 = 40%
       na.rm = F
     ) 
   ) %>%  
@@ -257,7 +259,7 @@ ta = left_join(
 )
 
 # making capacity score resemble malcomb et al's work 
-# ta = mutate(ta, capacity_2010 = capacity_2010 * 20) --> THIS LINE IS NOW REMOVED
+ta = mutate(ta, capacity_2010 = capacity_2010 * 20) --> THIS LINE IS NOW REMOVED
 # 256 features 
 
 # preparing breaks for mapping using natural jenks method
@@ -675,7 +677,7 @@ ggsave(
   units = "in"
 )
 ggsave(
-  here("results","assets","fig5comp.png"),
+  here("results","assets","fig5comp_bg.png"),
   plot = vuln_diff_map,
   width = 8.5,
   height = 11,
