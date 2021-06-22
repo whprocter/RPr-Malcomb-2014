@@ -671,11 +671,11 @@ vuln_diff_map = ggplot() +
   scale_fill_gradient2(
     low = "#e9a3c9",
     high = "#beaed4",
-    breaks = c(-0.887,0.989),
+    breaks = c(-0.97,0.97),
     labels = c("Negative Difference", "Positive Difference"),
     na.value = "transparent",
     guide = "colourbar",
-    limits = c(-0.887,0.989)
+    limits = c(-0.97,0.97) #you want centered around zero, so make larger # the ends
   ) +
   scale_x_continuous(breaks = c(33,34,35,36)) +
   labs(title = "Fig. 5 Replication Comparison") +
@@ -706,4 +706,8 @@ ggsave(
   height = 11,
   units = "in"
 )
+```
+
+```{exporting comparison as geotiff}
+write_stars(fig5comp, "fig5.tif", layer = "diff")
 ```
