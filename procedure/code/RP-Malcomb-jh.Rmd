@@ -12,30 +12,6 @@ output: html_document
 
 ### [https://gis4dev.github.io/](https://gis4dev.github.io/)
 
-```{R processing + weighting FEWSNet Data}
-
-lhz_scores = read.csv(here(private_r, "lhz.csv"))
-
-lhz_sensitivity = lhz %>%
-  right_join(lhz_scores, by = ("LZCODE" = "LZCODE")) %>%
-
-  mutate(
-    ownCrops = percent_rank(pctOwnCrops) * 4, # high values means lower sensitivity 
-    wageIncome = percent_rank(pctIncWage) * 4, # high values means lower sensitivity
-    cashCropIncome = percent_rank(desc(pctIncCashCrops)) * 4, #high values mean lower senstivity (b/c of desc)
-    newDisaster = percent_rank(desc(disasterCoping)) * 4, #high values mean lower senstivity (b/c of desc)
-  ) %>%
-  rowwise %>%
-  mutate(
-    livelihoodSensitivity = sum(
-      ownCrops * .06,
-      wageIncome * .06,
-      cashCropIncome * .04,
-      newDisaster * .04)
-  ) # %>% ungroup
-# the theoretical range is 0 to 0.8 [rescale & multiply by 25 20/.8]
-# livelihood sensitivity range iis now .235 to .490
-```
 
 ```{r libraries, include = F}
 
@@ -112,8 +88,8 @@ dhs_downloads = get_datasets(
 ```
 
 ```{crerates RDS file for DHS downloaded}
-saveRDS(dhs_downloads,"data/raw/private/datasets/dhs_downloads.rds")
-# saveRDS(dhs_downloads, here("data","raw","private","dhs_downloads.rds"))
+# saveRDS(dhs_downloads,"data/raw/private/datasets/dhs_downloads.rds")
+saveRDS(dhs_downloads, here("data","raw","private","dhs_downloads.rds"))
 ```
 
 ```{r 2010 adaptive capacity data}
@@ -349,6 +325,33 @@ ta_2010 = st_clip(st_transform(filter(ta, is.na(capacity_2010) == F), 3395), st_
 
 # making capacity rasters 
 ta_capacity = st_rasterize(ta_2010[, 'capacity_2010'], blank)
+```
+
+```{R processing + weighting FEWSNet Data}
+
+lhz_scores = read.csv(here(private_r, "lhz.csv"))
+
+lhz_sensitivity = lhz %>%
+  right_join(lhz_scores, by = ("LZCODE" = "LZCODE")) %>%
+
+  mutate(
+    ownCrops = percent_rank(pctOwnCrops) * 4, # high values means lower sensitivity 
+    wageIncome = percent_rank(pctIncWage) * 4, # high values means lower sensitivity
+    cashCropIncome = percent_rank(desc(pctIncCashCrops)) * 4, #high values mean lower senstivity (b/c of desc)
+    newDisaster = percent_rank(desc(disasterCoping)) * 4, #high values mean lower senstivity (b/c of desc)
+  ) %>%
+  rowwise %>%
+  mutate(
+    livelihoodSensitivity = sum(
+      ownCrops * .06,
+      wageIncome * .06,
+      cashCropIncome * .04,
+      newDisaster * .04)
+  ) # %>% ungroup
+# the theoretical range is 0 to 0.8 [rescale & multiply by 25 20/.8]
+# livelihood sensitivity range iis now .235 to .490
+
+# making capacity rasters 
 lhz_capacity = st_rasterize(lhz_sensitivity[,'livelihoodSensitivity'], blank)  
 ```
 
