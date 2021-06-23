@@ -37,6 +37,16 @@ sf_use_s2(T)
 ```{pull in ALL data at once}
 # LHZ Data
 lhz_scores_new = read.csv(here(private_r, "lhz_test.csv"))
+lhz_scores_new$pctOwnCrop = data$
+lhz_scores_new$pctIncWage = ,
+lhz_scores_new$pctIncCashCrop =,
+lhz_scores_new$disasterCoping = 
+
+ownCrops = percent_rank(pctOwnCrops) * 4, # high values means lower sensitivity 
+    wageIncome = percent_rank(pctIncWage) * 4, # high values means lower sensitivity
+    cashCropIncome = percent_rank(desc(pctIncCashCrops)) * 4, #high values mean lower sensitivity (b/c of desc)
+    newDisaster = percent_rank(desc(disasterCoping)) * 4, #high values mean lower sensitivity (b/c of desc)
+  ) %>%
 #do derivations in R // RDS this baby
 ```
 
@@ -461,7 +471,6 @@ map_2010
 ```
 
 ```{find break & limit values for vulnerability map}
-#idk this doesn't work... it's super rude
 max(ta_new[[1]],na.rm = TRUE)
 min(ta_new[[1]],na.rm = TRUE)
 ``` 
@@ -671,11 +680,11 @@ vuln_diff_map = ggplot() +
   scale_fill_gradient2(
     low = "#e9a3c9",
     high = "#beaed4",
-    breaks = c(-0.97,0.97),
+    breaks = c(-0.974405,0.974405),
     labels = c("Negative Difference", "Positive Difference"),
     na.value = "transparent",
     guide = "colourbar",
-    limits = c(-0.97,0.97) #you want centered around zero, so make larger # the ends
+    limits = c(-0.974405,0.974405) #you want centered around zero, so make larger # the ends
   ) +
   scale_x_continuous(breaks = c(33,34,35,36)) +
   labs(title = "Fig. 5 Replication Comparison") +
@@ -709,5 +718,8 @@ ggsave(
 ```
 
 ```{exporting comparison as geotiff}
-write_stars(fig5comp, "fig5.tif", layer = "diff")
+write_stars(fig5comp, "fig5diff.tif", layer = "diff")
+write_stars(fig5comp, "fig5or.tif", layer = "or")
+write_stars(fig5comp, "fig5rp.tif", layer = "rp")
+# copy & paste above code into console, block won't run otherwise (reason?)
 ```
