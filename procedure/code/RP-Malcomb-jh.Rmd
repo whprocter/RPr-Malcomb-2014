@@ -34,22 +34,6 @@ library(s2)
 sf_use_s2(T)
 ```
 
-```{pull in ALL data at once}
-# LHZ Data
-lhz_scores_new = read.csv(here(private_r, "lhz_test.csv"))
-lhz_scores_new$pctOwnCrop = "sof_crops" + "sof_livestock"
-lhz_scores_new$pctIncWage = ,
-lhz_scores_new$pctIncCashCrop =,
-lhz_scores_new$disasterCoping = 
-
-ownCrops = percent_rank(pctOwnCrops) * 4, # high values means lower sensitivity 
-    wageIncome = percent_rank(pctIncWage) * 4, # high values means lower sensitivity
-    cashCropIncome = percent_rank(desc(pctIncCashCrops)) * 4, #high values mean lower sensitivity (b/c of desc)
-    newDisaster = percent_rank(desc(disasterCoping)) * 4, #high values mean lower sensitivity (b/c of desc)
-  ) %>%
-#do derivations in R // RDS this baby
-```
-
 
 ```{r download data}
 
@@ -102,6 +86,7 @@ dhs_downloads = get_datasets(
   all_lower = FALSE,
   download_option = "rds"
 )
+# common error: Error in names(filedatatypelist_DHS) <- paste0("filedatatypelist_", qdapRegex::rm_between(filedatatypelist_DHS_line, : 'names' attribute [1] must be the same length as the vector [0]
 ```
 
 ```{crerates RDS file for DHS downloaded}
@@ -212,7 +197,7 @@ hh_capacity_2010 = dhshh_2010 %>%
 ```
 
 ```{r capacity in traditional authorities 2010}
-ta_capacity_2010 <- hh_capacity_2010 %>%
+ta_capacity_2010b <- hh_capacity_2010 %>%
   # calculating capacity score based on table 2 in malcomb et al 
   rowwise %>%
   mutate(
@@ -235,7 +220,7 @@ ta_capacity_2010 <- hh_capacity_2010 %>%
       # values have possible range of 0 to 1.6, 0.071 to 1.054 when adjusted range of 0-4
       na.rm = F
     ) 
-  ) %>%  
+  ) #%>%  
   # removing incomplete surveys 
   filter(!is.na(capacity))%>%
   # 19996 obs. of 33 variables 
@@ -373,6 +358,38 @@ lhz_sensitivity = lhz %>%
 lhz_capacity = st_rasterize(lhz_sensitivity[,'livelihoodSensitivity'], blank)  
 ```
 
+```{pull in ALL data at once}
+# LHZ Data
+lhz_scores_new = read.csv(here(private_r, "lhz_test2.csv"))
+
+lhz_good  = lhz %>%
+  left_join(lhz_scores_new, by = ("LZCODE" = "LZCODE")) %>%
+  
+  
+  mutate(
+  pctOwnCrop = (sof_crop + sof_livestock) * 100, 
+  pctIncWage = (soc_labour / soc_total) * 100,
+  pctIncCashCrops = (cp_tobacco + cp_sugar + cp_tea + cp_coffee) / soc_total * 100,
+  disasterCoping = (se_firewoord + se_grass	+ se_wildfood + se_charcoal + se_matmaking + se_basket) / soc_total * 100,
+  ) %>%
+
+  mutate(
+  ownCrop = percent_rank(pctOwnCrop) * 4, # high values means lower sensitivity 
+  wageIncome = percent_rank(pctIncWage) * 4, # high values means lower sensitivity
+  cashCropIncome = percent_rank(desc(pctIncCashCrops)) * 4, #high values mean lower sensitivity (b/c of desc)
+  newDisaster = percent_rank(desc(disasterCoping)) * 4, #high values mean lower sensitivity (b/c of desc)
+  ) %>%
+  rowwise %>%
+  mutate(
+    livelihoodSensitivity_new = sum(
+      ownCrop * 6,
+      wageIncome * 6,
+      cashCropIncome * 4,
+      newDisaster * 4) 
+  ) %>% ungroup
+lhz_capacity_new = st_rasterize(lhz_good[,'livelihoodSensitivity_new'], blank) 
+```
+
 ```{r function to calculate vulnerability}
   # creating mask layer
   mask = ta_capacity 
@@ -473,6 +490,7 @@ map_2010
 ```{find break & limit values for vulnerability map}
 max(ta_new[[1]],na.rm = TRUE)
 min(ta_new[[1]],na.rm = TRUE)
+# copy & paste above code into console, block won't run otherwise (reason?)
 ``` 
 
 ```{r vulnerability map}
@@ -493,11 +511,11 @@ vuln_map = ggplot() +
   scale_fill_gradient(
     low = "#FFFF75",
     high = "#CF4611",
-    breaks = c(0.95, 61.01),
+    breaks = c(0.9499073, 61.00681),
     labels = c("Lower Vulnerability", "Higher Vulnerability"),
     na.value = "transparent",
     guide = "colourbar",
-    limits = c(0.95, 61.01)
+    limits = c(0.9499073, 61.00681)
   ) +
   scale_x_continuous(breaks = c(33,34,35,36)) +
   labs(title = "Malawi Vulnerability to Climate Change") +
