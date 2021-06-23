@@ -37,7 +37,7 @@ sf_use_s2(T)
 ```{pull in ALL data at once}
 # LHZ Data
 lhz_scores_new = read.csv(here(private_r, "lhz_test.csv"))
-lhz_scores_new$pctOwnCrop = data$
+lhz_scores_new$pctOwnCrop = "sof_crops" + "sof_livestock"
 lhz_scores_new$pctIncWage = ,
 lhz_scores_new$pctIncCashCrop =,
 lhz_scores_new$disasterCoping = 
