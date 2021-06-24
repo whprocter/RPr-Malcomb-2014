@@ -23,27 +23,40 @@
 - Resilience: "ability of a household to prepare for, respond to and recover from complex drivers of vulnerability"
 
 ## Field Research Trips
-- March 2011 1.4
-- August 2011 1.4
-- 70 interviews 1.4
-- List of interviewed organizations is provided in Appendix 1 and referenced in section 3.2
-- 11 village focus groups 1.4
-- "multi-leveled, semi-structured interviews" 1.4
-- interview themes: "perceptions of climate change, adaptation, governance, vulnerability, and foreign aid" 3.2
-- "understanding household social and economic practices in the context of environmental uncertainty." 3.2
+- March 2011 `1.4`
+- August 2011 `1.4`
+- 70 interviews `1.4`
+- List of interviewed organizations is provided in Appendix 1 and referenced in section `3.2`
+- 11 village focus groups `1.4`
+- "multi-leveled, semi-structured interviews" `1.4`
+- interview themes: "perceptions of climate change, adaptation, governance, vulnerability, and foreign aid" `3.2`
+- "understanding household social and economic practices in the context of environmental uncertainty." `3.2`
 
 ## Selecting and weighting indicators
-- transcribe and code interviews 3.3
-- synthesize into four metathemes 3.3
+- transcribe and code interviews `3.3`
+- synthesize into four metathemes `3.3`
   - assets of land, livestock, income
   - access to markets, food, water, health care, and labor
   - livelihood sensitivity
   - physical exposure to droughts and floods
-- themes (3.3) and indicators (3.4, 3.5, 3.6, 3.7) contextualized in literature
+- themes `3.3` and indicators `3.4, 3.5, 3.6, 3.7` contextualized in literature
 - somewhere note collaboration with the DHS Survey folks and the FEWSNet folks as matter of convenience!
 - Sources of Indicators (T1) and their weights (T2)
   - Assets: DHS Survey 20%
   - Access: DHS Survey 20%
   - Livelihood Sensitivity: Famine Early Warning Network 20%
   - Biophysical Exposure: UNEP/GRID-Europe 40%
-- expert opinion of interviewees used to select and weight indicators 4.2
+- expert opinion of interviewees used to select and weight indicators (4.2)
+
+## Data 
+
+### GADM
+- Districts, prior to maps date of 2012 (F1)
+- Traditional Authorities (F3 & F4 captions)
+
+### CIESIN: Gridded Population
+- Figure 1 (not used anywhere else in paper)
+
+### UNEP
+- Physical Exposure Risk 1.4
+
