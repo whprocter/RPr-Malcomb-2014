@@ -82,16 +82,27 @@ set_rdhs_config(
 
 ```{r downloading dhs data}
 dhs_downloads = get_datasets(
-  c("MWHR61SV", "MWGE62FL", "MWHR4ESV", "MWGE4BFL"),
+  c("MWHR61SV", "MWGE62FL"), #removed latter two datasets, as they were for 2004; the two that are used here are for 2010
   all_lower = FALSE,
   download_option = "rds"
 )
 # common error: Error in names(filedatatypelist_DHS) <- paste0("filedatatypelist_", qdapRegex::rm_between(filedatatypelist_DHS_line, : 'names' attribute [1] must be the same length as the vector [0]
+
+saveRDS(dhs_downloads, here("data","raw","private","dhs_downloads.rds"))
+#read RDS at the beginning of the next section
 ```
 
-```{crerates RDS file for DHS downloaded}
-# saveRDS(dhs_downloads,"data/raw/private/datasets/dhs_downloads.rds")
-saveRDS(dhs_downloads, here("data","raw","private","dhs_downloads.rds"))
+```{r REMAINING DATA IMPORTS -- need to figure out how to arange this + the former}
+# read raster data into r
+# UNEP layers
+# set CRS for raster
+dr = read_stars(here("data", "raw", "public", "dr1010ipeykx.tif")) %>% 
+  st_set_crs(4326) 
+
+fl = read_stars(here("data", "raw", "public",  "fl1010irmt.tif")) %>% 
+  st_set_crs(4326) 
+
+lhz_scores = read.csv(here(private_r, "lhz.csv"))
 ```
 
 ```{r 2010 adaptive capacity data}
@@ -196,8 +207,8 @@ hh_capacity_2010 = dhshh_2010 %>%
   ) 
 ```
 
-```{r capacity in traditional authorities 2010}
-ta_capacity_2010b <- hh_capacity_2010 %>%
+```{r capacity for traditional authorities 2010 at the household level}
+ta_hh_capacity_2010 <- hh_capacity_2010 %>%
   # calculating capacity score based on table 2 in malcomb et al 
   rowwise %>%
   mutate(
@@ -220,18 +231,20 @@ ta_capacity_2010b <- hh_capacity_2010 %>%
       # values have possible range of 0 to 1.6, 0.071 to 1.054 when adjusted range of 0-4
       na.rm = F
     ) 
-  ) #%>%  
-  # removing incomplete surveys 
-  filter(!is.na(capacity))%>%
-  # 19996 obs. of 33 variables 
-  ungroup %>%
+  ) %>%
+  filter(!is.na(capacity)) %>% # removing incomplete surveys 
+  ungroup
+```
+
+```{r capacity for traditional authorities 2010; aggregates from household level}
+  ta_capacity_2010 <- ta_hh_capacity_2010 %>% 
   group_by(ta_id) %>%
   summarize(
     capacity_avg = mean(capacity),
     capacity_min = min(capacity),
     capacity_max = max(capacity),
     capacity_sd = sd(capacity)
-  ) 
+  )
 ```
 
 ```{r joining 2010 capacity to ta and creating breaks for visualization}
@@ -358,12 +371,16 @@ lhz_sensitivity = lhz %>%
 lhz_capacity = st_rasterize(lhz_sensitivity[,'livelihoodSensitivity'], blank)  
 ```
 
-```{pull in ALL data at once}
+```{r pull in ALL data at once}
+
 # LHZ Data
+
 lhz_scores_new = read.csv(here(private_r, "lhz_test2.csv"))
 
+lhz_filtered <- lhz_scores_new[-(17:18),] #removes lhz zones 18 & 19 (urban area & national parks)
+
 lhz_good  = lhz %>%
-  left_join(lhz_scores_new, by = ("LZCODE" = "LZCODE")) %>%
+  left_join(lhz_filtered, by = ("LZCODE" = "LZCODE")) %>%
   
   
   mutate(
@@ -387,7 +404,7 @@ lhz_good  = lhz %>%
       cashCropIncome * 4,
       newDisaster * 4) 
   ) %>% ungroup
-lhz_capacity_new = st_rasterize(lhz_good[,'livelihoodSensitivity_new'], blank) 
+lhz_capacity_new = st_rasterize(lhz_good[,'livelihoodSensitivity_new'], blank)
 ```
 
 ```{r function to calculate vulnerability}
@@ -419,7 +436,7 @@ lhz_capacity_new = st_rasterize(lhz_good[,'livelihoodSensitivity_new'], blank)
     ) %>% select(recoded) * 5
   
   # final output (adding component rasters)
-  final = 100 - (ta_capacity + lhz_capacity + (40 - (drought + flood))) # 100 = highest vulnerability, 0 = lowest vulnerability
+  final = 100 - (ta_capacity + lhz_capacity_new + (40 - (drought + flood))) # 100 = highest vulnerability, 0 = lowest vulnerability
 ```
 
 ```{r creating final vulnerability layers}
@@ -487,9 +504,9 @@ map_2010 = ggplot() +
 map_2010
 ```
 
-```{find break & limit values for vulnerability map}
-max(ta_new[[1]],na.rm = TRUE)
-min(ta_new[[1]],na.rm = TRUE)
+```{r find break & limit values for vulnerability map}
+vuln_max <- max(ta_new[[1]],na.rm = TRUE)
+vuln_min <- min(ta_new[[1]],na.rm = TRUE)
 # copy & paste above code into console, block won't run otherwise (reason?)
 ``` 
 
@@ -511,11 +528,11 @@ vuln_map = ggplot() +
   scale_fill_gradient(
     low = "#FFFF75",
     high = "#CF4611",
-    breaks = c(0.9499073, 61.00681),
+    breaks = c(vuln_min, vuln_max),
     labels = c("Lower Vulnerability", "Higher Vulnerability"),
     na.value = "transparent",
     guide = "colourbar",
-    limits = c(0.9499073, 61.00681)
+    limits = c(vuln_min, vuln_max)
   ) +
   scale_x_continuous(breaks = c(33,34,35,36)) +
   labs(title = "Malawi Vulnerability to Climate Change") +
@@ -680,6 +697,13 @@ ac_diff_map = ggplot() +
 ac_diff_map
 ```
 
+```{r find break & limit values for vulnerability difference map}
+abs(max(fig5comp[[3]],na.rm = TRUE))
+abs(min(fig5comp[[3]],na.rm = TRUE))
+range <- max(abs(max(fig5comp[[3]],na.rm = TRUE)),abs(min(fig5comp[[3]],na.rm = TRUE)))
+# takes the greatest value and makes it the range
+``` 
+
 ```{r vulnerability difference map}
 clrs = mutate(
   ea,
@@ -698,11 +722,11 @@ vuln_diff_map = ggplot() +
   scale_fill_gradient2(
     low = "#e9a3c9",
     high = "#beaed4",
-    breaks = c(-0.974405,0.974405),
+    breaks = c(-range,range),
     labels = c("Negative Difference", "Positive Difference"),
     na.value = "transparent",
     guide = "colourbar",
-    limits = c(-0.974405,0.974405) #you want centered around zero, so make larger # the ends
+    limits = c(-range,range) #you want centered around zero, so make larger # the ends
   ) +
   scale_x_continuous(breaks = c(33,34,35,36)) +
   labs(title = "Fig. 5 Replication Comparison") +
@@ -735,7 +759,7 @@ ggsave(
 )
 ```
 
-```{exporting comparison as geotiff}
+```{r exporting comparison as geotiff}
 write_stars(fig5comp, "fig5diff.tif", layer = "diff")
 write_stars(fig5comp, "fig5or.tif", layer = "or")
 write_stars(fig5comp, "fig5rp.tif", layer = "rp")
