@@ -15,6 +15,7 @@
 - F3 Malawi Household Resilience (2004)
 - F4 Malawi Household Resilience (2010)
 - F5 Malawi Composite Vulnerability Index
+- R References
 
 ## Concepts
 - Adaptive capacity as "household-level assets to recover from disasters and access to resources" `2.2`
@@ -66,13 +67,37 @@
 - UNEP Global Risk Data Platform on droughts (2009) `F5`
 - Continuous raster `5.6`
 
+### FEWSNET 
+- Livlihood data  `1.4`
+- FEWSNET 2005 `T2`
+- Malawi Vulnerability Assessment Committee (2005) `F5`
+- Livelihood Zones Area District from TAs `5.6`
+- 
+
 ## Theory?
 
-### Physical Exposure (3.7)
+### Physical Exposure (3.7) -- same as next thing (same reference)
 - UNEP Global Disaster Risk Platform
   - risks of flood (Peduzzi 2011)
   - drought exposure (Peduzzi 2012) based on 
     - global monthly gridded precipitation dataset from the Climactic Research Unit (Unviersity of E. Angolia)
     - global standardized precipitation index based on Brooklyn IRI Columbia
   - designed by: UNEP Global Resource Information Database (GRID) Europe
+
+### Biophysical Exposure 40%
+- Floods & rain variability, flood events `T1`
+  - estimated risk for flood hazards 20% `T2`
+  - Global estimated risk index for flood hazard `R w/ link`
+- Drought & Dry Spells, drought indiices `T1`
+  - exposition to drought events 20% `T2`
+  - Physical exposition to drought events 1980 - 2001 `R w/ link`
+
+### Livelihood Sensitivty 20% (3.6) 
+- interviews with MVAC
+- data created in partnership with FEWSNET & USAID
+- pre-established livelihood zones - geographic areas where populations share characteristics of farming practices, labor, and enviro. coping strategies 
+- May to July 2003 Household Economy Approach baseline survey in 11 livelihood zones
+- wealth grroups created (poor, middle, better-off) in process unique to each zone
+
+
 
