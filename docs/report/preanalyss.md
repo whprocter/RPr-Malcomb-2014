@@ -11,7 +11,7 @@
 - F1 Map of Malawi
 - F2 Vulnerability web
 - T1 Evidence-based complex vulnerability indicators
-- T2 Weighted indicators by metatheme
+- T2 Weighted indicators by metatheme **in orange on notecards**
 - F3 Malawi Household Resilience (2004)
 - F4 Malawi Household Resilience (2010)
 - F5 Malawi Composite Vulnerability Index
