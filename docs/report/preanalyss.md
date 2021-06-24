@@ -17,8 +17,8 @@
 - F5 Malawi Composite Vulnerability Index
 
 ## Concepts
-- Adaptive capacity as "household-level assets to recover from disasters and access to resources" 2.2
-- Exposure: "magnitude and frequency of forced that could stress a system" 2.2
+- Adaptive capacity as "household-level assets to recover from disasters and access to resources" `2.2`
+- Exposure: "magnitude and frequency of forced that could stress a system" `2.2`
 - Sensitivity: "degree to which a system will respond to an external disturbing force"
 - Resilience: "ability of a household to prepare for, respond to and recover from complex drivers of vulnerability"
 
@@ -41,22 +41,38 @@
   - physical exposure to droughts and floods
 - themes `3.3` and indicators `3.4, 3.5, 3.6, 3.7` contextualized in literature
 - somewhere note collaboration with the DHS Survey folks and the FEWSNet folks as matter of convenience!
-- Sources of Indicators (T1) and their weights (T2)
+- Sources of Indicators `T1` and their weights `T2`
   - Assets: DHS Survey 20%
   - Access: DHS Survey 20%
   - Livelihood Sensitivity: Famine Early Warning Network 20%
   - Biophysical Exposure: UNEP/GRID-Europe 40%
-- expert opinion of interviewees used to select and weight indicators (4.2)
+- expert opinion of interviewees used to select and weight indicators `4.2`
 
 ## Data 
 
 ### GADM
-- Districts, prior to maps date of 2012 (F1)
-- Traditional Authorities (F3 & F4 captions)
+- Districts, prior to maps date of 2012 `F1`
+- Traditional Authorities `F3 & F4 captions`
 
 ### CIESIN: Gridded Population
 - Figure 1 (not used anywhere else in paper)
 
 ### UNEP
-- Physical Exposure Risk 1.4
+- Physical Exposure Risk `1.4`
+
+### UNEP/GRID `T2`
+- Dartmouth Flood Observatory 
+  - Data? `Fig 5` 1999 - 2007 
+- UNEP Global Risk Data Platform on droughts (2009) `F5`
+- Continuous raster `5.6`
+
+## Theory?
+
+### Physical Exposure `3.7`
+- UNEP Global Disaster Risk Platform
+  - risks of flood (Peduzzi 2011)
+  - drought exposure (Peduzzi 2012) based on 
+    - global monthly gridded precipitation dataset from the Climactic Research Unit (Unviersity of E. Angolia)
+    - global standardized precipitation index based on Brooklyn IRI Columbia
+  - designed by: UNEP Global Resource Information Database (GRID) Europe
 
