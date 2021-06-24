@@ -1,4 +1,6 @@
-# Sections of Paper
+# Pre-analysis plan based on paper only
+
+## Sections of Paper
 - 1 Introduction
 - 2 Complex vulnerability
 - 3 Evidence-based Indicators
@@ -14,13 +16,13 @@
 - F4 Malawi Household Resilience (2010)
 - F5 Malawi Composite Vulnerability Index
 
-# Concepts
+## Concepts
 - Adaptive capacity as "household-level assets to recover from disasters and access to resources" 2.2
 - Exposure: "magnitude and frequency of forced that could stress a system" 2.2
 - Sensitivity: "degree to which a system will respond to an external disturbing force"
 - Resilience: "ability of a household to prepare for, respond to and recover from complex drivers of vulnerability"
 
-# Field Research Trips
+## Field Research Trips
 - March 2011 1.4
 - August 2011 1.4
 - 70 interviews 1.4
@@ -30,7 +32,7 @@
 - interview themes: "perceptions of climate change, adaptation, governance, vulnerability, and foreign aid" 3.2
 - "understanding household social and economic practices in the context of environmental uncertainty." 3.2
 
-# Selecting and weighting indicators
+## Selecting and weighting indicators
 - transcribe and code interviews 3.3
 - synthesize into four metathemes 3.3
   - assets of land, livestock, income
