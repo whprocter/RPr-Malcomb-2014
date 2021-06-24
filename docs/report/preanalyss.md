@@ -60,7 +60,7 @@
 ### UNEP
 - Physical Exposure Risk `1.4`
 
-### UNEP/GRID `T2`
+### UNEP/GRID (T2)
 - Dartmouth Flood Observatory 
   - Data? `Fig 5` 1999 - 2007 
 - UNEP Global Risk Data Platform on droughts (2009) `F5`
@@ -68,7 +68,7 @@
 
 ## Theory?
 
-### Physical Exposure `3.7`
+### Physical Exposure (3.7)
 - UNEP Global Disaster Risk Platform
   - risks of flood (Peduzzi 2011)
   - drought exposure (Peduzzi 2012) based on 
