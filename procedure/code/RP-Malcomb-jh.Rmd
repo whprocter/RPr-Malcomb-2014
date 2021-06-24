@@ -507,7 +507,6 @@ map_2010
 ```{r find break & limit values for vulnerability map}
 vuln_max <- max(ta_new[[1]],na.rm = TRUE)
 vuln_min <- min(ta_new[[1]],na.rm = TRUE)
-# copy & paste above code into console, block won't run otherwise (reason?)
 ``` 
 
 ```{r vulnerability map}
@@ -763,5 +762,4 @@ ggsave(
 write_stars(fig5comp, here("data", "derived", "public", "fig5diff.tif"), layer = "diff")
 write_stars(fig5comp, here("data", "derived", "public", "fig5or.tif"), layer = "or")
 write_stars(fig5comp, here("data", "derived", "public", "fig5rp.tif"), layer = "rp")
-# copy & paste above code into console, block won't run otherwise (reason?)
 ```
