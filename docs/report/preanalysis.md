@@ -215,7 +215,7 @@ potential for redundancy" `4.3`
 - 203 TAs with Data in 2010 `F3`
 - Range of HH Resilience Scores from 11.48 - 25.77 `F3`
 - 24,850 HH surveys in 2010 `5.2`
-- Blantyre District, TA Machinjili scored 3.9
+- Blantyre District, TA Machinjili scored `3.9`
 - Machinga District, TA Mposa scored highest (max) "average household score nationwide was 17.63" `5.3`
 - `F4`- Malawi Household Resiliences (2010)
 - 173 TA's had temporal data (both 2004 & 2010) `6.3`
