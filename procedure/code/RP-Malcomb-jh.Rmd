@@ -523,8 +523,6 @@ vuln_map
 
 ```{r saving maps}
 
-save(map_2010, vuln_map, file = here("results","maps","maps.Rdata"))
-
 ggsave(
   here("results","figures","fig4rep_final.png"),
   plot = map_2010,
@@ -715,8 +713,6 @@ vuln_diff_map
 ```
 
 ```{r saving maps}
-
-save(ac_diff_map, vuln_diff_map, file = here("results","maps","maps.Rdata"))
 
 ggsave(
   here("results","figures","fig4comp_final.png"),
