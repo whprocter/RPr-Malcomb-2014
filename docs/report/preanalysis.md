@@ -30,6 +30,32 @@ Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling f
 
 Reproducibility, Vulnerability, GIS, Climate Change, Africa
 
+## Study Design
+
+The reproduction study design will first implement the original study as closely as possible to reproduce the 2010 Household Resilience map (figure 4) and Malawi Vulnerability Map (figure 5). We hypothesize that we will be able to exactly reproduce the same results for both maps.
+
+### Original Study Design
+
+The original study is an observational and descriptive multi-criteria analysis using geographic information systems (GIS) to implement a hierarchical design for a climate change vulnerability model of Malawi.
+The model themes, indicators, and weights were selected based upon 70 interviews and 11 village focus groups from field trips in March and August of 2011 (1.4, 4.2, A1).
+Themes and indicators were also contextualized in literature (3.3 through 3.7) and adjusted based on redundancy and representativeness across the country (4.3).
+The model and weights were adjusted through "several iterations of the model usign alternative weighting schemes" to produce a "final product that reflects Malawi's contextual and perceptual vulnerability" (4.3).
+Each theme was constructed of indicators from a single data provider: adaptive capacity is measured with USAID DHS surveys, livelihood sensitivity is measured with FEWSnet/MVAC livelihood zones baseline data, and physical exposure is measured with UNEP Global Risk Data Platform data (T1, T2). 
+suggesting a model design based on a combination of factors including expert opinion, deductive theory, inductive data characteristics, and pragmatic data availability.
+
+### Evaluating the Reproduction Results
+
+In order to test the household resilience results, we will georeference the original figure 4 map using QGIS georeferencer plugin.
+Using a vector dataset of traditional authorities and the georeferenced map, we will then use zonal statistics to extract the average brightness values, which represent four classes of household resilience, for each traditional authority.
+After inspecting a histogram of the mean brightness values, we will reclassify the values as closely to the four classes on the original figure 4 as possible and then manually adjust the attribute values for any misclassified traditional authorities.
+We will compare original and reproduction household resilience results by creating a confusion matrix, calculating the Spearman's Rho correlation coefficient (expecting a value of 1 for perfect positive correlation), and creating a thematic map of the difference between the original results and replication results.
+
+In order to compare the Malawi vulnerability results, we will georeference the original figure 5 map using QGIS georeferencer plugin.
+We will vectorize the UNEP-Grid raster  input most closely matching the published map and summarize the red, green, and blue brightness values of the original map using zonal statistics.
+We will add the green and blue brightness values together to convert the original color ramp into a linear scale of continuous values. 
+We will compare original and reproduction Malawi vulnerability results by creating a scatterplot, Spearman's Rho correlation coefficient (expecting a value near 1 for perfect positive correlation), and thematic map of the difference between the original results and replication results.
+
+
 
 ## Sections of Paper
 - 1 Introduction
@@ -46,6 +72,7 @@ Reproducibility, Vulnerability, GIS, Climate Change, Africa
 - F3 Malawi Household Resilience (2004)
 - F4 Malawi Household Resilience (2010)
 - F5 Malawi Composite Vulnerability Index
+- A1 Appendix 1
 - R References
 
 ## Concepts
