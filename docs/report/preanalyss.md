@@ -155,7 +155,7 @@ potential for redundancy" `4.3`
   - arable lands (hectares) 6%
 - animals used as coping strategy `3.4`
   - livestock; number oof animals per HH by type `T1`
-  - # of livestock units 4% `T2`
+  - number of livestock units 4% `T2`
 - wealth (disposable capital assets) `3.4`
   - money; wealth index (based on owned `T1` assets)
   - wealth index score 4% `T2`
@@ -164,7 +164,7 @@ potential for redundancy" `4.3`
   - in household sick in past 12 months 3% `T2`
 - orphans are a socially vulnerable set of the population orphan care adds burdens `3.4`
   - number of orphans or vulnerable children `T1`
-  - # of orphans in households 3% `T2`
+  - number of orphans in households 3% `T2`
 - income (immediately accessible resources) `3.4`
   - NOT in `T1`
 
