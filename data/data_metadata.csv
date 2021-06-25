@@ -1,13 +1,27 @@
 path,name,format,sources,metadata
 this guide to metadata is not up to date.,,,,
-raw/private, MWI_adm0 + MWI_adm1 + MWI_adm2, .shp, GADM,
-raw/private, MW_LHZ_2009, .shp, FEWSnet,
-raw/private, dhs_downloads, .rds, DHS Surveys,
-raw/private, major_lakes, .csv, OSM, http://www.masdap.mw/showmetadata/xsl/365
-
-
-
-the path column will be raw/private, raw/public, derived/private, or derived/public
-the name will be the file name
-the source will be UNEP-GRID, DHS Surveys, or FEWSnet for raw data, or it will be the data files used to create derived data
-the metadata will be a list of metadata files providing additional information on any raw data source.
+raw/public,MWI_adm0 + MWI_adm1 + MWI_adm2,.shp,GADM,
+raw/public,MW_LHZ_2009,.shp,FEWSnet,
+raw/public,major_lakes,.csv,OSM/masdap, http://www.masdap.mw/showmetadata/xsl/365
+raw/private,dhs_downloads,.rds,DHS Surveys,
+raw/private,dr1010ipeykx,.tif,UNEP,
+raw/private,fl1010irmt,.tif,UNEP,
+raw/private,lhz_test2,.csv,FEWSnet,
+raw/private/datasets,MWGE62FL,.rds,DHS Surveys,
+raw/private/datasets,MWHR61SV,.rds,DHS Surveys,
+derived/public,adaptive_capacity,.rData,MWHR61SV.rds + MWGE62FL.rds,
+derived/public,results,.gpkg,fig5rep_final.png + fig4rep_final.png,
+derived/public,ta_capacity,.tif,,
+derived/public,georeferencingB,.gpkg,,
+derived/public,georef_bg,.gpkg,,
+derived/public,fig5diff,.tif,georef_bg.gpkg,
+derived/public,fig5or,.tif,georef_bg.gpkg,
+derived/public,fig5tif,.tif,georef_bg.gpkg,
+,,,,
+,,,,
+,,,,
+,,,,
+the path column will be raw/private  raw/public  derived/private  or derived/public,,,,
+the name will be the file name,,,,
+the source will be UNEP-GRID DHS Surveys or FEWSnet for raw dat a or it will be the data files used to create derived data,,,,
+the metadata will be a list of metadata files providing additional information on any raw data source.,,,,

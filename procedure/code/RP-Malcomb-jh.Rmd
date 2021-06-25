@@ -42,14 +42,14 @@ public_r = here("data","raw","public")
 
 if (!"traditional_authorities" %in% list.files(public_r)){
   # Malawi administrative areas from GADM version 2.8 https://gadm.org/download_country_v2.html
-  download("https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip", here("data","raw","private", "MWI_adm_shp.zip"))
-  unzip(here("data","raw","private", "MWI_adm_shp.zip"), exdir = here("data","raw","public","traditional_authorities"))
+  download("https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip", here("data","scratch", "MWI_adm_shp.zip"))
+  unzip(here("data","scratch", "MWI_adm_shp.zip"), exdir = here("data","raw","public"))
 }
 
 if (!"livelihood_zones" %in% list.files(public_r)){
   # Malawi livelihood zones from FEWS NET Data Center https://fews.net/fews-data/335
-  download("https://fews.net/data_portal_download/download?data_file_path=http%3A//shapefiles.fews.net.s3.amazonaws.com/LHZ/MW_LHZ_2009.zip", here("data","raw","private","MW_LHZ_2009.zip"))
-  unzip(here("data","raw","private","MW_LHZ_2009.zip"), exdir = here("data","raw","public","livelihood_zones"))
+  download("https://fews.net/data_portal_download/download?data_file_path=http%3A//shapefiles.fews.net.s3.amazonaws.com/LHZ/MW_LHZ_2009.zip", here("data","scratch","MW_LHZ_2009.zip"))
+  unzip(here("data","scratch","MW_LHZ_2009.zip"), exdir = here("data","raw","public"))
 }
 
 if (!"major_lakes.csv" %in% list.files(public_r)) {
@@ -106,10 +106,10 @@ lhz_scores = read.csv(here(private_r, "lhz_test2.csv"))
 ```
 
 ```{r 2010 adaptive capacity data}
-ta = read_sf(here("data", "raw", "public","traditional_authorities", "MWI_adm2.shp")) %>%
+ta = read_sf(here("data", "raw", "public", "MWI_adm2.shp")) %>%
   st_make_valid() 
 
-lhz = read_sf(here("data", "raw", "public", "livelihood_zones", "MW_LHZ_2009.shp")) %>% st_make_valid()
+lhz = read_sf(here("data", "raw", "public", "MW_LHZ_2009.shp")) %>% st_make_valid()
 
 dhsclusters_2010 = readRDS(here("data", "raw", "private", "datasets", "MWGE62FL.rds")) %>%
   as("sf") %>% 
@@ -348,7 +348,7 @@ ta_capacity = st_rasterize(ta_2010[, 'capacity_2010'], blank)
 
 # LHZ Data
 
-lhz_scores_new = read.csv(here(private_r, "lhz_test2.csv"))
+lhz_scores = read.csv(here(private_r, "lhz.csv"))
 
 lhz_filtered <- lhz_scores_new[-(17:18),] #removes lhz zones 18 & 19 (urban area & national parks)
 
