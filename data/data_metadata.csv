@@ -1,2 +1,13 @@
 path,name,format,sources,metadata
 this guide to metadata is not up to date.,,,,
+raw/private, MWI_adm0 + MWI_adm1 + MWI_adm2, .shp, GADM,
+raw/private, MW_LHZ_2009, .shp, FEWSnet,
+raw/private, dhs_downloads, .rds, DHS Surveys,
+raw/private, major_lakes, .csv, OSM, http://www.masdap.mw/showmetadata/xsl/365
+
+
+
+the path column will be raw/private, raw/public, derived/private, or derived/public
+the name will be the file name
+the source will be UNEP-GRID, DHS Surveys, or FEWSnet for raw data, or it will be the data files used to create derived data
+the metadata will be a list of metadata files providing additional information on any raw data source.
