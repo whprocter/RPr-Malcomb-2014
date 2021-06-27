@@ -9,9 +9,9 @@ Version 1.0 | Created June 25, 2021 | Last Updated June 25, 2021
 ## Abstract
 
 Malcomb, Weaver and Krakowka ([2014](https://doi.org/10.1016/j.apgeog.2014.01.004)) published one of the first sub-national geographic climate change vulnerability models for a developing country (1.4).
-The authors intended for the study to be replicable across space (other African countries with similar data available) (7.1), time (when new suvery data is published) (4.5, 7.1), and vulnerability stimuli (7.1) for the purpose of addressing extreme vulnerability to climate change (1.3) with a model to assist in the allocation and evaluation of foreign aid (1.2).
-The methodology was desgined to be "transparent and easily replicable" (2.1) in its use of "locally derived indicators and granular data" (2.1), addressing critiques of vulnerability models aimed at their uncertainty and sensitivity due to problems of scale and spatial aggregation, normative and subjective modelling decisions, and data availability, and challenges in model comparability (2.1).
-The model uses household adaptive capacity data United States Agency for International Development (USAID) Demographic and Health Surveys (DHS) (1.4, 4.1) available in 44 African countries (7.1), livelihood sensitivity data from Famine Early Warning Systems Network (FEWSnet) livelihood zones baseline surveys available in 23 African countries (3.6), and global physical exposure data from the United Nations Environment Programme (UNEP) Global Risk Data Platform.
+The authors intended for the study to be replicable across space (other African countries with similar data available) (7.1), time (when new survey data is published) (4.5 and 7.1), and vulnerability stimuli (7.1) for the purpose of addressing extreme vulnerability to climate change (1.3) with a model to assist in the allocation and evaluation of foreign aid (1.2).
+The methodology was designed to be "transparent and easily replicable" (2.1) in its use of "locally derived indicators and granular data" (2.1), addressing critiques of vulnerability models aimed at their uncertainty and sensitivity due to problems of scale and spatial aggregation, normative and subjective modelling decisions, and data availability, and challenges in model comparability (2.1).
+The model uses household adaptive capacity data United States Agency for International Development () Demographic and Health Surveys (DHS) (1.4 and 4.1) available in 44 African countries (7.1), livelihood sensitivity data from the USAID / Famine Early Warning Systems Network (FEWSnet) livelihood zones baseline surveys available in 23 African countries (3.6), and global physical exposure data from the United Nations Environment Programme (UNEP) Global Risk Data Platform.
 
 This replication study is motivated by three factors.
 First, climate change impacts are increasingly severe in Africa and establishing reproducible and replicable methods for geographic vulnerability modeling may help in allocating resources for climate change adaptation and evaluating the effectiveness of climate change adaptation investments.
@@ -19,269 +19,420 @@ Second, a fully reproducible publication can be more readily replicated in new g
 Third, there is an urgent need to evaluate the reproducibility of research in human-environment and geographical sciences (HEGS) and to establish protocols and infrastructure for conducting and publishing reproduction/replication studies and reproducible research in HEGS.
 
 In this study, we will attempt to identically reproduce the 2010 Malawi Household Resilience model and the Vulnerability to Climate Change model described in Malcomb et al (2014) using The R Project for Statistical Computing and the same data sources cited in the original publication.
-We will compare our reproduction results with the orginal results using thematic maps of difference between results and the Spearman's Rho Correlation Coefficient. Additionally, we will compare reproduction results with original results for the household resilience model with a confusion matrix, and for the vulnerability model with a scatterplot.
+We will compare our reproduction results with the original results using thematic maps of difference between results and the Spearman's Rho Correlation Coefficient.
+Additionally, we will compare reproduction results with original results for the household resilience model with a confusion matrix, and for the vulnerability model with a scatterplot.
 The original study is a descriptive geographic multi-criteria analysis based on local expert opinion, and therefore has no testable hypotheses or effects.
-As a reproduction study, the geographic extent and support will match the original study, for which the extent is the country of Malawi and the support for household resiliency is the third administrative level (Traditional Authorities) (4.4, F4) while the support for climate vulnerability is a raster grid (4.6, F5) with unknown spatial resolution.
-The original study was conducted using STATA and ArcGIS, while this replication study will use The R Project for Statistical Computing.
 
-Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004). 
+The replication study data and code will be made available in a GitHub repository to the greatest extent that licensing and file sizes permit.
+The repository will be made public at [github.com/GIS4DEV/RPr-Malcomb-2014](https://github.com/HEGSRR/RPr-Malcomb-2014)
+
+Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004).
 
 ### Keywords
 
 Reproducibility, Vulnerability, GIS, Climate Change, Africa
 
-## Study Design
+## Study design
 
-The reproduction study design will first implement the original study as closely as possible to reproduce the 2010 Household Resilience map (figure 4) and Malawi Vulnerability Map (figure 5). We hypothesize that we will be able to exactly reproduce the same results for both maps.
+The reproduction study design will first implement the original study as closely as possible to reproduce the 2010 Household Resilience map (F4) and Malawi Vulnerability Map (F5).
+Our two confirmatory hypotheses are that we will be able to independently reproduce results for both maps.
 
-### Original Study Design
+The working hypotheses are therefore:
 
-The original study is an observational and descriptive multi-criteria analysis using geographic information systems (GIS) to implement a hierarchical design for a climate change vulnerability model of Malawi.
-The model themes, indicators, and weights were selected based upon 70 interviews and 11 village focus groups from field trips in March and August of 2011 (1.4, 4.2, A1).
+> H1: There is no correlation between Malcomb et al's ranking of traditional authorities by household resilience and our reproduction study's ranking of traditional authorities by household resilience.
+
+> H2: There is no correlation between Malcom et al's ranking of locations by climate vulnerability and our reproduction study's ranking of locations by climate vulnerability.
+
+### Original study design
+
+The original study is **observational** and **descriptive**, with no hypotheses or effect sizes.
+The study is a multi-criteria analysis using geographic information systems (GIS) to implement a hierarchical geographic model of climate change vulnerability model in Malawi.
+
+The **spatial extent** of the study was the country of Malawi.
+The **spatial scale** of the study was the third administrative level (traditional authorities) and a raster grid of unknown spatial resolution.
+The **temporal extent** of the study was explicitly 2004&mdash;2010 (4.5), but the contains secondary data collected earlier (3.6 and F5).
+
+The model themes, indicators, and weights were selected based upon 70 interviews and 11 village focus groups from field trips to Malawi in March and August of 2011 (1.4, 4.2 and A1).
 Themes and indicators were also contextualized in literature (3.3 through 3.7) and adjusted based on redundancy and representativeness across the country (4.3).
-The model and weights were adjusted through "several iterations of the model usign alternative weighting schemes" to produce a "final product that reflects Malawi's contextual and perceptual vulnerability" (4.3).
-Each theme was constructed of indicators from a single data provider: adaptive capacity is measured with USAID DHS surveys, livelihood sensitivity is measured with FEWSnet/MVAC livelihood zones baseline data, and physical exposure is measured with UNEP Global Risk Data Platform data (T1, T2). 
-suggesting a model design based on a combination of factors including expert opinion, deductive theory, inductive data characteristics, and pragmatic data availability.
+The model and weights were adjusted through "several iterations of the model using alternative weighting schemes" (4.3) to produce a "final product that reflects Malawi's contextual and perceptual vulnerability" (4.3).
+Each theme was constructed of indicators from a single data provider: adaptive capacity is measured with USAID DHS surveys, livelihood sensitivity is measured with FEWSnet/Malawi Vulnerability Assessment Committee (MVAC) livelihood zones baseline data, and physical exposure is measured with UNEP Global Risk Data Platform data (T1 and T2).
+Although the authors emphasize a grounded local evidence-based selection of indicators and weights (2.1, 4.2, 5.1 and 7.1), other evidence in the publication suggests a model design based on a more pragmatic combination of factors including expert local opinion, deductive theory, and the availability and characteristics of data.
 
-### Evaluating the Reproduction Results
+The study did not use any **randomization**.
 
-In order to test the household resilience results, we will georeference the original figure 4 map using QGIS georeferencer plugin.
-Using a vector dataset of traditional authorities and the georeferenced map, we will then use zonal statistics to extract the average brightness values, which represent four classes of household resilience, for each traditional authority.
+The original study was conducted using STATA&trade; (4.4) and ArcGIS&trade; (4.6, F3 and F4) with unspecified software versions, by 2012 according to creation dates on map figures (F3, F4 and F5).
+
+## Sampling plan
+
+### Existing data and data exploration
+
+This registration is based upon knowledge of the original study based upon a thorough reading of the original research article only.
+
+In full transparency, we have already attempted the reproduction study, including acquisition and analysis of all of the secondary data sources required.
+This preregistration serves two purposes for us:
+1. Revisiting the original paper to document the most complete knowledge of the data and methodology possible without acquiring data or beginning analysis, represented in this preregistration.
+1. Practicing and demonstrating the full workflow of a reproduction study in the human-environment and geographical sciences, including preregistration, reproducible computational research practices, and publication of a reproduction report.
+
+Therefore, we have not taken steps to not explore or analyze the data. Rather, we are practicing the intellectual challenge of practicing a scenario in which we are preregistering the reproduction study as if we had only read the original study.
+
+Holler has previously reviewed and compared other climate vulnerability models for Malawi, and conducted a scoping study in the Lilongwe and Mangochi districts of Malawi in 2015, including meeting with the Regional Centre for Mapping of Resources for Development (RCMRD) consultants who created the Malawi Hazards and Vulnerability Atlas ([2015](https://doi.org/10.13140/RG.2.1.1460.0402)).
+
+### Data collection and spatial sampling
+
+The study exclusively uses secondary data sources.
+The published results based on DHS surveys include data 203 traditional authorities in 2010 (F4), whereas the authors state that there are more than 250 populated traditional authorities in Malawi (4.4).
+The 2010 household resilience data is based upon 24,850 DHS household surveys (5.2).
+Furthermore, "not every traditional authority had surveys conducted within its administrative boundaries" (5.2).
+This suggests possible spatial sampling problems in the DHS survey data in the context of its application in this study.
+The authors' rationales for using the third level administrative units of traditional authorities include matching the political level at which many projects are planned and assessed, and identifying hotspots of vulnerability that are lost in the aggregation to second level districts (4.4).
+The original paper does not contain any further detail on the spatial sampling or distribution of DHS surveys *vis a vis* traditional authorities.
+
+## Data description
+
+Household resilience data is derived from USAID DHS Surveys conducted in 2004 and 2010 (1.4).
+Readers are referred to the DHS website for an "explanation on using survey data with GPS information" (4.4).
+The website, [www.measuredhs.com](http://www.measuredhs.com), is provided in the references, and forwards to [dhsprogram.com](https://dhsprogram.com).
+There were 24,850 household surveys in 2010 (5.2), providing data for 203 traditional authorities (F3).
+
+The analysis is conducted in traditional authorities, which may be provided by the "GADM administrative boundaries for Africa" cited on maps of household resilience (F3 and F4).
+No date, version, or formal citation for this data is provided.
+
+Livelihood sensitivity data is derived from household economic analysis (HEA) baseline surveys of livelihood zones created by MVAC in collaboration with USAID and FEWSnet (3.6).
+Livelihood zones are distinct from traditional authorities (5.6).
+They are "geographic areas where populations share characteristics of farming practices, labor, and environmental coping strategies" (3.6).
+Eleven zones were surveyed in 2003 (3.6).
+An MVAC 2005 report on livelihood zones appears in the references with an expired URL (R)
+
+Physical exposure data is derived from the United Nations Environment Programme (UNEP) Global Risk Data Platform (1.4) as global (3.7) continuous raster data (5.6).
+The climate vulnerability map also cites the Dartmouth Flood Observatory (1999-2007) (F5).
+According to the references to Peduzzi (2011, 2012), the data for flood risk and drought exposure is available from UNEP/DEWA/GRID-Europe at [preview.grid.unep.ch/](http://preview.grid.unep.ch/).
+The drought risk data is based on "a global monthly gridded precipitation dataset obtained from the Climatic Research Unit (University of East Anglia)" and "a global Standardized Precipitation Index based on Brad Lyon (IRI, Columbia University) methodology" (3.7).
+
+## Variables
+
+All variables used in this study are derived from secondary data.
+There are no experimentally manipulated variables.
+Eighteen independent variables are represented as indicators and drivers of four component themes of vulnerability/resilience: 1) *assets* and 2) *access* combine to create *adaptive capacity*, 3) *livelihood sensitivity*, and 4) *physical exposure*.
+Although the eighteen indicators are often discussed as driving vulnerability or resilience outcomes, they are not formally used as **predictor** or **response** variables in any statistical tests.
+
+The variables are presented below as described in various sections of the original paper, with the weighted values assigned to them for analysis of household resilience and climate vulnerability. Text is copied almost verbatim from the original study to facilitate finding the correct variables in data.
+
+##### Assets
+
+- 6%: Arable land (hectares) (T2)
+  - amount of arable land (T1 theory) per household (T1 indicator)
+  - larger landholders can diversify crops and sell food (3.4)
+- 4%: Number of livestock units (T2)
+  - livestock (T1 theory)
+  - number of animals per household by type (T1 indicator)
+  - animals used as coping strategy (3.4)
+- 4%: Wealth index score (T2)
+  - money (T1 theory)
+  - wealth index (based on owned assets) (T1 indicator)
+  - wealth (disposable capital assets) (3.4)
+  - income is discussed separately from wealth (3.4) but is not included as an indicator
+- 3%: Number in household sick in past 12 months (T2)
+  - good health (T1 theory and 3.4)
+  - sick in the past 12 months (T1 indicator)
+- 3%: Number of orphans in household (T2)
+  - orphan care (T1 theory)
+  - number of orphans or vulnerable children (T1 indicator)
+  - orphans... are a highly socially vulnerable subset of the population (3.4)
+  - orphan care adds tremendous burden to families that are... poor and food insecure (3.4)
+
+##### Access
+
+- 4%: time to water source (T2)
+  - basics (T1 theory)
+  - water (time to source) (T1 indicator)
+  - burden that often falls to women and can consume large amounts of time... in a time of shock or drought, water collection time can be protracted causing even greater hardship and vulnerability (3.5)
+- 4%: own a cell phone (T2)
+  - media and information (T1 theory)
+  - own a cell phone (Y/N) (T1 indicator)
+  - households were better prepared, informed and warned about disasters through being well-connected through radio, mobile technology, or tribal networks (3.5)
+- 3%: own a radio (T2)
+  - technology sharing (T1 theory)
+  - own a radio (Y/N) (T1 indicator)
+  - Radio programs are powerful tools for reaching previously inaccessible populations (3.5)
+- 3%: electricity (T2)
+  - basics (T1 theory)
+  - electricity (Y/N) (T1 indicator)
+  - access to the electrical grid (3.5)
+- 2%: type of cooking fuel (T2)
+  - basics (T1 theory)
+  - cooking fuel type (T1 indicator)
+  - selling of charcoal is one of the top coping strategies during periods of food insecurity and market shocks (3.5)
+- 2%: house setting (urban/rural) (T2)
+  - market access (T1 theory)
+  - rural, peri-urban, urban (T1 indicator)
+  - nearest vehicle-accessible road can be several kilometers and the nearest paved road for public transportation to urban centers might be a days or more journey by foot (3.5)
+- 2%: sex of head of household (T2)
+  - power and decision-making (T1 theory)
+  - female-headed HH (Y/N) (T1 indicator)
+  - households headed by females are more vulnerable based on less access to sources of power, land, and resources (3.5)
+  - households headed by one parent or by children (encompassed in the variable family structure) were seen as more vulnerable (3.5)
+
+##### Livelihood sensitivity
+
+- 6%: percent of food from own farm (T2)
+  - ability to meet food needs (T1 theory)
+  - % food intake from personal farm (T1 indicator)
+  - % of food that poor households receive independently from their own farm, an indication of sustainability of livelihoods (3.6)
+- 6%: percent income from wage labor (T2)
+  - % of income that poor households receive from wage labor (3.6)
+  - income source (T1 theory)
+  - % poor income from labor (T1 indicator)
+- 4%: percent income from cash crops (T2)
+  - % of labor income that is susceptible to market shocks (i.e. tobacco, sugar, tea, & coffee (3.6)
+  - cash crop exposure (T1 theory)
+  - % non-food crop (cotton, tobacco, tea) (T1 indicator)
+- 4%: disaster coping strategy (T2)
+  - ecological destruction associated with livelihood coping strategies during time of crisis (3.6)
+  - ecological coping effect (T1 theory)
+  - access to alternative form of income (T1 indicator)
+
+##### Physical exposure
+
+- 20%: estimated risk for flood hazard (T2)
+  - floods & rain variability (T1 theory)
+  - flood events (T1 indicator)
+  - risks of flood (3.7)
+  - global estimated risk index for flood hazard (R)
+- 20%: exposition to drought events (T2)
+  - drought & dry spells (T1 theory)
+  - drought indices (T1 indicator)
+  - (risks of) drought exposure (3.7)
+  - physical exposition to drought events 1980 - 2001 (R)
+
+##### Aggregate thematic concepts
+
+The variables are **aggregated** into thematic concepts and referenced in the original paper as outlined below:
+
+- 40%: Adaptive capacity (T2)
+  - "adaptive capacity" defined as "household-level assets to recover from disasters and access to resources" (2.2) and referred to as:
+    - "adaptive capacity", "capacity score", or "adaptive capacity score" (3.3, 4.6 formula, 5.2, 5.4, 6.3)
+    - "assets" and "access" (3.3, 5.2, F3 and F4)
+    - "assets" and "access" included, but not "adaptive capacity" (1.4, T1 theory, F5)
+    - "resilience", "household(-level) resilience" or "resilience scores" (5.2, 5.3, F3, F4 and F5, 6.4)
+    - "vulnerability" (4.1, 4.4, 4.5, 5.1, 5.3, 5.4, 5.5, 6.1, 6.2, 6.3, 6.4, 7.2)
+  - measured as a positive condition (4.6)
+- 20%: Assets (T2)
+  - defined only as a component of adaptive capacity: "assets to recover from disasters" (2.2) and referred to as:
+    - "assets" (1.4, 3.3, 3.4, T1 theory, F5)
+  - measured as a positive condition (4.6)
+- 20%: Access (T2)
+  - defined only as a component of adaptive capacity: "access to resources" (2.2) and referred to as:
+    - "access" (1.4, 3.3, 3.5, T1 theory, F5)
+  - measured as a positive condition (4.6)
+- 20%: Livelihood Sensitivity (T2)
+  - "sensitivity" defined as "degree to which a system will respond to an external disturbing force" (2.2) and referred to as:
+    - "livelihood sensitivity" (1.4, 3.3, 3.6, T1 theory, 4.6 formula, F5)
+  - measured as a positive condition (4.6)
+- 40%: Physical exposure (T2)
+  - "exposure" defined as the "magnitude and frequency of forces that could stress a system" (2.2) and referred to as:
+    - "physical exposure" (1.4, 3.3, 3.7, 4.6 formula, T2)
+    - "biophysical exposure" (T1 theory)
+    - "exposure to floods and droughts" (F5)
+  - measured as a negative condition (4.6)
+- 100%: Household Resilience (T2)
+  - "resilience" defined as "ability of a household to prepare for, respond to and recover from complex drivers of vulnerability" (2.2, 5.6) and referred to as:
+    - "household resilience" calculated as "Adaptive Capacity + Livelihood Sensitivity - Physical Exposure" (4.6 formula)
+    - "vulnerability to climate change" calculated as "assets + access + livelihood sensitivity - physical exposure" (F5)
+    - "vulnerability" (title, 3.3, 3.6, 4.3, 4.5, 6.5, 7.1, 7.2)
+
+The authors use the terms and definitions of "adaptive capacity", "vulnerability" and "resilience" inconsistently in the paper.
+Depending on context, both "vulnerability" and "resilience" may refer only to the assets and access portion of the model or to the full model inclusive of adaptive capacity (assets and access), livelihood sensitivity, and exposure.
+In some sections and formulas, "adaptive capacity" is used, while in others it appears as its components (assets and access) or even as "household resilience".
+The data mapped in figures 3 and 4 are described in different sections of the original paper as resilience, adaptive capacity, and/or vulnerability.
+The data mapped in figure 5 are described in different sections of the article as vulnerability or resilience.
+Confounding matters further, the authors' definition for resilience is typical for resilience theory, but the formula for resilience is more typical of the well-known Intergovernmental Panel on Climate Change (IPCC) operationalization of "vulnerability".
+
+#### Attribute variable transformations
+
+All variables are normalized between zero and five (4.3 and 5.6) with zero representing the worst or poorest condition and five representing the best or richest condition (4.3).
+The normalization method is not described, but the poorest and richest conditions are described as "quintiles" with values of zero and five (4.3).
+Here, "quintiles" suggests classification into five classes with equal counts.
+"Normalization" suggests transforming each variable into a normal distribution.
+A minimum of zero and maximum of five suggests rescaling the data to a range from zero to five or classifying the data into six quantiles assigned integer values zero through five.
+Four variables were described as (Y/N) nominal data (T1), for which it is not clear how to transform the data into ordinal data with more than two classes.
+A similar concern arises for the market access variable with three classes (Rural, Peri-urban, and Urban).
+Regardless, there is ambiguity in the method of normalizing, scaling, or classifying each variable.
+
+The direction of variables is not always clear because "better" (5) or "worse" (0) conditions are not made explicit for each variable transformation.
+The variable direction is often intuitive, but not in every case.
+This becomes a concern when some components of vulnerability are added while others are subtracted.
+For example, the better condition for a household in terms of flood risk is to be at low risk, therefore low flood risk should be assigned a value of five.
+However, flood risk becomes part of the physical exposure theme which is then *subtracted* in the formula for calculating climate vulnerability (4.6), yielding counterintuitive results.
+Meanwhile, livelihood sensitivity is *added*, therefore each of its indicators should receive high scores of five for good conditions of low sensitivity.
+The final model of the study is also referred to equally often in opposite terms: "vulnerability" or "resilience"
+Rufat et al (2015) found that the monotonicity of vulnerability indicators should not be assumed.
+Therefore, the one certainty is that the individual and thematic variable directions are uncertain.
+
+Household-level resilience is analyzed with the weighted combination of all asset theme indicators and access theme indicators.
+Weights are given in the Variables section.
+The formula for this combination is not specified.
+For 2004, the authors report a household-level minimum resilience score of -0.80 and maximum of 39.33 (5.2).
+Based on the described methodology of a weighted combination of values ranging from zero to five, a negative score is inexplicable.
+A maximum score near 40 is intuitive as a theoretical maximum of 40% for the adaptive capacity category.
+It is not clear whether the calculation should be a weighted average, weighted sum, weighted combination meant to achieve a possible range of 40% for the overall adaptive capacity component of the final vulnerability model, or some other form of weighted combination.
+
+Livelihood sensitivity is presumably calculated with the weighted combination of its four indicators.
+Weights are given in the Variables section.
+The formula for this combination is not specified.
+Results for this theme are not presented.
+
+Physical exposure may be calculated with the weighted combination of its two indicators.
+Weights are given in the Variables section.
+The formula for this combination is not specified.
+It is not specified whether any geographic transformation is required to combine these two variables.
+Results for this theme are not presented.
+
+#### Geographic transformations
+
+The household resilience analysis is analyzed in the spatial units of traditional authorities (4.4, 5.2, F3 and F4).
+This aggregation from households to traditional authorities is accomplished with a spatial join (5.2) with an average of the individual household resilience scores (5.2, 6.3, F3 and F4), and classified into four classes with the Natural Breaks Jenks classification method (F3 and F4).
+In the methodology section, the authors state that "DHS Indicators were disaggregated to the village level" (4.4).
+Since the DHS data is described as using the household level of aggregation, it is not clear how or why the data would be "disaggregated" to the village level.
+
+For the climate vulnerability analysis, each theme was converted to the raster grid data format (4.6).
+The paper does not specify the parameters for rasterization, including the relationship between vector polygons and raster grid cells or the spatial resolution of the grid cells.
+The paper does not specify if or how any geographic transformation is required for the biophysical risk grids from the UNEP Global Risk Data Platform.
+It may be possible to infer the resolution and methods from close inspection of the final climate vulnerability map (F5).
+
+## Analyses
+
+The final climate vulnerability analysis is calculated with map algebra on a raster grid for each theme using the formula `household resilience = adaptive capacity + livelihood sensitivity - physical exposure` (4.6).
+The results are presented as a continuous raster grid with a continuous color gradient.
+No descriptive statistics of the results are provided.
+
+### Geographical characteristics
+
+The **coordinate reference system(s)** used in the original study are not specified.
+However, the study does not appear to include any distance or area calculations: therefore the analysis should not be sensitive to the coordinate reference system used as long as each layer is stored or reprojected into one consistent system.
+
+The **spatial extent** of the study was the country of Malawi (OSM relation [195290](https://www.openstreetmap.org/relation/195290)), excluding large bodies of water, national parks or similarly reserved land, and areas missing data (4.5).
+203 traditional authority areas were included in the original study (F4).
+
+The authors suggest that the scale of the phenomena of vulnerability dynamics in the context of climate change is at the **household level** (1.4, 2.2, 3.1 and 4.4).
+The authors use the third administrative level (traditional authorities) as the **spatial scale** and **units of analysis** of household resilience (4.4 and F4).
+The **spatial support** for the final analysis of climate vulnerability is a raster grid (4.6, F5) with unknown spatial resolution&mdash;appearing finer than the size of traditional authorities and the smallest unit on the scale bar, which is 12.5 kilometers (F5).
+We presume that the spatial resolution may be identical to at least one of the gridded physical exposure raster inputs.
+
+**Edge effects** and neighboring countries will not be addressed in the analysis (4.2).
+The spatial analysis techniques in this study are not sensitive to edge effects.
+
+The analysis does not include creation of any **spatial subgroups** and does not measure or account for any **first order spatial effects**, **second order spatial effects**, or **spatial anistropies**.
+
+### Temporal characteristics
+
+The **temporal extent** of the original study was stated as "2004&ndash;2010 based on the availability of the Malawi DHS datasets with GPS data" (4.5).
+The study also references Dartmouth Flood Observatory Data from 1999 to 2007 (F5) used to indicate flood risk and a Malawi Vulnerability Assessment Committee (MVAC) Household Economy Approach (HEA) baseline survey conducted between May and July 2003 used to indicate livelihood sensitivity (3.6).
+Therefore, it appears that the 2004&ndash;2010 temporal extent applies strictly to the household resilience analysis, and not to the climate vulnerability analysis.
+
+The **temporal support** for the household resilience analysis was longitudinal DHS Survey data collected in 2004 and 2010.
+The **temporal support** for the climate vulnerability analysis is an aggregation of data from different sources, ranging from 1999 to 2010 (F5).
+**Temporal effects** are not measured or accounted for, although the authors discuss differences between household resilience in 2004 and 2010 (5.3 and 5.4)
+
+### Data exclusion
+
+Some traditional authorities are **missing data** for DHS surveys because no DHS surveys were conducted within their administrative boundaries.
+These traditional authorities were excluded from the analysis of household resilience and labelled as 'Areas Missing DHS Data' (5.2).
+No **inferences** were made to fill the missing data (5.2).
+Some traditional authorities are clearly symbolized with the diagonal hashmarks representing missing data for household resilience (F4), and appear to be similarly excluded from the analysis of climate vulnerability (F5).
+However, several other traditional authorities appear white&mdash;not one of the four categories of household resilience (F4).
+Some of these areas appear to be excluded from the climate vulnerability analysis while others are not (F5).
+
+The study does not analyze the presence of **outliers** or exclude them.
+The study does not **weight samples**.
+
+### Analytical specification
+
+There are no hypothesis tests requiring explanation of analytical specifications.
+
+### Inference criteria and robustness
+
+There are no hypothesis tests requiring explanation of inference criteria or robustness.
+
+### Exploratory analyses and contingency planning
+
+The entire study is an **exploratory analysis** in soliciting local Malawian's opinions and perspectives on climate change vulnerability and constructing descriptive geographic vulnerability models based upon those opinions and perspectives.
+The authors do not discuss any pre-described **contingency plans**, but do describe "several iterations of the model using alternative weighting schemes result[ing] in a final product that best reflects Malawi's contextual and perceptual vulnerability&mdash;a stated goal" (4.3).
+It is unclear whether the model iterations were planned or unplanned.
+
+## Reproduction study design
+
+### Planned differences from the original study
+
+The replication study will focus on reproducing 2010 household resilience (F4) and climate vulnerability (F5), excluding the 2004 household resilience analysis (F3).
+The aim of this reproduction is to produce results identical to the original study.
+Therefore, we will not collect new interview or focus group data.
+Additionally, qualitative interview and focus group data was not provided with the original study.
+Therefore, we will not attempt to reinterpret any qualitative data or determine new themes, indicators or weights for the models.
+The reproduction study will use the indicators and weights as they are described in the original study.
+
+The replication study will use a different software environment, using replicable open source software over proprietary software.
+Specifically, the study will be completed using The R Project for Statistical Computing version 3.6.1 or later using RStudio version 1.3.1 or later, and the research will be completed in full on both Windows 10 and MacOS operating systems.
+A complete list of required R packages is not known at the time of preregistration, but will be reported with the final publication.
+
+The study will attempt to reproduce the original methods exactly, but some differences may be inevitable due to ambiguous or conflicting information in the original article.
+We will plan to make the following reasonable decisions, which may differ from the authors' intentions:
+1. Figure 4 represents adaptive capacity, composed of assets and access.
+1. Adaptive capacity scores will be calculated for each household, and then household scores will be spatially joined by traditional authority and averaged.
+1. Figure 5 represents vulnerability, composed of adaptive capacity, livelihood sensitivity, and physical exposure.
+1. Every indicator will be rescaled to a 0 to 4 scale using the formula: `percent rank * 4`. This method is a compromise from the uncertainty caused by a 0 to 5 scale, quintiles, and nominal indicators.
+1. High ranks (4) will be assigned to better and safer conditions for each indicator.
+1. Weighted aggregation will be formulated so that the aggregate scores have a theoretical minimum of 0 and maximum of the assigned percentage for the thematic concept.
+  - Assets = ([land] * 0.06 + [livestock units] * 0.04 + [wealth] * 0.04 + [number sick] * 0.03 + [orphans] * 0.03) * 25
+  - Access = ([water] * 0.04 + [cell phone] * 0.04 + [radio] * 0.03 + [electricity] * 0.03 + [cooking fuel] * 0.02 + [urban/rural] * 0.02 + [female household] * 0.02) * 25
+  - Livelihood sensitivity = ([subsistence food] * 0.06 + [wage income] * 0.06 + [cash crop income] * 0.04 + [disaster coping] * 0.04) * 25
+  - Physical exposure = ([flood risk] * 0.2 + [drought exposure] * 0.2) * 50
+1. Each thematic indicator will be rasterized or resampled to the UNEP/GRID data input most closely resembling the spatial resolution of figure 5.
+1. Vulnerability will be calculated so that the aggregate scores have a theoretical minimum of 0 and maximum of 100. This is achieved by inverting physical exposure.
+  - Vulnerability = Assets + Access + Livelihood sensitivity + (40 - Physical Exposure)
+1. Any traditional authority missing adaptive capacity data from DHS surveys will be removed / masked from the final vulnerability analysis.
+
+### Evaluating the reproduction results
+
+In order to test the adaptive capacity results, we will georeference the original figure 4 map using the QGIS3 georeferencer plugin.
+Using a vector dataset of traditional authorities and the georeferenced map, we will then use zonal statistics to extract the average brightness values, (which represent four classes of adaptive capacity) for each traditional authority.
+We will use an interior buffer of the traditional authority polygons, optimized in order to avoid summarizing border symbol in zonal statistics while capturing as much of the choropleth color symbol as possible.
 After inspecting a histogram of the mean brightness values, we will reclassify the values as closely to the four classes on the original figure 4 as possible and then manually adjust the attribute values for any misclassified traditional authorities.
 We will compare original and reproduction household resilience results by creating a confusion matrix, calculating the Spearman's Rho correlation coefficient (expecting a value of 1 for perfect positive correlation), and creating a thematic map of the difference between the original results and replication results.
 
 In order to compare the Malawi vulnerability results, we will georeference the original figure 5 map using QGIS georeferencer plugin.
-We will vectorize the UNEP-Grid raster  input most closely matching the published map and summarize the red, green, and blue brightness values of the original map using zonal statistics.
-We will add the green and blue brightness values together to convert the original color ramp into a linear scale of continuous values. 
+We will vectorize the UNEP-Grid raster input most closely matching the published map and summarize the red, green, and blue brightness values of the original map using zonal statistics.
+We will add the green and blue brightness values together to convert the original color ramp into a linear scale of continuous values.
 We will compare original and reproduction Malawi vulnerability results by creating a scatterplot, Spearman's Rho correlation coefficient (expecting a value near 1 for perfect positive correlation), and thematic map of the difference between the original results and replication results.
 
+We expect relatively stronger correlations for the adaptive capacity analysis than the vulnerability analysis because of some uncertainty in digitizing correct continuous values from a georeferenced image of the figure 5 map, particularly when considering the influence of text and other symbology on the map in potentially altering  effects.
 
 
-## Sections of Paper
-- 1 Introduction
-- 2 Complex vulnerability
-- 3 Evidence-based Indicators
-- 4 Methodology
-- 5 Results
-- 6 Discussion
-- 7 Conclusion
-- F1 Map of Malawi
-- F2 Vulnerability web
+## Referencing the original paper
+
+Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004).
+
+### Sections
+
+1. Introduction
+2. Complex vulnerability
+3. Evidence-based Indicators
+4. Methodology
+5. Results
+6. Discussion
+7. Conclusion
+
+### Tables, figures, other elements
+
 - T1 Evidence-based complex vulnerability indicators
 - T2 Weighted indicators by metatheme **in orange on notecards**
+- F1 Map of Malawi
+- F2 Vulnerability web
 - F3 Malawi Household Resilience (2004)
 - F4 Malawi Household Resilience (2010)
 - F5 Malawi Composite Vulnerability Index
 - A1 Appendix 1
 - R References
 
-## Concepts
-- Adaptive capacity as "household-level assets to recover from disasters and access to resources" `2.2`
-- Exposure: "magnitude and frequency of forced that could stress a system" `2.2`
-- Sensitivity: "degree to which a system will respond to an external disturbing force"
-- Resilience: "ability of a household to prepare for, respond to and recover from complex drivers of vulnerability"
+## Other references
 
-## Computational Environment
-- STATA `4.4` to disaggregate DHS indicators + combine
-- ArcGIS Software `4.6` to map + visualize
-
-## Spatial/Temporal Extent
-- Traditional Authorities level for DHS vulnerability indicators `4.4`
-- extent of Malawi (all territories data where data was available) `4.5`
-- temporal scale (2004 - 2010) `4.5`
-- exposure data had global extent  `3.7`
-
-## Field Research Trips
-- March 2011 `1.4`
-- August 2011 `1.4`
-- 70 interviews `1.4`
-- List of interviewed organizations is provided in Appendix 1 and referenced in section `3.2`
-- 11 village focus groups `1.4`
-- "multi-leveled, semi-structured interviews" `1.4`
-- interview themes: "perceptions of climate change, adaptation, governance, vulnerability, and foreign aid" `3.2`
-- "understanding household social and economic practices in the context of environmental uncertainty." `3.2`
-
-## Selecting and weighting indicators
-- transcribe and code interviews `3.3`
-- synthesize into four metathemes `3.3`
-  - assets of land, livestock, income
-  - access to markets, food, water, health care, and labor
-  - livelihood sensitivity
-  - physical exposure to droughts and floods
-- themes `3.3` and indicators `3.4, 3.5, 3.6, 3.7` contextualized in literature
-- somewhere note collaboration with the DHS Survey folks and the FEWSNet folks as matter of convenience!
-- Sources of Indicators `T1` and their weights `T2`
-  - Assets: DHS Survey 20%
-  - Access: DHS Survey 20%
-  - Livelihood Sensitivity: Famine Early Warning Network 20%
-  - Biophysical Exposure: UNEP/GRID-Europe 40%
-- expert opinion of interviewees used to select and weight indicators `4.2`
-
----
-
-### Weighting
-- based on expert opinion `4.2`
-- reduced weight for variables "not representative (of the total population) across the country" or
-potential for redundancy" `4.3`
-- "several iterations of the model using alternative weighting schemes resulted in a final product that but reflects Malawi's contextual and perceptual vulnerability" `4.3`
-
-### Normalizing
-- individual indicators normalized between 0 & 5
-  - 0 = worst conditions (poorest quintile)
-  - 5 = best condition (richest quintile)
-
-## Data
-
-### GADM
-- Districts, prior to maps date of 2012 `F1`
-- Traditional Authorities `F3 & F4 captions`
-
-### CIESIN: Gridded Population
-- Figure 1 (not used anywhere else in paper)
-
-### UNEP
-- Physical Exposure Risk `1.4`
-
-### UNEP/GRID (T2)
-- Dartmouth Flood Observatory
-  - Data? `Fig 5` 1999 - 2007
-- UNEP Global Risk Data Platform on droughts (2009) `F5`
-- Continuous raster `5.6`
-
-### FEWSNET
-- Livlihood data  `1.4`
-- FEWSNET 2005 `T2`
-- Malawi Vulnerability Assessment Committee (2005) `F5`
-- Livelihood Zones Area District from TAs `5.6`
-
-### USAID DHS Surveys
-  - household surveys, 2004 + 2010 `1.4`
-  - over 38,5100 surveys `4.1`
-  - 25,000+ are women `4.1`
-
-## Theory (T1)
-
-### Physical Exposure (3.7) -- same as next thing (same reference)
-- UNEP Global Disaster Risk Platform
-  - risks of flood (Peduzzi 2011)
-  - drought exposure (Peduzzi 2012) based on
-    - global monthly gridded precipitation dataset from the Climactic Research Unit (University of E. Angolia)
-    - global standardized precipitation index based on Brooklyn IRI Columbia
-  - designed by: UNEP Global Resource Information Database (GRID) Europe
-
-### Biophysical Exposure 40%
-- Floods & rain variability, flood events `T1`
-  - estimated risk for flood hazards 20% `T2`
-  - Global estimated risk index for flood hazard `R w/ link`
-- Drought & Dry Spells, drought indiices `T1`
-  - exposition to drought events 20% `T2`
-  - Physical exposition to drought events 1980 - 2001 `R w/ link`
-
-### Livelihood Sensitivity 20% (3.6)
-- interviews with MVAC
-- data created in partnership with FEWSNET & USAID
-- pre-established livelihood zones - geographic areas where populations share characteristics of farming practices, labor, and enviro. coping strategies
-- May to July 2003 Household Economy Approach baseline survey in 11 livelihood zones
-- wealth groups created (poor [65%], middle, better-off) in process unique to each zone
-
-#### 4 Indicators of Livelihood Sensitivity
-- "% of income that poor households receive from wage labor" `3.6`
-  - income source; % poor income from labor `T1`
-  - % income from wage labor 6% `T2`
-  - report on livelihood zones linked in references (MVAC 2005)
-- "% of food that poor households *receive independently from their own farm (??)* indication of sustainability of livelihoods `3.6`
-  - ability to meet food needs; % food intake from personal farm `T1`
-  - % of food from own farm 6% `T2`
-- "% of labor income that is susceptible to market shocks (i.e. tobacco, sugar, tea, & coffee" `3.6`
-  - cash crop exposure, % non-food crop (cotton, tobacco, tea) `T1`
-  - % income from cash crops 4% `T2`
-- "ecological destruction associated with livelihood coping strategies during time of crisis" `3.6`
-  - ecological coping effect; access to alternative form of income `T1`
-  - disaster coping strategy 4% (FEWNET 2005) `T2`
-
-### Adaptive Capacity
-- 40% AC includes:
-  - 20% assets
-  - 20% access
-  - `2.2 & T2`, but `NOT 3.4, 3.5, or T1`
-- DHS 2004, 2020 `T2`
-- Demographic & Health Survey from Malawi (2010) `F5`
-
-#### Assets
-- larger landholders can diversify crops and sell food `3.4`
-  - amount of arable land per HH `T1`
-  - arable lands (hectares) 6%
-- animals used as coping strategy `3.4`
-  - livestock; number oof animals per HH by type `T1`
-  - number of livestock units 4% `T2`
-- wealth (disposable capital assets) `3.4`
-  - money; wealth index (based on owned `T1` assets)
-  - wealth index score 4% `T2`
-- good health `3.4`
-  - sick in the past 12 months good health `T1`
-  - in household sick in past 12 months 3% `T2`
-- orphans are a socially vulnerable set of the population orphan care adds burdens `3.4`
-  - number of orphans or vulnerable children `T1`
-  - number of orphans in households 3% `T2`
-- income (immediately accessible resources) `3.4`
-  - NOT in `T1`
-
-#### Access
-- to the electrical grid `3.5`
-  - basics, electricity (Y/N) `T1`
-  - electricity 3% `T2`
-- basics, cooking fuel type `T1`
-  - NOT in section `3.5` unless you consider "selling of charcoal is one of the top coping strategies during periods of food insecurity and market shocks" `3.5`
-  - type of cooking fuel 2% `T2`
-- burden of collecting water `3.5`
-  - basics, water (time to source) `T1`
-  - time to water source 4% `T2`
-- market access; rural, peri-urban, urban `T1`
-  - NOT in section `3.5`
-  - house setting (urban/rural) 2%  `T2`
-- nearest vehicle-accessible road `3.5`
-  - NOT in `T1`
-- radios `3.5`
-  - technology sharing/own a radio (Y/N) `T1`
-  - own a radio 3% `T2`
-- own a cell phone (Y/N)/media & information `T1`
-  - NOT in section `3.5`
-  - own a cell phone 4% `T2`
-- households headed by females are more vulnerable based on less access to sources of power, land, and resources `3,5`
-  - power and decision-making female-headed HH (Y/N) `T1`
-  - sex of head of household 2% `T2`
-- households headed by one parent or by children (encompassed in the variable family structure) werre seen as more vulnerable
-  - NOT in `T1`
-
----
-
-## Combining
-- each meta data theme converted to Raster format `4.6`
-- overall score calculated with map algebra `4.6`
-- household resilience = adaptive capacity + livelihood sensitivity - physical exposure `4.6`
-- final maps appears to be raster `F5`
-- resilience scores are 203 traditional authority (polygons) `F4`
-- "DHS Indicators were disaggregated to the village level" --> "combined @ a suitable administrative level for analysis" `4.4`
-- "explanation on using survey data with GPS information is available from the DHS website and was instrumented this index" `4.4`
-- Malawi contained 28 administrative districts (but too large - an "inappropriate scale for household vulnerability dynamics") `4.4` - hotspots of vulnerability would be lost
-- "analysis of the weighted DHS vulnerability indicators was conducted at the administrative scale of Traditional Authorities"
-- There are over 250 populated TAs in Malawi `4.4`
-- "Not every traditional authority had surveys conducted within its administrative boundaries" `5.2`
-- "TAs with missing information was indicated as 'Areas Missing DHS Data'" `5.2`
-
-## Checking Results
-- 203 TAs with Data in 2010 `F3`
-- Range of HH Resilience Scores from 11.48 - 25.77 `F3`
-- 24,850 HH surveys in 2010 `5.2`
-- Blantyre District, TA Machinjili scored `3.9`
-- Machinga District, TA Mposa scored highest (max) "average household score nationwide was 17.63" `5.3`
-- `F4`- Malawi Household Resiliences (2010)
-- 173 TA's had temporal data (both 2004 & 2010) `6.3`
-
-### Checking Results (on our end)
-- georeference
-- zonal stats
-- classify & edit
-- spearman's rho
-- cross tabs
-- scatterplot  
+Rufat, S., E. Tate, C. G. Burton, and A. S. Maroof. 2015. Social vulnerability to floods: Review of case studies and implications for measurement. *International Journal of Disaster Risk Reduction* 14:470–486. DOI: [10.1016/j.ijdrr.2015.09.013](http://dx.doi.org/10.1016/j.ijdrr.2015.09.013).
