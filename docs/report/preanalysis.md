@@ -424,7 +424,7 @@ Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling f
 ### Tables, figures, other elements
 
 - T1 Evidence-based complex vulnerability indicators
-- T2 Weighted indicators by metatheme **in orange on notecards**
+- T2 Weighted indicators by metatheme
 - F1 Map of Malawi
 - F2 Vulnerability web
 - F3 Malawi Household Resilience (2004)
