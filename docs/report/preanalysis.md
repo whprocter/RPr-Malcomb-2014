@@ -245,7 +245,7 @@ Depending on context, both "vulnerability" and "resilience" may refer only to th
 In some sections and formulas, "adaptive capacity" is used, while in others it appears as its components (assets and access) or even as "household resilience".
 The data mapped in figures 3 and 4 are described in different sections of the original paper as resilience, adaptive capacity, and/or vulnerability.
 The data mapped in figure 5 are described in different sections of the article as vulnerability or resilience.
-Confounding matters further, the authors' definition for resilience is typical for resilience theory, but the formula for resilience is more typical of the well-known Intergovernmental Panel on Climate Change (IPCC) operationalization of "vulnerability".
+Confounding matters further, the authors' definition for resilience is typical for resilience theory, but the formula for resilience is more typical of the well-known Intergovernmental Panel on Climate Change (IPCC) operationalization of "vulnerability" (Gallopín 2006, Smit and Wandel 2006).
 
 #### Attribute variable transformations
 
@@ -435,4 +435,6 @@ Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling f
 
 ## Other references
 
+Gallopín, G. C. 2006. Linkages Between Vulnerability, Resilience, and Adaptive Capacity. Global Environmental Change 16 (3):293–303. DOI: [10.1016/j.gloenvcha.2006.02.004](https://doi.org/10.1016/j.gloenvcha.2006.02.004).
 Rufat, S., E. Tate, C. G. Burton, and A. S. Maroof. 2015. Social vulnerability to floods: Review of case studies and implications for measurement. *International Journal of Disaster Risk Reduction* 14:470–486. DOI: [10.1016/j.ijdrr.2015.09.013](http://dx.doi.org/10.1016/j.ijdrr.2015.09.013).
+Smit, B., and J. Wandel. 2006. Adaptation, adaptive capacity and vulnerability. Global Environmental Change 16 (3):282–292. DOI: [10.1016/j.gloenvcha.2006.03.008](https://doi.org/10.1016/j.gloenvcha.2006.03.008).
