@@ -30,6 +30,8 @@ library(rdhs)
 library(readr)
 library(ggplot2)
 library(s2)
+library(gtsummary)
+library(qwraps2)
 
 sf_use_s2(T)
 ```
@@ -102,7 +104,7 @@ dr = read_stars(here("data", "raw", "public", "dr1010ipeykx.tif")) %>%
 fl = read_stars(here("data", "raw", "public",  "fl1010irmt.tif")) %>% 
   st_set_crs(4326) 
 
-lhz_scores = read.csv(here(private_r, "lhz_test2.csv"))
+lhz_scores = read.csv(here(private_r, "lhz.csv"))
 ```
 
 ```{r 2010 adaptive capacity data}
@@ -237,6 +239,9 @@ ta_hh_capacity_2010 <- hh_capacity_2010 %>%
   #19996 features (from the initial 24028 --> removed 4032 NA features)
 ```
 
+```{r a table for adaptive capacity reporting all the individual variables used (after discarding records with missing data}
+```
+
 ```{r capacity for traditional authorities 2010; aggregates from household level}
   ta_capacity_2010 <- ta_hh_capacity_2010 %>% 
   group_by(ta_id) %>%
@@ -246,6 +251,7 @@ ta_hh_capacity_2010 <- hh_capacity_2010 %>%
     capacity_max = max(capacity),
     capacity_sd = sd(capacity)
   )
+#256 features
 ```
 
 ```{r joining 2010 capacity to ta and creating breaks for visualization}
@@ -350,7 +356,7 @@ ta_capacity = st_rasterize(ta_2010[, 'capacity_2010'], blank)
 
 lhz_scores = read.csv(here(private_r, "lhz.csv"))
 
-lhz_filtered <- lhz_scores_new[-(17:18),] #removes lhz zones 18 & 19 (urban area & national parks)
+lhz_filtered <- lhz_scores[-(17:18),] #removes lhz zones 18 & 19 (urban area & national parks)
 
 lhz_good  = lhz %>%
   left_join(lhz_filtered, by = ("LZCODE" = "LZCODE")) %>%
@@ -383,6 +389,20 @@ lhz_good  = lhz %>%
 # making capacity rasters 
 lhz_capacity_new = st_rasterize(lhz_good[,'livelihoodSensitivity_new'], blank)
 ```
+
+```{r a table for livelihood sensitivity data reporting all of the individual variables used, & the calculated variables}
+
+trial <- lhz_good %>% 
+  select(LZCODE, LZNAMEEN, sof_crop, sof_livestock, soc_labour, soc_total, cp_tobacco, cp_sugar,	cp_tea,	cp_coffee, se_firewoord,	se_grass,	se_wildfood,	se_charcoal,	se_matmaking,	se_basket) 
+trial2 <- st_drop_geometry(trial)
+
+lhz_table <- trial2 %>%
+  tbl_summary(by = LZCODE) %>%
+  add_overall() %>%
+  modify_caption("**LHZ Data**")
+```
+
+ 
 
 ```{r function to calculate vulnerability}
   # creating mask layer
@@ -423,6 +443,7 @@ ta_2010$vuln = aggregate(final,ta_2010,mean)$capacity_2010 #THIS IS THE REAL Q, 
 ta_new = ta_2010[!is.na(ta_2010$vuln), 18]
 ta_new = st_rasterize(ta_new[1])
 ```
+
 
 ```{r misc. map features}
 lakes = st_as_sf(read_csv(here(public_r, "major_lakes.csv"))[, c("name", "the_geom")],
@@ -610,7 +631,6 @@ orfig5rast = orfig5rast %>%
         )
 )  # or is Re-scaled from 0 to 1 with (value - min)/(max - min)
 # it is also inverted, because higher blue values are less red
-
 
 ta_new = ta_new %>% 
   mutate(rp =
