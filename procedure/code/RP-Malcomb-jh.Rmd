@@ -32,10 +32,29 @@ library(ggplot2)
 library(s2)
 library(gtsummary)
 library(qwraps2)
+library(pastecs)
 
 sf_use_s2(T)
 ```
 
+```{r formatting}
+# list of required packages
+packages = c("here")
+
+# load and install required packages
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+
+# save the R processing environment to r_environment.txt
+writeLines(capture.output(sessionInfo()),here("procedure","environment","r_environment.txt"))
+```
 
 ```{r download data}
 
@@ -239,7 +258,10 @@ ta_hh_capacity_2010 <- hh_capacity_2010 %>%
   #19996 features (from the initial 24028 --> removed 4032 NA features)
 ```
 
-```{r a table for adaptive capacity reporting all the individual variables used (after discarding records with missing data}
+```{r extract traditional authorities without data}
+hh_null <- ta_hh_capacity_2010[is.na(ta_hh_capacity_2010$capacity),] 
+# run the function up to na.rm = F, then run this function
+#4032 features
 ```
 
 ```{r capacity for traditional authorities 2010; aggregates from household level}
@@ -341,6 +363,7 @@ st_clip = function(x,y) st_intersection(x, st_union(st_geometry(y)))
 
 st_agr(ta) = "constant"
 
+#creates a small buffer around the Livelihood Zones & use this as a mask to clip features from Traditional Authorities (only the TAs that have data clipped to the extent of Malawi)
 ta_2010 = st_clip(st_transform(filter(ta, is.na(capacity_2010) == F), 3395), st_buffer(st_transform(lhz, 3395), .01)) %>%
   st_transform(4326)
 # 222 features 
@@ -349,6 +372,10 @@ ta_2010 = st_clip(st_transform(filter(ta, is.na(capacity_2010) == F), 3395), st_
 ta_capacity = st_rasterize(ta_2010[, 'capacity_2010'], blank)
 ```
 
+```{r extract traditional authorities without data}
+ta_nulls <- ta_2010[is.na(ta_2010$vuln),]
+#34 features
+```
 
 ```{R processing + weighting FEWSNet Data}
 
@@ -393,13 +420,88 @@ lhz_capacity_new = st_rasterize(lhz_good[,'livelihoodSensitivity_new'], blank)
 ```{r a table for livelihood sensitivity data reporting all of the individual variables used, & the calculated variables}
 
 trial <- lhz_good %>% 
-  select(LZCODE, LZNAMEEN, sof_crop, sof_livestock, soc_labour, soc_total, cp_tobacco, cp_sugar,	cp_tea,	cp_coffee, se_firewoord,	se_grass,	se_wildfood,	se_charcoal,	se_matmaking,	se_basket) 
-trial2 <- st_drop_geometry(trial)
+  select(LZNAMEEN, LZCODE, sof_crop, sof_livestock, soc_labour, soc_total, cp_tobacco, cp_sugar, cp_tea,	cp_coffee, se_firewoord,	se_grass,	se_wildfood,	se_charcoal,	se_matmaking,	se_basket) 
+trial2 <- st_drop_geometry(trial) %>%
+  na.omit
+new <- list("Source of Food: Crops" =
+         list("min" = ~min(trial2$sof_crop),
+              "max" = ~max(trial2$sof_crop),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$sof_crop, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$sof_crop)),
+        "Source of Food: Livestock" =
+          list("min" = ~min(trial2$sof_livestock),
+              "max" = ~max(trial2$sof_livestock),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$sof_livestock, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$sof_livestock)),
+        "Source of Cash: Labour" =
+          list("min" = ~min(trial2$soc_labour),
+              "max" = ~max(trial2$soc_labour),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$soc_labour, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$soc_labour)),
+        "Source of Cash: Total" =
+          list("min" = ~min(trial2$soc_total),
+              "max" = ~max(trial2$soc_total),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$soc_total, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$soc_total)),
+        "Crop Production: Tobacco" =
+          list("min" = ~min(trial2$cp_tobacco),
+              "max" = ~max(trial2$cp_tobacco),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$cp_tobacco, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$cp_tobacco)),
+        "Crop Production: Sugar" =
+          list("min" = ~min(trial2$cp_sugar),
+              "max" = ~max(trial2$cp_sugar),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$cp_sugar, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$cp_sugar)),
+        "Crop Production: Tea" =
+          list("min" = ~min(trial2$cp_tea),
+              "max" = ~max(trial2$cp_tea),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$cp_tea, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$cp_tea)),
+        "Crop Production: Coffee" =
+          list("min" = ~min(trial2$cp_coffee),
+              "max" = ~max(trial2$cp_coffee),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$cp_coffee, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$cp_coffee)),
+        "Self-Employment: Firewood" =
+          list("min" = ~min(trial2$se_firewoord),
+              "max" = ~max(trial2$se_firewoord),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_firewoord, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$se_firewoord)),
+        "Self-Employment: Grass" =
+          list("min" = ~min(trial2$se_grass),
+              "max" = ~max(trial2$se_grass),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_grass, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$se_grass)),
+        "Self-Employment: Wildfood" =
+          list("min" = ~min(trial2$se_wildfood),
+              "max" = ~max(trial2$se_wildfood),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_wildfood, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$se_wildfood)),
+        "Self-Employment: Charcoal" =
+          list("min" = ~min(trial2$se_charcoal),
+              "max" = ~max(trial2$se_charcoal),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_charcoal, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$se_charcoal)),
+        "Self-Employment: Mat Making" =
+          list("min" = ~min(trial2$se_matmaking),
+              "max" = ~max(trial2$se_matmaking),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_matmaking, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$se_matmaking)),
+        "Self-Employment: Basket" =
+          list("min" = ~min(trial2$se_basket),
+              "max" = ~max(trial2$se_basket),
+              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_basket, denote_sd = "paren"),
+              "count" = ~qwraps2::n_perc0(trial2$se_basket))
+       )
+whole <- summary_table(trial2, new)
+whole
+#lhz_table <- trial2 %>%
+  #tbl_summary(by = LZCODE) %>%
+  #add_overall() %>%
+  #modify_caption("**LHZ Data**")
 
-lhz_table <- trial2 %>%
-  tbl_summary(by = LZCODE) %>%
-  add_overall() %>%
-  modify_caption("**LHZ Data**")
+# mean_sd(trial2$sof_crop, denote_sd = "paren")
 ```
 
  
