@@ -215,12 +215,12 @@ hh_capacity_2010 = dhshh_2010 %>%
     orphans = percent_rank(desc(HV251)) * 4,
     # changing 996 to 0 as it takes no time to get water on premises
     # percenrank sets values 0 to 1, then * 4 + 1 makes the range 1-5
-    # sexcat male = 1, female = 2, run 0 to 2.81 is the binary
+    # femalehh male = 1, female = 2, run 0 to 2.81 is the binary
     HV204 = ifelse(HV204 == 996, 0, HV204), #996 means they have source of water in proximity to home
     water = percent_rank(desc(HV204)) * 4,
     electricity = percent_rank(HV206) * 4,
     cooking = percent_rank(desc(HV226)) * 4,
-    sexcat = percent_rank(desc(HV219)) * 4,
+    femalehh = percent_rank(desc(HV219)) * 4,
     cellphone = percent_rank(desc(HV243A)) * 4,
     radio = percent_rank(HV207) * 4,
     urbanruralscore = ifelse(urban_rural == "U", 4, 0)
@@ -242,7 +242,7 @@ ta_hh_capacity_2010 <- hh_capacity_2010 %>%
       water * 0.04,
       electricity * 0.03,
       cooking * 0.02,
-      sexcat * 0.02,
+      femalehh * 0.02,
       cellphone * 0.04,
       radio * 0.03,
       urbanruralscore * 0.02),
@@ -251,15 +251,18 @@ ta_hh_capacity_2010 <- hh_capacity_2010 %>%
       # at this point, values have possible range of 0 to 2 -- but capacity has actual range of 0.471 to 1.454 for 1-5 rnage
       # values have possible range of 0 to 1.6, 0.071 to 1.054 when adjusted range of 0-4
       na.rm = F)
+```
 
+``` {r summary stats for tas at hh level before pullings nas}
 hh_stats <- stat.desc(ta_hh_capacity_2010[,21:33]) %>%
-  mutate_if(is.numeric, round, digits=3)
+  mutate_if(is.numeric, round, digits=1)
+hh_stats
 ```
 
 ```{r extract traditional authorities without data}
 hh_null <- ta_hh_capacity_2010[is.na(ta_hh_capacity_2010$capacity),] 
 
-st_write(hh_null, here("data", "derived", "public", "hh_null.shp"), append=FALSE)
+st_write(hh_null, here("data", "derived", "public", "hh_null.csv"), append=FALSE)
 # run the function up to na.rm = F, then run this function
 #4032 features
 ```
@@ -269,9 +272,12 @@ ta_hh_capacity_2010 <- ta_hh_capacity_2010 %>%
 filter(!is.na(capacity)) %>% # removing incomplete surveys 
 ungroup
 #19996 features (from the initial 24028 --> removed 4032 NA features)
+```
 
+``` {r summary stats for tas at hh level after pullings nas}
 hh_stats_2 <- stat.desc(ta_hh_capacity_2010[,21:33]) %>%
-  mutate_if(is.numeric, round, digits=3)
+  mutate_if(is.numeric, round, digits=1)
+hh_stats_2
 ```
 
 ```{r capacity for traditional authorities 2010; aggregates from household level}
@@ -421,90 +427,9 @@ lhz_good  = lhz %>%
 lhz_capacity_new = st_rasterize(lhz_good[,'livelihoodSensitivity_new'], blank)
 ```
 
-```{r a table for livelihood sensitivity data reporting all of the individual variables used, & the calculated variables}
-
-trial <- lhz_good %>% 
-  select(LZNAMEEN, LZCODE, sof_crop, sof_livestock, soc_labour, soc_total, cp_tobacco, cp_sugar, cp_tea,	cp_coffee, se_firewoord,	se_grass,	se_wildfood,	se_charcoal,	se_matmaking,	se_basket) 
-trial2 <- st_drop_geometry(trial) %>%
-  na.omit
-new <- list("Source of Food: Crops" =
-         list("min" = ~min(trial2$sof_crop),
-              "max" = ~max(trial2$sof_crop),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$sof_crop, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$sof_crop)),
-        "Source of Food: Livestock" =
-          list("min" = ~min(trial2$sof_livestock),
-              "max" = ~max(trial2$sof_livestock),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$sof_livestock, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$sof_livestock)),
-        "Source of Cash: Labour" =
-          list("min" = ~min(trial2$soc_labour),
-              "max" = ~max(trial2$soc_labour),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$soc_labour, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$soc_labour)),
-        "Source of Cash: Total" =
-          list("min" = ~min(trial2$soc_total),
-              "max" = ~max(trial2$soc_total),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$soc_total, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$soc_total)),
-        "Crop Production: Tobacco" =
-          list("min" = ~min(trial2$cp_tobacco),
-              "max" = ~max(trial2$cp_tobacco),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$cp_tobacco, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$cp_tobacco)),
-        "Crop Production: Sugar" =
-          list("min" = ~min(trial2$cp_sugar),
-              "max" = ~max(trial2$cp_sugar),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$cp_sugar, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$cp_sugar)),
-        "Crop Production: Tea" =
-          list("min" = ~min(trial2$cp_tea),
-              "max" = ~max(trial2$cp_tea),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$cp_tea, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$cp_tea)),
-        "Crop Production: Coffee" =
-          list("min" = ~min(trial2$cp_coffee),
-              "max" = ~max(trial2$cp_coffee),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$cp_coffee, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$cp_coffee)),
-        "Self-Employment: Firewood" =
-          list("min" = ~min(trial2$se_firewoord),
-              "max" = ~max(trial2$se_firewoord),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_firewoord, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$se_firewoord)),
-        "Self-Employment: Grass" =
-          list("min" = ~min(trial2$se_grass),
-              "max" = ~max(trial2$se_grass),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_grass, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$se_grass)),
-        "Self-Employment: Wildfood" =
-          list("min" = ~min(trial2$se_wildfood),
-              "max" = ~max(trial2$se_wildfood),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_wildfood, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$se_wildfood)),
-        "Self-Employment: Charcoal" =
-          list("min" = ~min(trial2$se_charcoal),
-              "max" = ~max(trial2$se_charcoal),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_charcoal, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$se_charcoal)),
-        "Self-Employment: Mat Making" =
-          list("min" = ~min(trial2$se_matmaking),
-              "max" = ~max(trial2$se_matmaking),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_matmaking, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$se_matmaking)),
-        "Self-Employment: Basket" =
-          list("min" = ~min(trial2$se_basket),
-              "max" = ~max(trial2$se_basket),
-              "mean (sd)" = ~qwraps2::mean_sd(trial2$se_basket, denote_sd = "paren"),
-              "count" = ~qwraps2::n_perc0(trial2$se_basket))
-       )
-whole <- summary_table(trial2, new)
-whole
-```
-
 ```{r summary table with lhz data}
 lhz_stats <- stat.desc(lhz_good[,14:36]) %>%
-  mutate_if(is.numeric, round, digits=3)
+  mutate_if(is.numeric, round, digits=1)
 lhz_stats
 ```
 
