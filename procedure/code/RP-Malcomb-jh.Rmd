@@ -30,8 +30,6 @@ library(rdhs)
 library(readr)
 library(ggplot2)
 library(s2)
-library(gtsummary)
-library(qwraps2)
 library(pastecs)
 
 sf_use_s2(T)
@@ -111,6 +109,8 @@ dhs_downloads = get_datasets(
 
 saveRDS(dhs_downloads, here("data","raw","private","dhs_downloads.rds"))
 #read RDS at the beginning of the next section
+
+# st_write(, here("data", "derived", "public", "hh_null.csv"), append=FALSE))
 ```
 
 ```{r REMAINING DATA IMPORTS -- need to figure out how to arange this + the former}
@@ -136,7 +136,7 @@ dhsclusters_2010 = readRDS(here("data", "raw", "private", "datasets", "MWGE62FL.
   as("sf") %>% 
   st_transform(3395) %>% 
   # joining id for traditional authorities and livelihood zones to dhs clusters
-  st_join(st_transform(select(ta, ID_2),3395)) %>%
+  st_join(st_transform(select(ta, ID_2),3395)) %>% #FOR revision: you want to join to good TAs, refer to workflow 7/6 & count dhs clusters + households
   st_join(st_transform(select(lhz, FNID),3395)) %>%
   rename(ta_id = ID_2,
          lhz_id = FNID,
@@ -318,6 +318,13 @@ ta = mutate(ta, capacity_2010_brks = case_when(
 ))
 ```
 
+```{r extract traditional authorities without data by capacity}
+ta_null_cap <- ta[is.na(ta$capacity_2010),]
+#34 features
+
+st_write(ta_null_cap, here("data", "derived", "public", "ta_null_capacity.shp"), append=FALSE)
+```
+
 ```{r saving adaptive capacity scores}
 save(
   ta_capacity_2010,
@@ -481,7 +488,7 @@ ta_new = ta_2010[!is.na(ta_2010$vuln), 18]
 ta_new = st_rasterize(ta_new[1])
 ```
 
-```{r extract traditional authorities without data}
+```{r extract traditional authorities without data by vuln}
 ta_null <- ta_2010[is.na(ta_2010$vuln),]
 #34 features
 
@@ -511,7 +518,6 @@ ea = lhz %>%
   ) %>%
   rbind(lakes) %>%
   st_make_valid()
-
 ```
 
 ```{r 2010 adaptive capacity map}
