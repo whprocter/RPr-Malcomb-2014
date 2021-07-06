@@ -245,23 +245,33 @@ ta_hh_capacity_2010 <- hh_capacity_2010 %>%
       sexcat * 0.02,
       cellphone * 0.04,
       radio * 0.03,
-      urbanruralscore * 0.02,
+      urbanruralscore * 0.02),
       # NAs are not removed here to filter out incomplete surveys later on
       # multiple by ratio that adds everything to 40% of 5 --> max is going to be 2, 2*20 = 40%
       # at this point, values have possible range of 0 to 2 -- but capacity has actual range of 0.471 to 1.454 for 1-5 rnage
       # values have possible range of 0 to 1.6, 0.071 to 1.054 when adjusted range of 0-4
-      na.rm = F
-    ) 
-  ) %>%
-  filter(!is.na(capacity)) %>% # removing incomplete surveys 
-  ungroup
-  #19996 features (from the initial 24028 --> removed 4032 NA features)
+      na.rm = F)
+
+hh_stats <- stat.desc(ta_hh_capacity_2010[,21:33]) %>%
+  mutate_if(is.numeric, round, digits=3)
 ```
 
 ```{r extract traditional authorities without data}
 hh_null <- ta_hh_capacity_2010[is.na(ta_hh_capacity_2010$capacity),] 
+
+st_write(hh_null, here("data", "derived", "public", "hh_null.shp"), append=FALSE)
 # run the function up to na.rm = F, then run this function
 #4032 features
+```
+
+```{r remove nulls}
+ta_hh_capacity_2010 <- ta_hh_capacity_2010 %>%
+filter(!is.na(capacity)) %>% # removing incomplete surveys 
+ungroup
+#19996 features (from the initial 24028 --> removed 4032 NA features)
+
+hh_stats_2 <- stat.desc(ta_hh_capacity_2010[,21:33]) %>%
+  mutate_if(is.numeric, round, digits=3)
 ```
 
 ```{r capacity for traditional authorities 2010; aggregates from household level}
@@ -273,7 +283,7 @@ hh_null <- ta_hh_capacity_2010[is.na(ta_hh_capacity_2010$capacity),]
     capacity_max = max(capacity),
     capacity_sd = sd(capacity)
   )
-#256 features
+#222 features
 ```
 
 ```{r joining 2010 capacity to ta and creating breaks for visualization}
@@ -317,7 +327,6 @@ dr = read_stars(here("data", "raw", "public", "dr1010ipeykx.tif")) %>%
 
 fl = read_stars(here("data", "raw", "public",  "fl1010irmt.tif")) %>% 
   st_set_crs(4326) 
-
 ```
 
 ```{r cleaning and reprojecting rasters}
@@ -370,11 +379,6 @@ ta_2010 = st_clip(st_transform(filter(ta, is.na(capacity_2010) == F), 3395), st_
 
 # making capacity rasters 
 ta_capacity = st_rasterize(ta_2010[, 'capacity_2010'], blank)
-```
-
-```{r extract traditional authorities without data}
-ta_nulls <- ta_2010[is.na(ta_2010$vuln),]
-#34 features
 ```
 
 ```{R processing + weighting FEWSNet Data}
@@ -496,15 +500,13 @@ new <- list("Source of Food: Crops" =
        )
 whole <- summary_table(trial2, new)
 whole
-#lhz_table <- trial2 %>%
-  #tbl_summary(by = LZCODE) %>%
-  #add_overall() %>%
-  #modify_caption("**LHZ Data**")
-
-# mean_sd(trial2$sof_crop, denote_sd = "paren")
 ```
 
- 
+```{r summary table with lhz data}
+lhz_stats <- stat.desc(lhz_good[,14:36]) %>%
+  mutate_if(is.numeric, round, digits=3)
+lhz_stats
+```
 
 ```{r function to calculate vulnerability}
   # creating mask layer
@@ -538,6 +540,14 @@ whole
   final = 100 - (ta_capacity + lhz_capacity_new + (40 - (drought + flood))) # 100 = highest vulnerability, 0 = lowest vulnerability
 ```
 
+```{r descriptive stats for raster inputs}
+fl_stats <- stat.desc(fl)
+dr_stats <- stat.desc(dr)
+fl
+dr
+#do you need standard deviation here?
+```
+
 ```{r creating final vulnerability layers}
 ta_2010$vuln = aggregate(final,ta_2010,mean)$capacity_2010 #THIS IS THE REAL Q, what's the mean doing
 
@@ -546,6 +556,12 @@ ta_new = ta_2010[!is.na(ta_2010$vuln), 18]
 ta_new = st_rasterize(ta_new[1])
 ```
 
+```{r extract traditional authorities without data}
+ta_null <- ta_2010[is.na(ta_2010$vuln),]
+#34 features
+
+st_write(ta_null, here("data", "derived", "public", "ta_null.shp"), append=FALSE)
+```
 
 ```{r misc. map features}
 lakes = st_as_sf(read_csv(here(public_r, "major_lakes.csv"))[, c("name", "the_geom")],
