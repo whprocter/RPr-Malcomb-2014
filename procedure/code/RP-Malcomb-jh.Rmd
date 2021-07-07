@@ -124,6 +124,36 @@ fl = read_stars(here("data", "raw", "public",  "fl1010irmt.tif")) %>%
   st_set_crs(4326) 
 
 lhz_scores = read.csv(here(private_r, "lhz.csv"))
+
+lhz = read_sf(here("data", "raw", "public", "MW_LHZ_2009.shp")) %>% st_make_valid()
+```
+
+```{r filter ta's & fix geometries}
+ta_nature <- subset(ta, ENGTYPE_2 == 'Water body' | ENGTYPE_2 == 'National Park' | ENGTYPE_2 == 'Reserve') %>%
+  filter(ID_2 != 162) %>% #combine arguments here
+  filter(ID_2 != 224)
+#27 features (this includes the errors) 
+ta_populated <- subset(ta, ENGTYPE_2 == 'City' | ENGTYPE_2 == 'Headquarter' | ENGTYPE_2 == 'Sub-chief' | ENGTYPE_2 == 'Town' | ENGTYPE_2 == 'Traditional Authority'| ENGTYPE_2 == 'Urban')
+#229 features
+ta_errors <- ta[c(162, 224), ]
+
+#creates a buffer around the lakes & uses this as a mask to clip two 'outlier' features from Traditional Authorities
+# alternative: library(spatialEco) --> explode(ta_no_case, sp=FALSE) https://www.rdocumentation.org/packages/spatialEco/versions/1.3-1/topics/explode
+ta_corrected = st_difference(st_transform(filter(ta_errors), 3395), st_buffer(st_transform(lakes, 3395), 625)) %>%
+  st_transform(4326) %>%
+  st_cast ("POLYGON", warn=FALSE)
+
+# select out 5 largest polygon features (the ones we actually care about)
+ta_corrected <- ta_corrected[c(1:4,17),]
+ta_corrected <- ta_corrected %>%
+  mutate(ID_2 = ID_2 + row_number() * 1000) %>% #gives unique IDs different values
+  select(-c(EA)) %>%
+  st_cast ("MULTIPOLYGON", warn=FALSE)
+
+ta_corrected <- bind_rows(ta, ta_corrected)
+
+
+st_write(ta_corrected, here("data", "scratch", "ta_corrected.shp"), append=FALSE) 
 ```
 
 ```{r 2010 adaptive capacity data}
@@ -136,8 +166,8 @@ dhsclusters_2010 = readRDS(here("data", "raw", "private", "datasets", "MWGE62FL.
   as("sf") %>% 
   st_transform(3395) %>% 
   # joining id for traditional authorities and livelihood zones to dhs clusters
-  st_join(st_transform(select(ta, ID_2),3395)) %>% #FOR revision: you want to join to good TAs, refer to workflow 7/6 & count dhs clusters + households
-  st_join(st_transform(select(lhz, FNID),3395)) %>%
+  st_join(st_transform(select(ta, ID_2),3395)) %>% #FOR revision: you want to join to good TAs, refer to workflow 7/6 & count dhs clusters + households #survey clusters to TAs #keep such id unique
+  st_join(st_transform(select(lhz, FNID),3395)) %>% 
   rename(ta_id = ID_2,
          lhz_id = FNID,
          urban_rural = URBAN_RURA)
