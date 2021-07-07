@@ -152,7 +152,6 @@ ta_corrected <- ta_corrected %>%
 
 ta_corrected <- bind_rows(ta, ta_corrected)
 
-
 st_write(ta_corrected, here("data", "scratch", "ta_corrected.shp"), append=FALSE) 
 ```
 
