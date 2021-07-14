@@ -12,18 +12,16 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] pastecs_1.3.21 s2_1.0.4       ggplot2_3.3.3  readr_1.4.0    rdhs_0.7.1     classInt_0.4-3 here_1.0.1    
- [8] dplyr_1.0.5    stars_0.5-2    abind_1.4-5    sf_0.9-8       haven_2.4.0    downloader_0.4
+ [1] pastecs_1.3.21 s2_1.0.4       ggplot2_3.3.3  readr_1.4.0    rdhs_0.7.1     classInt_0.4-3 here_1.0.1     dplyr_1.0.5   
+ [9] stars_0.5-2    abind_1.4-5    sf_0.9-8       haven_2.4.0    downloader_0.4
 
 loaded via a namespace (and not attached):
- [1] storr_1.2.5        tinytex_0.31       tidyselect_1.1.0   xfun_0.22          purrr_0.3.4       
- [6] colorspace_2.0-0   vctrs_0.3.6        generics_0.1.0     htmltools_0.5.1.1  yaml_2.2.1        
-[11] utf8_1.2.1         rlang_0.4.10       e1071_1.7-6        pillar_1.6.0       withr_2.4.1       
-[16] glue_1.4.2         DBI_1.1.1          rappdirs_0.3.3     wk_0.4.1           lifecycle_1.0.0   
-[21] munsell_0.5.0      gtable_0.3.0       evaluate_0.14      knitr_1.32         forcats_0.5.1     
-[26] parallel_4.0.4     class_7.3-18       fansi_0.4.2        Rcpp_1.0.6         KernSmooth_2.23-18
-[31] scales_1.1.1       lwgeom_0.2-6       hms_1.0.0          digest_0.6.27      grid_4.0.4        
-[36] rprojroot_2.0.2    cli_2.5.0          tools_4.0.4        magrittr_2.0.1     proxy_0.4-25      
-[41] tibble_3.1.0       crayon_1.4.1       pkgconfig_2.0.3    ellipsis_0.3.1     assertthat_0.2.1  
-[46] rmarkdown_2.7      rstudioapi_0.13    boot_1.3-26        R6_2.5.0           units_0.7-1       
-[51] compiler_4.0.4    
+ [1] storr_1.2.5        tinytex_0.31       tidyselect_1.1.0   xfun_0.22          purrr_0.3.4        colorspace_2.0-0  
+ [7] vctrs_0.3.6        generics_0.1.0     htmltools_0.5.1.1  yaml_2.2.1         utf8_1.2.1         rlang_0.4.10      
+[13] e1071_1.7-6        pillar_1.6.0       glue_1.4.2         withr_2.4.1        DBI_1.1.1          rappdirs_0.3.3    
+[19] wk_0.4.1           lifecycle_1.0.0    munsell_0.5.0      gtable_0.3.0       evaluate_0.14      knitr_1.32        
+[25] forcats_0.5.1      parallel_4.0.4     class_7.3-18       fansi_0.4.2        Rcpp_1.0.6         KernSmooth_2.23-18
+[31] scales_1.1.1       lwgeom_0.2-6       hms_1.0.0          digest_0.6.27      grid_4.0.4         rprojroot_2.0.2   
+[37] cli_2.5.0          tools_4.0.4        magrittr_2.0.1     proxy_0.4-25       tibble_3.1.0       crayon_1.4.1      
+[43] pkgconfig_2.0.3    ellipsis_0.3.1     assertthat_0.2.1   rmarkdown_2.7      rstudioapi_0.13    boot_1.3-26       
+[49] R6_2.5.0           units_0.7-1        compiler_4.0.4    
