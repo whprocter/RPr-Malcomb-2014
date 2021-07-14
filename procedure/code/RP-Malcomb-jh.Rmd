@@ -686,7 +686,7 @@ write_stars(ta_r, here("data","derived","public","ta_capacity.tif"))
 
 write_sf(ta_2010, results, "ta_2010")
 
-write_sf(lhz, results, "lhz")
+write_sf(lhz_v, results, "lhz")
 ```
 
 ```{R Sample Code for Comparing Discrete Choropleth Maps}
