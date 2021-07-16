@@ -1,0 +1,183 @@
+---
+output: html_document
+---
+
+# Pre-Anlaysis for Reproduction of Malcomb et al (2014)
+
+#### Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. Applied Geography 48:17-30.
+
+#### [https://doi.org/10.1016/j.apgeog.2014.01.004]([https://doi.org/10.1016/j.apgeog.2014.01.004)
+
+### Authors: Drew An-Pham & Joseph Holler
+
+### [https://gis4dev.github.io/](https://gis4dev.github.io/)
+
+```{r libraries, include = F}
+packages = c("downloader", "haven", "stars", "dplyr", "sf", "rdhs", "classInt", "readr", "ggplot2", "here", "s2")
+setdiff(packages, rownames(installed.packages()))
+install.packages(setdiff(packages, rownames(installed.packages())), quietly=TRUE)
+
+library(downloader)
+library(haven)
+library(sf)
+library(stars)
+library(dplyr)
+library(here)
+library(classInt)
+library(rdhs)
+library(readr)
+library(ggplot2)
+library(s2)
+
+sf_use_s2(T)
+```
+
+```{r formatting}
+# list of required packages
+packages = c("here")
+
+# load and install required packages
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+
+# save the R processing environment to r_environment.txt
+writeLines(capture.output(sessionInfo()),here("procedure","environment","r_environment.txt"))
+
+# read in R processing environment
+# the data frame package_version provides info on the libraries used for this analysis when previewed in the console
+package_version <- read.delim(here("procedure","environment","r_environment.txt"))
+```
+
+```{r download data}
+private_r = here("data","raw","private")
+public_r = here("data","raw","public")
+
+if (!"traditional_authorities" %in% list.files(public_r)){
+  # Malawi administrative areas from GADM version 2.8 https://gadm.org/download_country_v2.html
+  download("https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip", here("data","scratch", "MWI_adm_shp.zip"))
+  unzip(here("data","scratch", "MWI_adm_shp.zip"), exdir = here("data","raw","public"))
+}
+
+if (!"livelihood_zones" %in% list.files(public_r)){
+  # Malawi livelihood zones from FEWS NET Data Center https://fews.net/fews-data/335
+  download("https://fews.net/data_portal_download/download?data_file_path=http%3A//shapefiles.fews.net.s3.amazonaws.com/LHZ/MW_LHZ_2009.zip", here("data","scratch","MW_LHZ_2009.zip"))
+  unzip(here("data","scratch","MW_LHZ_2009.zip"), exdir = here("data","raw","public"))
+}
+
+if (!"major_lakes.csv" %in% list.files(public_r)) {
+  # major lakes in malawi: http://www.masdap.mw/
+  download(
+    "http://www.masdap.mw/geoserver/ows?outputFormat=csv&service=WFS&srs=EPSG%3A4326&request=GetFeature&typename=geonode%3Amajor_lakes&version=1.0.0",
+    here("data","raw","public","major_lakes.csv")
+  )
+}
+```
+
+running this function will prompt you to enter email and project information in the console and password in a pop up
+
+```{r dhs data access configuration}
+email = readline(prompt="Enter DHS Login Email: ")
+project = readline(prompt="Enter Project Name: ")
+rdhs_json = here("data","raw","private","rdhs.json")
+
+if (!file.exists(rdhs_json)) file.create(rdhs_json)
+
+# the information here was established through DHS project approval. see dhs-metadata.md in the data/metadata folder for details
+
+set_rdhs_config(
+  email = email,
+  project = project,
+  config_path = rdhs_json,
+  global = FALSE,
+  cache_path = here("data","raw","private")
+)
+```
+
+```{r downloading dhs data}
+# run this code block once; the error below will occur after the RDS is saved once
+# common error: Error in names(filedatatypelist_DHS) <- paste0("filedatatypelist_", qdapRegex::rm_between(filedatatypelist_DHS_line, : 'names' attribute [1] must be the same length as the vector [0]
+dhs_downloads = get_datasets(
+  c("MWHR61SV.zip", "MWGE62FL.zip"), # the data used here are for 2010
+  all_lower = FALSE,
+  download_option = "rds"
+)
+
+saveRDS(dhs_downloads, here("data","raw","private","dhs_downloads.rds"))
+```
+
+``` {r reading in dhs data}
+# run this code block every time once dhs data is saved as an RDS
+dhs_downloads <- readRDS(here("data", "raw", "private", "dhs_downloads.rds"))
+```
+
+```{r load lakes & ta data}
+ta = read_sf(here(public_r, "MWI_adm2.shp")) %>%
+  st_make_valid() 
+
+lhz_v = read_sf(here(public_r, "MW_LHZ_2009.shp")) %>% st_make_valid()
+
+lakes = st_as_sf(read_csv(here(public_r, "major_lakes.csv"))[, c("name", "the_geom")],
+                 wkt = "the_geom",
+                 crs = 4326) %>%
+  st_geometry %>%
+  st_union %>%
+  st_sf %>%
+  mutate(EA = "Major Lakes of Malawi")
+```
+
+```{r preprocess traditional authorities}
+ta_nature <- subset(ta, ENGTYPE_2 == 'Water body' | ENGTYPE_2 == 'National Park' | ENGTYPE_2 == 'Reserve') %>%
+  filter(ID_2 != 162) %>% 
+  filter(ID_2 != 224)
+#25 features
+
+ta_populated <- subset(ta, ENGTYPE_2 == 'City' | ENGTYPE_2 == 'Headquarter' | ENGTYPE_2 == 'Sub-chief' | ENGTYPE_2 == 'Town' | ENGTYPE_2 == 'Traditional Authority'| ENGTYPE_2 == 'Urban')
+#229 features
+
+ta_errors <- ta[c(162, 224), ]
+#2 features
+
+# creates a buffer around the lakes as a mask to clip two 'outlier' features from the Traditional Authorities
+lake_clip <- lakes %>%
+  st_transform(3395) %>%
+  st_buffer(625) %>%
+  st_transform(4326)
+
+ta_errors <- st_difference(ta_errors, lake_clip) %>%
+  st_cast ("POLYGON", warn=FALSE)
+# 18 features
+
+# lhz_selection extracts the two polygon features that the significant ta_errors intersect with
+lhz_selection <- filter(lhz_v, LZCODE == "MW09" | LZCODE == "MW13")
+
+# set the crs the enable st_filter
+lhz_selection <- st_set_crs(lhz_selection, 4326)
+ta_errors <- st_set_crs(ta_errors, 4326)
+
+# extract the 5 ta_errors that will be joined back into the original ta_v 
+ta_errors <- st_filter(ta_errors, lhz_selection, .predicate = st_intersects)
+
+ta_errors <- ta_errors %>%
+  mutate(ID_2 = ID_2 + row_number() * 1000) %>% #gives unique IDs different values
+  select(-c(EA)) %>%
+  st_cast ("MULTIPOLYGON", warn=FALSE)
+# 5 features
+
+ta_errors_check <- ggplot() + geom_sf(data = ta_errors)
+ta_errors_check
+
+# combines ta_populated and ta_errors to produce the final traditional authorities used for analysis
+ta_v <- bind_rows(ta_populated, ta_errors)
+
+ta_v_check <- ggplot() + geom_sf(data = ta_v)
+ta_v_check 
+
+st_write(ta_v, here("data", "derived", "public", "ta_v.gpkg"), append=FALSE) 
+```
