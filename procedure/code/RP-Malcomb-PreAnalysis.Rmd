@@ -32,7 +32,7 @@ library(s2)
 sf_use_s2(T)
 ```
 
-```{r formatting}
+```{r formatting package versions}
 # list of required packages
 packages = c("here")
 
@@ -47,15 +47,16 @@ package.check <- lapply(
   }
 )
 
-# save the R processing environment to r_environment.txt
+# save the R processing environment 
 writeLines(capture.output(sessionInfo()),here("procedure","environment","r_environment.txt"))
 
-# read in R processing environment
+# read in R the processing environment
 # the data frame package_version provides info on the libraries used for this analysis when previewed in the console
 package_version <- read.delim(here("procedure","environment","r_environment.txt"))
 ```
 
 ```{r download data}
+# these values allow you to access private and public raw data more efficiently
 private_r = here("data","raw","private")
 public_r = here("data","raw","public")
 
@@ -80,44 +81,7 @@ if (!"major_lakes.csv" %in% list.files(public_r)) {
 }
 ```
 
-running this function will prompt you to enter email and project information in the console and password in a pop up
-
-```{r dhs data access configuration}
-email = readline(prompt="Enter DHS Login Email: ")
-project = readline(prompt="Enter Project Name: ")
-rdhs_json = here("data","raw","private","rdhs.json")
-
-if (!file.exists(rdhs_json)) file.create(rdhs_json)
-
-# the information here was established through DHS project approval. see dhs-metadata.md in the data/metadata folder for details
-
-set_rdhs_config(
-  email = email,
-  project = project,
-  config_path = rdhs_json,
-  global = FALSE,
-  cache_path = here("data","raw","private")
-)
-```
-
-```{r downloading dhs data}
-# run this code block once; the error below will occur after the RDS is saved once
-# common error: Error in names(filedatatypelist_DHS) <- paste0("filedatatypelist_", qdapRegex::rm_between(filedatatypelist_DHS_line, : 'names' attribute [1] must be the same length as the vector [0]
-dhs_downloads = get_datasets(
-  c("MWHR61SV.zip", "MWGE62FL.zip"), # the data used here are for 2010
-  all_lower = FALSE,
-  download_option = "rds"
-)
-
-saveRDS(dhs_downloads, here("data","raw","private","dhs_downloads.rds"))
-```
-
-``` {r reading in dhs data}
-# run this code block every time once dhs data is saved as an RDS
-dhs_downloads <- readRDS(here("data", "raw", "private", "dhs_downloads.rds"))
-```
-
-```{r load lakes & ta data}
+```{r load data for pre-analysis, message=FALSE}
 ta = read_sf(here(public_r, "MWI_adm2.shp")) %>%
   st_make_valid() 
 
@@ -132,7 +96,7 @@ lakes = st_as_sf(read_csv(here(public_r, "major_lakes.csv"))[, c("name", "the_ge
   mutate(EA = "Major Lakes of Malawi")
 ```
 
-```{r preprocess traditional authorities}
+```{r preprocess traditional authorities, warning=FALSE}
 ta_nature <- subset(ta, ENGTYPE_2 == 'Water body' | ENGTYPE_2 == 'National Park' | ENGTYPE_2 == 'Reserve') %>%
   filter(ID_2 != 162) %>% 
   filter(ID_2 != 224)
@@ -181,3 +145,16 @@ ta_v_check
 
 st_write(ta_v, here("data", "derived", "public", "ta_v.gpkg"), append=FALSE) 
 ```
+Once ta_v.gpkg is exported, this geopackage was opened in QGIS. These geometries are what you want to use for analysis, as they exclude nature features (forests, reserves, and lakes) and error features (nature features that included household points, thus receiving a capacity score when they shouldn't have). 
+
+These error features were found by pulling in the MWI_adm shapefile (TAs) and MWGE62FL shapefile (DHS Household Survey Cluster points), then using the count points in polygon tool to find which traditional authorities did and didn't contain household points. The workflow for this troubleshooting process can be found [here](https://github.com/daptx/RP-Malcomb/issues/6). Ultimately, this source of error was the reason behind this first notebook, to fix the traditional authority geometries before attempting to replicate the original results of Malcomb et al (2014).
+
+With the new traditional authorities vectors (234 features) in QGIS, a georeferenced shapefile of the figure 4 from Malcomb et al (2014), the adaptive capacity map, was converted into a .csv, then joined to the traditional authorities derived from this code by ID_2 (the column feature used to distinguish TAs). The custom prefix gref_ was used. Once created, a field calculator was used to create a 'capacity' column, turning the gref_resilience scores into integers and fixing the naming syntax for the remainder of analysis. In Malcomb et al (2014), capacity and resilience were terms used loosely and interchangably, making it essential to follow one naming schema in this analysis: capacity/capacity scores. After, this final shape file of 234 features and 23 variables (geometry included) was exported as ta_fig4_v.gpkg and is brought in at the start of the RP-Malcomb-jh.Rmb notebook.
+
+The original figures from Malcomb et al (2014) were 'cloned' using the follow steps: 
+1. Save a digital map image
+2. Georeference the map
+3. Create a vector data layer matching the regions in the study (traditional authorities or raster grids, which can be made with raster pixels to polygons)
+4. Extract values from the map with zonal statistics
+5. Classify and visualize the results'
+More information on georeferencing can be found [here](https://gis4dev.github.io/lessons/2021-04-19-georeference.html)
