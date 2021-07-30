@@ -13,18 +13,15 @@ output: html_document
 ### [https://gis4dev.github.io/](https://gis4dev.github.io/)
 
 ```{r libraries, include = F}
-packages = c("downloader", "haven", "stars", "dplyr", "sf", "rdhs", "classInt", "readr", "ggplot2", "here", "s2")
+packages = c("downloader", "haven", "dplyr", "sf", "readr", "ggplot2", "here", "s2")
 setdiff(packages, rownames(installed.packages()))
 install.packages(setdiff(packages, rownames(installed.packages())), quietly=TRUE)
 
 library(downloader)
 library(haven)
 library(sf)
-library(stars)
 library(dplyr)
 library(here)
-library(classInt)
-library(rdhs)
 library(readr)
 library(ggplot2)
 library(s2)

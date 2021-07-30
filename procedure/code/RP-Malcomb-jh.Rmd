@@ -435,7 +435,6 @@ dr_stats
 ```
 
 ```{r creating final vulnerability layers}
-
 ta_capacity_v <- st_make_valid(ta_capacity_v) # new version of sf (1.0.0) produces error, so st_make_valid fixes spherical geom errors
 
 ta_capacity_v$vuln = aggregate(final,ta_capacity_v,mean)$capacity_2010 
@@ -733,7 +732,6 @@ vuln_diff_map
 ```
 
 ```{r saving maps}
-
 ggsave(
   here("results","figures","fig4comp_final.png"),
   plot = ac_diff_map,
