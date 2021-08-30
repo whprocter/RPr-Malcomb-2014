@@ -1,0 +1,157 @@
+---
+output: html_document
+---
+
+# Pre-Anlaysis for Reproduction of Malcomb et al (2014)
+
+#### Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. Applied Geography 48:17-30.
+
+#### [https://doi.org/10.1016/j.apgeog.2014.01.004]([https://doi.org/10.1016/j.apgeog.2014.01.004)
+
+### Authors: Drew An-Pham & Joseph Holler
+
+### [https://gis4dev.github.io/](https://gis4dev.github.io/)
+
+```{r libraries, include = F}
+packages = c("downloader", "haven", "dplyr", "sf", "readr", "ggplot2", "here", "s2")
+setdiff(packages, rownames(installed.packages()))
+install.packages(setdiff(packages, rownames(installed.packages())), quietly=TRUE)
+
+library(downloader)
+library(haven)
+library(sf)
+library(dplyr)
+library(here)
+library(readr)
+library(ggplot2)
+library(s2)
+
+sf_use_s2(T)
+```
+
+```{r formatting package versions}
+# list of required packages
+packages = c("here")
+
+# load and install required packages
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+
+# save the R processing environment 
+writeLines(capture.output(sessionInfo()),here("procedure","environment","r_environment.txt"))
+
+# read in R the processing environment
+# the data frame package_version provides info on the libraries used for this analysis when previewed in the console
+package_version <- read.delim(here("procedure","environment","r_environment.txt"))
+```
+
+```{r download data}
+# these values allow you to access private and public raw data more efficiently
+private_r = here("data","raw","private")
+public_r = here("data","raw","public")
+
+if (!"traditional_authorities" %in% list.files(public_r)){
+  # Malawi administrative areas from GADM version 2.8 https://gadm.org/download_country_v2.html
+  download("https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip", here("data","scratch", "MWI_adm_shp.zip"))
+  unzip(here("data","scratch", "MWI_adm_shp.zip"), exdir = here("data","raw","public"))
+}
+
+if (!"livelihood_zones" %in% list.files(public_r)){
+  # Malawi livelihood zones from FEWS NET Data Center https://fews.net/fews-data/335
+  download("https://fews.net/data_portal_download/download?data_file_path=http%3A//shapefiles.fews.net.s3.amazonaws.com/LHZ/MW_LHZ_2009.zip", here("data","scratch","MW_LHZ_2009.zip"))
+  unzip(here("data","scratch","MW_LHZ_2009.zip"), exdir = here("data","raw","public"))
+}
+
+if (!"major_lakes.csv" %in% list.files(public_r)) {
+  # major lakes in malawi: http://www.masdap.mw/
+  download(
+    "http://www.masdap.mw/geoserver/ows?outputFormat=csv&service=WFS&srs=EPSG%3A4326&request=GetFeature&typename=geonode%3Amajor_lakes&version=1.0.0",
+    here("data","raw","public","major_lakes.csv")
+  )
+}
+```
+
+```{r load data for pre-analysis, message=FALSE}
+ta = read_sf(here(public_r, "MWI_adm2.shp")) %>%
+  st_make_valid() 
+
+lhz_v = read_sf(here(public_r, "MW_LHZ_2009.shp")) %>% st_make_valid()
+
+lakes = st_as_sf(read_csv(here(public_r, "major_lakes.csv"))[, c("name", "the_geom")],
+                 wkt = "the_geom",
+                 crs = 4326) %>%
+  st_geometry %>%
+  st_union %>%
+  st_sf %>%
+  mutate(EA = "Major Lakes of Malawi")
+```
+
+```{r preprocess traditional authorities, warning=FALSE}
+ta_nature <- subset(ta, ENGTYPE_2 == 'Water body' | ENGTYPE_2 == 'National Park' | ENGTYPE_2 == 'Reserve') %>%
+  filter(ID_2 != 162) %>% 
+  filter(ID_2 != 224)
+#25 features
+
+ta_populated <- subset(ta, ENGTYPE_2 == 'City' | ENGTYPE_2 == 'Headquarter' | ENGTYPE_2 == 'Sub-chief' | ENGTYPE_2 == 'Town' | ENGTYPE_2 == 'Traditional Authority'| ENGTYPE_2 == 'Urban')
+#229 features
+
+ta_errors <- ta[c(162, 224), ]
+#2 features
+
+# creates a buffer around the lakes as a mask to clip two 'outlier' features from the Traditional Authorities
+lake_clip <- lakes %>%
+  st_transform(3395) %>%
+  st_buffer(625) %>%
+  st_transform(4326)
+
+ta_errors <- st_difference(ta_errors, lake_clip) %>%
+  st_cast ("POLYGON", warn=FALSE)
+# 18 features
+
+# lhz_selection extracts the two polygon features that the significant ta_errors intersect with
+lhz_selection <- filter(lhz_v, LZCODE == "MW09" | LZCODE == "MW13")
+
+# set the crs the enable st_filter
+lhz_selection <- st_set_crs(lhz_selection, 4326)
+ta_errors <- st_set_crs(ta_errors, 4326)
+
+# extract the 5 ta_errors that will be joined back into the original ta_v 
+ta_errors <- st_filter(ta_errors, lhz_selection, .predicate = st_intersects)
+
+ta_errors <- ta_errors %>%
+  mutate(ID_2 = ID_2 + row_number() * 1000) %>% #gives unique IDs different values
+  select(-c(EA)) %>%
+  st_cast ("MULTIPOLYGON", warn=FALSE)
+# 5 features
+
+ta_errors_check <- ggplot() + geom_sf(data = ta_errors)
+ta_errors_check
+
+# combines ta_populated and ta_errors to produce the final traditional authorities used for analysis
+ta_v <- bind_rows(ta_populated, ta_errors)
+
+ta_v_check <- ggplot() + geom_sf(data = ta_v)
+ta_v_check 
+
+st_write(ta_v, here("data", "derived", "public", "ta_v.gpkg"), append=FALSE) 
+```
+Once ta_v.gpkg is exported, this geopackage was opened in QGIS. These geometries are what you want to use for analysis, as they exclude nature features (forests, reserves, and lakes) and error features (nature features that included household points, thus receiving a capacity score when they shouldn't have). 
+
+These error features were found by pulling in the MWI_adm shapefile (TAs) and MWGE62FL shapefile (DHS Household Survey Cluster points), then using the count points in polygon tool to find which traditional authorities did and didn't contain household points. The workflow for this troubleshooting process can be found [here](https://github.com/daptx/RP-Malcomb/issues/6). Ultimately, this source of error was the reason behind this first notebook, to fix the traditional authority geometries before attempting to replicate the original results of Malcomb et al (2014).
+
+With the new traditional authorities vectors (234 features) in QGIS, a georeferenced shapefile of the figure 4 from Malcomb et al (2014), the adaptive capacity map, was converted into a .csv, then joined to the traditional authorities derived from this code by ID_2 (the column feature used to distinguish TAs). The custom prefix gref_ was used. Once created, a field calculator was used to create a 'capacity' column, turning the gref_resilience scores into integers and fixing the naming syntax for the remainder of analysis. In Malcomb et al (2014), capacity and resilience were terms used loosely and interchangably, making it essential to follow one naming schema in this analysis: capacity/capacity scores. After, this final shape file of 234 features and 23 variables (geometry included) was exported as ta_fig4_v.gpkg and is brought in at the start of the RP-Malcomb-jh.Rmb notebook.
+
+The original figures from Malcomb et al (2014) were 'cloned' using the follow steps: 
+1. Save a digital map image
+2. Georeference the map
+3. Create a vector data layer matching the regions in the study (traditional authorities or raster grids, which can be made with raster pixels to polygons)
+4. Extract values from the map with zonal statistics
+5. Classify and visualize the results'
+More information on georeferencing can be found [here](https://gis4dev.github.io/lessons/2021-04-19-georeference.html)

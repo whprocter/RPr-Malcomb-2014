@@ -3,28 +3,37 @@
 Joseph Holler, Department of Geography, Middlebury College, Middlebury VT 05753
 Drew An-Pham, Department of Geography, Middlebury College, Middlebury VT 05753
 Kufre Udoh, Department of Geography, Middlebury College, Middlebury VT 05753
+Peter Kedron, School of Geographical Sciences & Urban Planning, Arizona State University, Tempe AZ 85281
 
 Version 1.0 | Created June 25, 2021 | Last Updated June 25, 2021
 
 ## Abstract
 
 Malcomb, Weaver and Krakowka ([2014](https://doi.org/10.1016/j.apgeog.2014.01.004)) published one of the first sub-national geographic climate change vulnerability models for a developing country (1.4).
-The authors intended for the study to be replicable across space (other African countries with similar data available) (7.1), time (when new survey data is published) (4.5 and 7.1), and vulnerability stimuli (7.1) for the purpose of addressing extreme vulnerability to climate change (1.3) with a model to assist in the allocation and evaluation of foreign aid (1.2).
-The methodology was designed to be "transparent and easily replicable" (2.1) in its use of "locally derived indicators and granular data" (2.1), addressing critiques of vulnerability models aimed at their uncertainty and sensitivity due to problems of scale and spatial aggregation, normative and subjective modelling decisions, and data availability, and challenges in model comparability (2.1).
-The model uses household adaptive capacity data United States Agency for International Development () Demographic and Health Surveys (DHS) (1.4 and 4.1) available in 44 African countries (7.1), livelihood sensitivity data from the USAID / Famine Early Warning Systems Network (FEWSnet) livelihood zones baseline surveys available in 23 African countries (3.6), and global physical exposure data from the United Nations Environment Programme (UNEP) Global Risk Data Platform.
+The authors intended for the study to be replicable across space (other African countries with similar data available) (7.1), time (when new survey data is published) (4.5 and 7.1), and vulnerability stimuli (7.1).
+The study's social impacts are to address extreme vulnerability to climate change (1.3) and assisting in the allocation and evaluation of foreign aid (1.2).
+The methodology was designed to be "transparent and easily replicable" (2.1) in its use of "locally derived indicators and granular data" (2.1).
+The study was designed to address critiques of vulnerability models aimed at their uncertainty and sensitivity due to problems of scale and spatial aggregation, normative and subjective modelling decisions, and data availability, and challenges in model comparability (2.1).
+The model uses household adaptive capacity data from the United States Agency for International Development (USAID) Demographic and Health Surveys (DHS) (1.4 and 4.1) available in 44 African countries (7.1), livelihood sensitivity data from the USAID / Famine Early Warning Systems Network (FEWSnet) livelihood zones baseline surveys available in 23 African countries (3.6), and global physical exposure data from the United Nations Environment Programme (UNEP) Global Risk Data Platform.
 
 This replication study is motivated by three factors.
-First, climate change impacts are increasingly severe in Africa and establishing reproducible and replicable methods for geographic vulnerability modeling may help in allocating resources for climate change adaptation and evaluating the effectiveness of climate change adaptation investments.
+First, there is an urgent need to evaluate the reproducibility of research in human-environment and geographical sciences (HEGS) and to establish protocols and infrastructure for conducting and publishing reproduction/replication studies and reproducible research in HEGS.
 Second, a fully reproducible publication can be more readily replicated in new geographic, temporal, and thematic contexts, and tested for uncertainty due to data constraints and subjective modelling decisions.
-Third, there is an urgent need to evaluate the reproducibility of research in human-environment and geographical sciences (HEGS) and to establish protocols and infrastructure for conducting and publishing reproduction/replication studies and reproducible research in HEGS.
+Third, climate change is causing increasingly severe in Africa.
+Improving the reproducibility and replicability of climate vulnerability research will hopefully enhance the potential for research to inform policy and reduce harm caused by climate change.
 
-In this study, we will attempt to identically reproduce the 2010 Malawi Household Resilience model and the Vulnerability to Climate Change model described in Malcomb et al (2014) using The R Project for Statistical Computing and the same data sources cited in the original publication.
-We will compare our reproduction results with the original results using thematic maps of difference between results and the Spearman's Rho Correlation Coefficient.
-Additionally, we will compare reproduction results with original results for the household resilience model with a confusion matrix, and for the vulnerability model with a scatterplot.
+Malcomb et al (2014) produce two models of interest for Malawi. Figure 4, labelled "Malawi Household Resilience", visualizes the average adaptive capacity score of households in each traditional authority. Figure 5, labelled "Malawi Composite Vulnerability Index", visualizes vulnerability scores by locations (cells) in a continuous raster grid.
+In this study, we will attempt to identically reproduce figure 4 (adaptive capacity by traditional authority) and figure 5 (vulnerability grid) using The R Project for Statistical Computing and the same data sources cited in the original publication.
+We will visually compare our resulting reproduction figures with the original figures.
+Comparison will be aided by digitizing and joining the original figure results to the reproduction results for each model, and then calculating any differences between them.
+Differences will be visualized with thematic maps for both models, a confusion matrix for figure 4 (adaptive capacity by traditional authority), and a scatterplot for figure 5 (vulnerability grid).
+An exact reproduction should produce exact replicas of the rank order of traditional authorities by adaptive capacity and grid cells by vulnerability.
+We will test this with the Spearman's Rho Correlation Coefficient, expecting values of 1 for perfect correlation.
+
 The original study is a descriptive geographic multi-criteria analysis based on local expert opinion, and therefore has no testable hypotheses or effects.
 
 The replication study data and code will be made available in a GitHub repository to the greatest extent that licensing and file sizes permit.
-The repository will be made public at [github.com/GIS4DEV/RPr-Malcomb-2014](https://github.com/HEGSRR/RPr-Malcomb-2014)
+The repository will be made public at [github.com/HEGSRR/RPr-Malcomb-2014](https://github.com/HEGSRR/RPr-Malcomb-2014)
 
 Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004).
 
@@ -39,9 +48,11 @@ Our two confirmatory hypotheses are that we will be able to independently reprod
 
 The working hypotheses are therefore:
 
-> H1: There is no correlation between Malcomb et al's ranking of traditional authorities by household resilience and our reproduction study's ranking of traditional authorities by household resilience.
+> H1: There is no perfect positive correlation between Malcomb et al's ranking of traditional authorities by household resilience and our reproduction study's ranking of traditional authorities by household resilience.
 
-> H2: There is no correlation between Malcom et al's ranking of locations by climate vulnerability and our reproduction study's ranking of locations by climate vulnerability.
+> H2: There is no perfect positive between Malcom et al's ranking of locations by climate vulnerability and our reproduction study's ranking of locations by climate vulnerability.
+
+We will evaluate each of these hypotheses using a Spearman's Rho Correlation. A failure to reject these hypotheses would indicate that our results do not exactly match those of the original authors. A positive correlation approaching 1 would indicate a partial reproduction
 
 ### Original study design
 
@@ -79,7 +90,14 @@ Holler has previously reviewed and compared other climate vulnerability models f
 
 ### Data collection and spatial sampling
 
-The study exclusively uses secondary data sources.
+The original study included over 70 qualitative semi-structured interviews with officials from development agencies, government, and non-governmental organizations (1.4).
+47 specific interviewee titles are listed in a "full list of the interviews" (A1), leaving uncertainty around the remaining 23 (or more) interviewees.
+The study included 11 village focus groups (1.4).
+The interviews and focus groups were selected to focus on villages and organizations connected at different levels of organization to "externally designed adaptation projects" (3.2).
+We presume that the interviewees and focus groups were selected based upon their association with externally designed and funded climate change adaptation projects, which are neither equally nor justly distributed (Barrett 2014).
+No minimum sample size or stopping criteria were defined.
+
+The original authors used exclusively secondary data for the vulnerability models and did not subset or sample from the secondary data.
 The published results based on DHS surveys include data 203 traditional authorities in 2010 (F4), whereas the authors state that there are more than 250 populated traditional authorities in Malawi (4.4).
 The 2010 household resilience data is based upon 24,850 DHS household surveys (5.2).
 Furthermore, "not every traditional authority had surveys conducted within its administrative boundaries" (5.2).
@@ -247,34 +265,27 @@ The data mapped in figures 3 and 4 are described in different sections of the or
 The data mapped in figure 5 are described in different sections of the article as vulnerability or resilience.
 Confounding matters further, the authors' definition for resilience is typical for resilience theory, but the formula for resilience is more typical of the well-known Intergovernmental Panel on Climate Change (IPCC) operationalization of "vulnerability" (Gallopín 2006, Smit and Wandel 2006).
 
+For the purposes of the reproduction study, the data visualized in figure 4 of the original study and referred to as 40% Adaptive Capacity in table 2 will be referred to as **adaptive capacity** while the data visualized in figure 5 of the original study and referred to as 100% Household Resilience in table 2 will be referred to as **vulnerability**.
+
 #### Attribute variable transformations
 
+The original study's description of attribute variable transformations is confusing, and we attempt to present all of the evidence in the original study clearly below.
 All variables are normalized between zero and five (4.3 and 5.6) with zero representing the worst or poorest condition and five representing the best or richest condition (4.3).
 The normalization method is not described, but the poorest and richest conditions are described as "quintiles" with values of zero and five (4.3).
-Here, "quintiles" suggests classification into five classes with equal counts.
+"Quintiles" suggests classification into five classes with equal counts or frequencies.
 "Normalization" suggests transforming each variable into a normal distribution.
 A minimum of zero and maximum of five suggests rescaling the data to a range from zero to five or classifying the data into six quantiles assigned integer values zero through five.
 Four variables were described as (Y/N) nominal data (T1), for which it is not clear how to transform the data into ordinal data with more than two classes.
 A similar concern arises for the market access variable with three classes (Rural, Peri-urban, and Urban).
 Regardless, there is ambiguity in the method of normalizing, scaling, or classifying each variable.
 
-The direction of variables is not always clear because "better" (5) or "worse" (0) conditions are not made explicit for each variable transformation.
-The variable direction is often intuitive, but not in every case.
-This becomes a concern when some components of vulnerability are added while others are subtracted.
-For example, the better condition for a household in terms of flood risk is to be at low risk, therefore low flood risk should be assigned a value of five.
-However, flood risk becomes part of the physical exposure theme which is then *subtracted* in the formula for calculating climate vulnerability (4.6), yielding counterintuitive results.
-Meanwhile, livelihood sensitivity is *added*, therefore each of its indicators should receive high scores of five for good conditions of low sensitivity.
-The final model of the study is also referred to equally often in opposite terms: "vulnerability" or "resilience"
-Rufat et al (2015) found that the monotonicity of vulnerability indicators should not be assumed.
-Therefore, the one certainty is that the individual and thematic variable directions are uncertain.
-
-Household-level resilience is analyzed with the weighted combination of all asset theme indicators and access theme indicators.
+Adaptive capacity is analyzed with the weighted combination of all asset theme indicators and access theme indicators.
 Weights are given in the Variables section.
 The formula for this combination is not specified.
-For 2004, the authors report a household-level minimum resilience score of -0.80 and maximum of 39.33 (5.2).
-Based on the described methodology of a weighted combination of values ranging from zero to five, a negative score is inexplicable.
+For 2004, the authors report a minimum household adaptive capacity score of -0.80 and maximum of 39.33 (5.2).
 A maximum score near 40 is intuitive as a theoretical maximum of 40% for the adaptive capacity category.
-It is not clear whether the calculation should be a weighted average, weighted sum, weighted combination meant to achieve a possible range of 40% for the overall adaptive capacity component of the final vulnerability model, or some other form of weighted combination.
+It is not clear whether the calculation should be a weighted average, weighted sum, weighted combination specified to achieve a maximum of 40%, or some other form of weighted combination.
+Results of the average adaptive capacity score for traditional authorities in 2010 are visualized in figure 4.
 
 Livelihood sensitivity is presumably calculated with the weighted combination of its four indicators.
 Weights are given in the Variables section.
@@ -289,19 +300,24 @@ Results for this theme are not presented.
 
 #### Geographic transformations
 
-The household resilience analysis is analyzed in the spatial units of traditional authorities (4.4, 5.2, F3 and F4).
+Adaptive capacity is analyzed in the spatial units of traditional authorities (4.4, 5.2, F3 and F4).
 This aggregation from households to traditional authorities is accomplished with a spatial join (5.2) with an average of the individual household resilience scores (5.2, 6.3, F3 and F4), and classified into four classes with the Natural Breaks Jenks classification method (F3 and F4).
 In the methodology section, the authors state that "DHS Indicators were disaggregated to the village level" (4.4).
 Since the DHS data is described as using the household level of aggregation, it is not clear how or why the data would be "disaggregated" to the village level.
 
-For the climate vulnerability analysis, each theme was converted to the raster grid data format (4.6).
-The paper does not specify the parameters for rasterization, including the relationship between vector polygons and raster grid cells or the spatial resolution of the grid cells.
+Vulnerability is analyzed in the spatial units of gridded cells (F5).
+Each theme was converted to the raster grid data format (4.6).
+The paper does not specify the parameters for raster conversion, including the relationship between vector polygons and raster grid cells or the spatial resolution of the grid cells.
+Presumably, only adaptive capacity and livelihood sensitivity were converted, since physical exposure is already in a raster grid format.
 The paper does not specify if or how any geographic transformation is required for the biophysical risk grids from the UNEP Global Risk Data Platform.
 It may be possible to infer the resolution and methods from close inspection of the final climate vulnerability map (F5).
 
 ## Analyses
 
-The final climate vulnerability analysis is calculated with map algebra on a raster grid for each theme using the formula `household resilience = adaptive capacity + livelihood sensitivity - physical exposure` (4.6).
+The final climate vulnerability analysis is calculated with map algebra on a raster grid for each theme using the formula:
+
+`household resilience = adaptive capacity + livelihood sensitivity - physical exposure` (4.6).
+
 The results are presented as a continuous raster grid with a continuous color gradient.
 No descriptive statistics of the results are provided.
 
@@ -406,7 +422,6 @@ We will compare original and reproduction Malawi vulnerability results by creati
 
 We expect relatively stronger correlations for the adaptive capacity analysis than the vulnerability analysis because of some uncertainty in digitizing correct continuous values from a georeferenced image of the figure 5 map, particularly when considering the influence of text and other symbology on the map in potentially altering  effects.
 
-
 ## Referencing the original paper
 
 Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004).
@@ -435,6 +450,7 @@ Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling f
 
 ## Other references
 
+Barrett, S. 2014. Subnational Climate Justice? Adaptation Finance Distribution and Climate Vulnerability. World Development 58:130–142. DOI: [10.1016/j.worlddev.2014.01.014](http://dx.doi.org/10.1016/j.worlddev.2014.01.014).
 Gallopín, G. C. 2006. Linkages Between Vulnerability, Resilience, and Adaptive Capacity. Global Environmental Change 16 (3):293–303. DOI: [10.1016/j.gloenvcha.2006.02.004](https://doi.org/10.1016/j.gloenvcha.2006.02.004).
 Rufat, S., E. Tate, C. G. Burton, and A. S. Maroof. 2015. Social vulnerability to floods: Review of case studies and implications for measurement. *International Journal of Disaster Risk Reduction* 14:470–486. DOI: [10.1016/j.ijdrr.2015.09.013](http://dx.doi.org/10.1016/j.ijdrr.2015.09.013).
 Smit, B., and J. Wandel. 2006. Adaptation, adaptive capacity and vulnerability. Global Environmental Change 16 (3):282–292. DOI: [10.1016/j.gloenvcha.2006.03.008](https://doi.org/10.1016/j.gloenvcha.2006.03.008).
