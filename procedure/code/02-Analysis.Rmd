@@ -66,6 +66,8 @@ public_r = here("data","raw","public")
 ```{r reading all data used for analysis, message=FALSE}
 ta_gref = read_sf(here("data", "derived", "public", "ta_fig4_v.gpkg"), layer = "ta_fig4_v") %>% 
   st_make_valid()
+# This read may need to be changed to match the final output of 01-preanalysis!
+# which was: st_write(ta_v, here("data", "derived", "public", "ta_v.gpkg"), append=FALSE)
 
 dr = read_stars(here(public_r, "dr1010ipeykx.tif")) %>% 
   st_set_crs(4326) 
