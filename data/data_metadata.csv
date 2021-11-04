@@ -6,7 +6,7 @@ raw/public,major_lakes,.csv,OSM/masdap, http://www.masdap.mw/showmetadata/xsl/36
 raw/private,dhs_downloads,.rds,DHS Surveys,
 raw/private,dr1010ipeykx,.tif,UNEP,
 raw/private,fl1010irmt,.tif,UNEP,
-raw/private,lhz_test2,.csv,FEWSnet,
+raw/public,lhz,.csv,FEWSnet,
 raw/private/datasets,MWGE62FL,.rds,DHS Surveys,
 raw/private/datasets,MWHR61SV,.rds,DHS Surveys,
 derived/public,adaptive_capacity,.rData,MWHR61SV.rds + MWGE62FL.rds,
