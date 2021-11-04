@@ -155,3 +155,30 @@ The original figures from Malcomb et al (2014) were 'cloned' using the follow st
 4. Extract values from the map with zonal statistics
 5. Classify and visualize the results'
 More information on georeferencing can be found [here](https://gis4dev.github.io/lessons/2021-04-19-georeference.html)
+
+```{r dhs data access configuration}
+email = readline(prompt="Enter DHS Login Email: ")
+project = readline(prompt="Enter Project Name: ")
+rdhs_json = here("data","raw","private","rdhs.json")
+
+if (!file.exists(rdhs_json)) file.create(rdhs_json)
+
+# the information here was established through DHS project approval. See dhs-metadata.md in the data/metadata folder for details.
+# running this function will prompt you to enter email and project information in the Console and password in a popup
+set_rdhs_config(
+  email = email,
+  project = project,
+  config_path = rdhs_json,
+  global = FALSE,
+  cache_path = here("data","raw","private")
+)
+
+```
+
+```{r downloading dhs data}
+dhs_downloads = get_datasets(
+  c("MWHR61SV", "MWGE62FL", "MWHR4ESV", "MWGE4BFL"),
+  all_lower = FALSE,
+  download_option = "rds"
+)
+```

@@ -78,7 +78,7 @@ fl = read_stars(here(public_r,  "fl1010irmt.tif")) %>%
 lhz_v = read_sf(here(public_r, "MW_LHZ_2009.shp")) %>% 
   st_make_valid()
 
-lhz_t = read.csv(here(private_r, "lhz.csv"))
+lhz_t = read.csv(here(public_r, "lhz.csv"))
 
 ta = read_sf(here(public_r, "MWI_adm2.shp")) %>%
   st_make_valid() 
