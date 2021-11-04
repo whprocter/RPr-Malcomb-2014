@@ -2,7 +2,7 @@
 
 Note: These instructions were developed for students in a course at Middlebury.  There is no guarantee that the DHS program will continue to approve projects for replication of this study in the future.
 
-1. Go to [https://dhsprogram.com/Data/](https://dhsprogram.com/Data/) 
+1. Go to [https://dhsprogram.com/Data/](https://dhsprogram.com/Data/)
 1. Create an account with your college e-mail address
 2. Within the Datasets menu, [Create a new project](https://dhsprogram.com/data/dataset_admin/index.cfm?action=createproject)
 1. Enter the following information:
@@ -14,6 +14,20 @@ Note: These instructions were developed for students in a course at Middlebury. 
 1. Save selection
 1. Read and agree to the conditions of use for the DHS Program datasets and save these conditions for your metadata records.
 1. Enter a **Justification for using DHS Program Geographic Datasets:** The research aim is to reproduce Malcomb et al (2014) in which GPS Datasets are used to spatially join DHS Survey data to Malawi's Districts for the purpose of sub-national climate change vulnerability mapping. Therefore, the research will not be reproducible without the geographic datasets.
+
+## Conditions of Use for The DHS Program datasets
+(applies to all datasets downloaded from The DHS Program website: www.dhsprogram.com)
+By entering my password below, I agree to the following conditions of use of the data:
+
+- I agree to use the requested data only for the registered research or study.
+- I agree to submit a new research project request if I want to use the data for another purpose (using the “Create a New Project” link in my DHS user account).
+- I agree that the datasets will not be shared with other researchers without the written consent of The DHS Program.
+- I agree to keep the data files in a secure location where they cannot be accessed by unauthorized users.
+- I agree to treat all data as confidential, and to make no effort to identify any individual, household, or enumeration area in the survey.
+- I agree that no results will be published in which communities or individuals can be identified.
+- I agree that the data will not be used for any marketing or commercial venture.
+- I agree that the DHS micro-level data will not be re-distributed, either directly or within any tool/dashboard.
+- I agree to submit a copy of any reports/publications resulting from using the data files to: references@dhsprogram.com.
 
 ## Geographic Structure of DHS Surveys
 
@@ -400,7 +414,7 @@ And Summary of the 2010 Survey here: [https://www.dhsprogram.com/methodology/sur
   /SH416AC  "Assistance received for schooling"
   /SH416AD  "Assistance received for schooling"
   /SH416AX  "Assistance received for schooling"
- 
+
 ### MISSING VALUE
    HV026    (9)
   /HV040    (9999)
@@ -681,7 +695,7 @@ And Summary of the 2010 Survey here: [https://www.dhsprogram.com/methodology/sur
   /SH416AC  (9)
   /SH416AD  (9)
   /SH416AX  (9)
- 
+
 ### VALUE LABELS
    HV003   
       0 "Incomplete interview"
@@ -1111,7 +1125,7 @@ And Summary of the 2010 Survey here: [https://www.dhsprogram.com/methodology/sur
       3 "Yao"
       4 "English"
       6 "Other"
-  /SHLRESP 
+  /SHLRESP
       1 "Chichewa"
       2 "Tumbuka"
       3 "Yao"
@@ -1127,7 +1141,7 @@ And Summary of the 2010 Survey here: [https://www.dhsprogram.com/methodology/sur
       0 "Not at all"
       1 "Sometimes"
       2 "All the time"
-  /SHLRESO 
+  /SHLRESO
       5 "Mang'anja"
       6 "Lomwe"
       7 "Ndali"
@@ -1138,7 +1152,7 @@ And Summary of the 2010 Survey here: [https://www.dhsprogram.com/methodology/sur
      12 "Sena"
      13 "Nyanja"
      14 "Sukwa"
-  /SH111A2 
+  /SH111A2
       0 "No"
       1 "Yes"
   /SH111B  
@@ -1184,13 +1198,13 @@ And Summary of the 2010 Survey here: [https://www.dhsprogram.com/methodology/sur
   /SH139B  
       0 "Water not available"
       1 "Water available"
-  /SH139CA 
+  /SH139CA
       0 "No"
       1 "Soap or detergent (bar, liquid, powder or paste)"
-  /SH139CB 
+  /SH139CB
       0 "No"
       1 "Ash mud sand"
-  /SH139CY 
+  /SH139CY
       0 "No"
       1 "None"
   /SH140   
@@ -1940,18 +1954,18 @@ And Summary of the 2010 Survey here: [https://www.dhsprogram.com/methodology/sur
       0 "No"
       1 "Yes"
       8 "DK"
-  /SH416AA 
+  /SH416AA
       0 "No"
       1 "Money for school fees"
-  /SH416AB 
+  /SH416AB
       0 "No"
       1 "Other money"
-  /SH416AC 
+  /SH416AC
       0 "No"
       1 "Uniform"
-  /SH416AD 
+  /SH416AD
       0 "No"
       1 "Notebooks"
-  /SH416AX 
+  /SH416AX
       0 "No"
       1 "Other"
