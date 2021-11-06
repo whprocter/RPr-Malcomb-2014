@@ -13,7 +13,8 @@ output: html_document
 ### [https://gis4dev.github.io/](https://gis4dev.github.io/)
 
 ```{r libraries, include = F}
-packages = c("downloader", "haven", "dplyr", "sf", "readr", "ggplot2", "here", "s2")
+packages = c("downloader", "haven", "dplyr", "rhds", "sf", "readr", "ggplot2", 
+             "here", "s2")
 setdiff(packages, rownames(installed.packages()))
 install.packages(setdiff(packages, rownames(installed.packages())), quietly=TRUE)
 
@@ -21,12 +22,13 @@ library(downloader)
 library(haven)
 library(sf)
 library(dplyr)
+library(rdhs)
 library(here)
 library(readr)
 library(ggplot2)
 library(s2)
 
-sf_use_s2(T)
+sf_use_s2(TRUE)
 ```
 
 ```{r formatting package versions}
@@ -142,11 +144,16 @@ ta_v_check
 
 st_write(ta_v, here("data", "derived", "public", "ta_v.gpkg"), append=FALSE) 
 ```
-Once ta_v.gpkg is exported, this geopackage was opened in QGIS. These geometries are what you want to use for analysis, as they exclude nature features (forests, reserves, and lakes) and error features (nature features that included household points, thus receiving a capacity score when they shouldn't have). 
+Once `ta_v.gpkg` is exported, this geopackage was opened in QGIS. These geometries are what you want to use for analysis, as they exclude nature features (forests, reserves, and lakes) and error features (nature features that included household points, thus receiving a capacity score when they shouldn't have). 
 
-These error features were found by pulling in the MWI_adm shapefile (TAs) and MWGE62FL shapefile (DHS Household Survey Cluster points), then using the count points in polygon tool to find which traditional authorities did and didn't contain household points. The workflow for this troubleshooting process can be found [here](https://github.com/daptx/RP-Malcomb/issues/6). Ultimately, this source of error was the reason behind this first notebook, to fix the traditional authority geometries before attempting to replicate the original results of Malcomb et al (2014).
+These error features were found by pulling in the MWI_adm shapefile (TAs) and MWGE62FL shapefile (DHS Household Survey Cluster points), then using the count points in polygon tool to find which traditional authorities did and did not contain household points.
+The workflow for this troubleshooting process can be found [here](https://github.com/daptx/RP-Malcomb/issues/6).
+Ultimately, this source of error was the reason behind this first notebook, to fix the traditional authority geometries before attempting to replicate the original results of Malcomb et al (2014).
 
-With the new traditional authorities vectors (234 features) in QGIS, a georeferenced shapefile of the figure 4 from Malcomb et al (2014), the adaptive capacity map, was converted into a .csv, then joined to the traditional authorities derived from this code by ID_2 (the column feature used to distinguish TAs). The custom prefix gref_ was used. Once created, a field calculator was used to create a 'capacity' column, turning the gref_resilience scores into integers and fixing the naming syntax for the remainder of analysis. In Malcomb et al (2014), capacity and resilience were terms used loosely and interchangably, making it essential to follow one naming schema in this analysis: capacity/capacity scores. After, this final shape file of 234 features and 23 variables (geometry included) was exported as ta_fig4_v.gpkg and is brought in at the start of the RP-Malcomb-jh.Rmb notebook.
+With the new traditional authorities vectors (234 features) in QGIS, a georeferenced shapefile of the figure 4 from Malcomb et al (2014), the adaptive capacity map, was converted into a .csv, then joined to the traditional authorities derived from this code by ID_2 (the column feature used to distinguish TAs).
+The custom prefix `gref_` was used. Once created, a field calculator was used to create a 'capacity' column, turning the `gref_resilience` scores into integers and fixing the naming syntax for the remainder of analysis.
+In Malcomb et al (2014), capacity and resilience were terms used loosely and interchangeably, making it essential to follow one naming schema in this analysis: `adaptive capacity` or `adaptive capacity scores`.
+After, this final polygon layer of 234 features and 23 variables (geometry included) was exported as `ta_fig4_v.gpkg` and is brought in at the start of the `02-Analysis.Rmb`  notebook.
 
 The original figures from Malcomb et al (2014) were 'cloned' using the follow steps: 
 1. Save a digital map image
@@ -157,6 +164,7 @@ The original figures from Malcomb et al (2014) were 'cloned' using the follow st
 More information on georeferencing can be found [here](https://gis4dev.github.io/lessons/2021-04-19-georeference.html)
 
 ```{r dhs data access configuration}
+# the following prompts could be changed to popups
 email = readline(prompt="Enter DHS Login Email: ")
 project = readline(prompt="Enter Project Name: ")
 rdhs_json = here("data","raw","private","rdhs.json")
@@ -177,7 +185,7 @@ set_rdhs_config(
 
 ```{r downloading dhs data}
 dhs_downloads = get_datasets(
-  c("MWHR61SV", "MWGE62FL", "MWHR4ESV", "MWGE4BFL"),
+  c("MWHR61SV", "MWGE62FL"),
   all_lower = FALSE,
   download_option = "rds"
 )

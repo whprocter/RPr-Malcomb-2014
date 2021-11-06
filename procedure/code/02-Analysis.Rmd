@@ -13,10 +13,12 @@ output: html_document
 ### [https://gis4dev.github.io/](https://gis4dev.github.io/)
 
 
-```{r libraries, include = F}
-packages = c("downloader", "haven", "stars", "dplyr", "sf", "rdhs", "classInt", "readr", "ggplot2", "here", "s2", "pastecs", "cartography")
-setdiff(packages, rownames(installed.packages()))
-install.packages(setdiff(packages, rownames(installed.packages())), quietly=TRUE)
+```{r install packages and load libraries, include = F}
+packages = c("downloader", "haven", "stars", "dplyr", "sf", "rdhs", "classInt", 
+             "readr", "ggplot2", "here", "s2", "pastecs", "cartography")
+
+install.packages(setdiff(packages, rownames(installed.packages())),
+                 quietly=TRUE)
 
 library(downloader)
 library(haven)
@@ -32,109 +34,75 @@ library(s2)
 library(pastecs)
 library(cartography)
 
-sf_use_s2(T)
+# Use spherical geometries for SF functions
+sf_use_s2(TRUE)
 ```
 
-```{r formatting package versions}
-# list of required packages
-packages = c("here")
-
-# load and install required packages
-package.check <- lapply(
-  packages,
-  FUN = function(x) {
-    if (!require(x, character.only = TRUE)) {
-      install.packages(x, dependencies = TRUE)
-      library(x, character.only = TRUE)
-    }
-  }
-)
-
-# save the R processing environment 
-writeLines(capture.output(sessionInfo()),here("procedure","environment","r_environment.txt"))
-
-# read in R processing environment
-# the data frame package_version provides info on the libraries used for this analysis when previewed in the console
-package_version <- read.delim(here("procedure","environment","r_environment.txt"))
+```{r save R processing environment}
+# save the R processing environment, including date in file name
+if (!file.exists(here("procedure","environment","r_environment.txt"))) {
+  writeLines(capture.output(sessionInfo()),here("procedure","environment","r_environment.txt"))
+} else {
+  writeLines(capture.output(sessionInfo()),here("procedure","environment",paste0("r-environment-",Sys.Date(),".txt",sep="")))
+}
 ```
 
-```{r create values to access private and public raw data more efficiently}
-private_r = here("data","raw","private")
-public_r = here("data","raw","public")
+```{r define raw data paths}
+private_r <- here("data","raw","private")
+public_r <- here("data","raw","public")
 ```
 
-```{r reading all data used for analysis, message=FALSE}
-ta_gref = read_sf(here("data", "derived", "public", "ta_fig4_v.gpkg"), layer = "ta_fig4_v") %>% 
+```{r load data for analysis, message=FALSE}
+ta_gref <- read_sf(here("data", "derived", "public", "ta_fig4_v.gpkg"), layer = "ta_fig4_v") %>% 
   st_make_valid()
 # This read may need to be changed to match the final output of 01-preanalysis!
 # which was: st_write(ta_v, here("data", "derived", "public", "ta_v.gpkg"), append=FALSE)
 
-dr = read_stars(here(public_r, "dr1010ipeykx.tif")) %>% 
+dr <- read_stars(here(public_r, "dr1010ipeykx.tif")) %>% 
   st_set_crs(4326) 
 
-fl = read_stars(here(public_r,  "fl1010irmt.tif")) %>% 
+fl <- read_stars(here(public_r,  "fl1010irmt.tif")) %>% 
   st_set_crs(4326) 
 
-lhz_v = read_sf(here(public_r, "MW_LHZ_2009.shp")) %>% 
+lhz_v <- read_sf(here(public_r, "MW_LHZ_2009.shp")) %>% 
   st_make_valid()
 
-lhz_t = read.csv(here(public_r, "lhz.csv"))
+lhz_t <- read.csv(here(public_r, "lhz.csv"))
 
-ta = read_sf(here(public_r, "MWI_adm2.shp")) %>%
+ta <- read_sf(here(public_r, "MWI_adm2.shp")) %>%
   st_make_valid() 
 
-lakes = st_as_sf(read_csv(here(public_r, "major_lakes.csv"))[, c("name", "the_geom")],
-                 wkt = "the_geom",
-                 crs = 4326) %>%
+# it may be possible to simplify this -- just dissolving lakes into single
+# multi-part feature
+lakes <- read_csv(here(public_r, "major_lakes.csv")) %>% 
+  select("name", "the_geom") %>% 
+  st_as_sf(wkt = "the_geom", crs = 4326) %>%
   st_geometry %>%
   st_union %>%
   st_sf %>%
   mutate(EA = "Major Lakes of Malawi")
 ```
 
-```{r reading 2010 adaptive capacity data}
-dhsclusters_2010 = readRDS(here(private_r, "datasets", "MWGE62FL.rds")) %>%
-  as("sf") %>% 
-  st_transform(3395) %>% 
-  # joining id for traditional authorities and livelihood zones to dhs clusters
-  st_join(st_transform(select(ta_gref, ID_2),3395)) %>% 
-  st_join(st_transform(select(lhz_v, FNID),3395)) %>% 
-  rename(ta_id = ID_2,
-         lhz_id = FNID,
-         urban_rural = URBAN_RURA)
+```{r load adaptive capacity data}
+dhsclusters_2010 <- readRDS(here(private_r, "datasets", "MWGE62FL.rds")) %>%
+  as("sf") # convert to simple features
 
-dhshh_2010 = readRDS(here(private_r, "datasets", "MWHR61SV.rds")) %>% zap_labels()
+dhshh_2010 = readRDS(here(private_r, "datasets", "MWHR61SV.rds")) %>%
+  zap_labels()
 ```
 
-```{r households to remove}
-rmv_2010 = dhshh_2010 %>%  
-  filter(
-  HV246A == 98 |
-    HV246A == 99 |
-    HV246D == 98 |
-    HV246D == 99 |
-    HV246E == 98 |
-    HV246E == 99 |
-    HV246G == 98 |
-    HV246G == 99 |
-    HV219  == 9 |
-    HV243A == 9 |
-    HV245  == 99 |
-    HV206  == 9 |
-    HV204  == 999 |
-    HV204  == 998 |
-    HV226  == 99 |
-    HV226  == 95 |
-    HV226  == 96 |
-    HV207  ==  9 
-) %>% 
-  pull(HHID)
-```
+```{r join traditional authority and cluster data to households}
+# spatial join traditional authority ID to clusters
+cluster_ta <- dhsclusters_2010 %>% 
+  st_join(ta_gref) %>% 
+  rename(ta_id = ID_2, urban_rural = URBAN_RURA) %>%
+  st_drop_geometry() %>% 
+  select(DHSCLUST, ta_id, urban_rural)
 
-```{r capacity in households 2010}
-hh_capacity_t = dhshh_2010 %>%
-  # joining traditional authority ids and urban_rural column 
-  left_join(st_drop_geometry(select(dhsclusters_2010, DHSCLUST, ta_id, urban_rural)), by = c("HV001" = "DHSCLUST")) %>%
+# join traditional authority and urban/rural data to DHS surveys
+# select variables for adaptive capacity analysis
+dhshh_2010 <- dhshh_2010 %>%
+  left_join(cluster_ta, by = c("HV001" = "DHSCLUST")) %>% 
   select(
     HHID,
     HV001,
@@ -155,40 +123,76 @@ hh_capacity_t = dhshh_2010 %>%
     HV219,
     HV243A,
     HV207
-    #24825 features
-  ) %>%
-  # removing values based on index and where there are NAs 
-  filter(!HHID %in% rmv_2010) %>% 
-  filter(!is.na(ta_id)) %>% 
-  # 23544 features of 19 variables 
-  # removing any surveys where all livestock values were NA
-  filter(!(is.na(HV246A) & is.na(HV246D) & is.na(HV246E)  & is.na(HV246G) )) %>% 
-  # 23543 features of 19 variables 
-  # using rowwise() to find sum of livestock by household --> go through every row of table
-  # and calulate something for each one
-  rowwise %>%
+  )
+
+paste(sum(is.na(cluster_ta$ta_id)),
+      "clusters did not join to a Traditional Authority, affecting",
+      sum(is.na(dhshh_2010$ta_id)),
+      "household surveys")
+```
+
+```{r households to remove}
+# create list of households with missing data for adaptive capacity indicators
+rmv_2010 <- dhshh_2010 %>%  
+  filter(
+    HV246A == 98 |
+    HV246A == 99 |
+    HV246D == 98 |
+    HV246D == 99 |
+    HV246E == 98 |
+    HV246E == 99 |
+    HV246G == 98 |
+    HV246G == 99 |
+    HV219  == 9 |
+    HV243A == 9 |
+    HV245  == 99 |
+    HV206  == 9 |
+    HV204  == 999 |
+    HV204  == 998 |
+    HV226  == 99 |
+    HV226  == 95 |
+    HV226  == 96 |
+    HV207  == 9 |
+    (is.na(HV246A) & is.na(HV246D) & is.na(HV246E) & is.na(HV246G))
+  ) 
+paste(nrow(rmv_2010), "household surveys with missing attribute data")
+```
+
+```{r remove missing data}
+paste(nrow(dhshh_2010), "household surveys")
+# count missing ta_id's
+
+hh_capacity_t <- dhshh_2010 %>%
+  anti_join(rmv_2010, by = "HHID") %>% # 24638 records
+  filter(!is.na(ta_id)) # 23543 records
+
+paste(nrow(hh_capacity_t), "household surveys with complete data")
+paste(nrow(dhshh_2010)-nrow(hh_capacity_t), "surveys removed for missing data")
+```
+    
+```{r capacity in households 2010}
+hh_capacity_t <- hh_capacity_t  %>%
+  rowwise() %>%
   mutate(hhlivestock = sum(HV246A, HV246D, HV246E, HV246G, na.rm = T)) %>%
-  ungroup %>%
-  # using percent_rank(), those  
-  # in cases where desc() is used, having a greater value before ranked makes a household more vulnerable 
+  ungroup() %>%
   mutate(
     livestock = percent_rank(hhlivestock) * 4,
     sick = percent_rank(desc(HV248)) * 4,
     land = percent_rank(HV245) * 4,
     wealth = percent_rank(HV271) * 4,
     orphans = percent_rank(desc(HV251)) * 4,
-    # changing 996 to 0 as it takes no time to get water on premises
-    # femalehh male = 1, female = 2, run 0 to 1.128 is the binary
-    HV204 = ifelse(HV204 == 996, 0, HV204), #996 means they have source of water in proximity to home
+    HV204 = ifelse(HV204 == 996, 0, HV204), # change 996 (water on premises) to 0
     water = percent_rank(desc(HV204)) * 4,
     electricity = percent_rank(HV206) * 4,
     cooking = percent_rank(desc(HV226)) * 4,
-    femalehh = percent_rank(desc(HV219)) * 4,
+    femalehh = percent_rank(desc(HV219)) * 4, # male = 1 and female = 2
     cellphone = percent_rank(desc(HV243A)) * 4,
     radio = percent_rank(HV207) * 4,
     urbanruralscore = ifelse(urban_rural == "U", 4, 0)
-    # percent_rank sets values 0 to 1, then * 4 puts everything on a 0-4 scale
   ) 
+  # percent_rank sets values 0 to 1, then * 4 puts everything on a 0-4 scale
+  # default is ascending order, with lower values being more vulnerable
+  # desc() option inverts order, with higher values being more vulnerable
 ```
 
 ```{r capacity for traditional authorities 2010 at the household level}
