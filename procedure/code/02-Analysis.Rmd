@@ -4,13 +4,16 @@ output: html_document
 
 # Reproduction of Malcomb et al (2014)
 
-#### Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. Applied Geography 48:17-30.
+Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014.
+Vulnerability modeling for sub-Saharan Africa: 
+An operationalized approach in Malawi. *Applied Geography* 48:17-30.
+DOI:[10.1016/j.apgeog.2014.01.004]([https://doi.org/10.1016/j.apgeog.2014.01.004)
 
-#### [https://doi.org/10.1016/j.apgeog.2014.01.004]([https://doi.org/10.1016/j.apgeog.2014.01.004)
+### Reproduction Authors
 
-### Authors: Kufre Udoh, Drew An-Pham, Joseph Holler, and Middlebury College Fall 2019 + Spring 2021 Geography 323 Class
-
-### [https://gis4dev.github.io/](https://gis4dev.github.io/)
+Kufre Udoh, Drew An-Pham, Joseph Holler, and 
+Middlebury College Geography 323 Classes (Fall 2019, Spring 2021, Fall 2021)
+[https://gis4dev.github.io/](https://gis4dev.github.io/)
 
 
 ```{r install packages and load libraries, include = F}
@@ -40,10 +43,16 @@ sf_use_s2(TRUE)
 
 ```{r save R processing environment}
 # save the R processing environment, including date in file name
-if (!file.exists(here("procedure","environment","r_environment.txt"))) {
-  writeLines(capture.output(sessionInfo()),here("procedure","environment","r_environment.txt"))
+env <- here("procedure", "environment")
+if (!file.exists(here(env, "r_environment.txt"))) {
+  writeLines(
+    capture.output(sessionInfo()), here(env, "r_environment.txt")
+  )
 } else {
-  writeLines(capture.output(sessionInfo()),here("procedure","environment",paste0("r-environment-",Sys.Date(),".txt",sep="")))
+  writeLines(
+    capture.output(sessionInfo()),
+    here(env, paste0("r-environment-", Sys.Date(), ".txt"))
+  )
 }
 ```
 
@@ -240,8 +249,6 @@ paste(nrow(hh_capacity_t), "household surveys with complete adaptive capacity")
 hh_capacity_stats <- stat.desc(hh_capacity_t[,21:33]) %>%
   mutate_if(is.numeric, round, digits=1)
 hh_capacity_stats
-paste(nrow(hh_capacity_stats),
-      "traditional authorities with adaptive capacity data")
 ```
 
 ```{r aggregate adaptive capacity to traditional authorities}
@@ -254,6 +261,8 @@ ta_capacity_t <- hh_capacity_t %>%
     capacity_sd = sd(capacity)
   )
 ta_capacity_t
+paste(nrow(ta_capacity_t),
+      "traditional authorities with adaptive capacity data")
 ```
 
 ```{r joining 2010 capacity to ta and creating breaks for visualization}
@@ -286,7 +295,12 @@ ta_v = mutate(ta_v, capacity_2010_brks = case_when(
 ta_null_cap <- ta_v[is.na(ta_v$capacity_2010),]
 #20 features
 
-st_write(ta_null_cap, here("data", "derived", "public", "ta_null_capacity.shp"), append=FALSE)
+st_write(
+  ta_null_cap,
+  here("data", "derived", "public", "ta_null_capacity.shp"), 
+  append = FALSE,
+  quiet = TRUE
+)
 ```
 
 ```{r saving adaptive capacity scores}
@@ -297,10 +311,12 @@ save(
 ```
 
 ```{r check final ta_v output before mapping}
+# this should be classified with natural breaks, similar to the publication
+# adjust x axis labelling
 ta_v_check <- ggplot() + 
   geom_sf(data = ta_v, aes(fill = capacity_2010), size = .1, color = "grey98") + 
   scale_fill_continuous(
-    name = "Adaptive Capacity Scores", 
+    name = "Adaptive\nCapacity\nScores", 
     low="lemonchiffon1", 
     high="lightcoral", 
     na.value = "snow3") 
@@ -359,41 +375,49 @@ ta_capacity_v = st_clip(st_transform(filter(ta_v, is.na(capacity_2010) == F), 33
 ta_capacity_r = st_rasterize(ta_capacity_v[, 'capacity_2010'], blank)
 ```
 
-```{R processing + weighting FEWSNet Data}
+Calculate livelihood sensitivity data with FEWSnet livelihood zones according 
+to table 2.
+
+```{R calculate livelihood sensitivity}
 # LHZ Data
 lhz_sensitivity_v  = lhz_v %>%
   inner_join(lhz_t, by = ("LZCODE" = "LZCODE")) %>%
-  # calculate scores for LHZ weighted indicators by metatheme (as seen in Table 2)
   mutate(
-  pctOwnCrop = (sof_crop + sof_livestock) * 100, 
-  pctIncWage = (soc_labour / soc_total) * 100,
-  pctIncCashCrops = (cp_tobacco + cp_sugar + cp_tea + cp_coffee) / soc_total * 100,
-  disasterCoping = (se_firewoord + se_grass	+ se_wildfood + se_charcoal + se_matmaking + se_basket) / soc_total * 100,
+    pctOwnCrop = (sof_crop + sof_livestock) * 100, 
+    pctIncWage = (soc_labour / soc_total) * 100,
+    pctIncCashCrops = (cp_tobacco + cp_sugar + cp_tea + cp_coffee) / soc_total 
+      * 100,
+    pctDisasterCope = (se_firewoord + se_grass	+ se_wildfood + se_charcoal + 
+      se_matmaking + se_basket) / soc_total * 100
   ) %>%
-  # multiply metatheme values by 4 readjust range
   mutate(
-  ownCrop = percent_rank(pctOwnCrop) * 4, # high values means lower sensitivity 
-  wageIncome = percent_rank(pctIncWage) * 4, # high values means lower sensitivity
-  cashCropIncome = percent_rank(desc(pctIncCashCrops)) * 4, #high values mean lower sensitivity (b/c of desc)
-  newDisaster = percent_rank(desc(disasterCoping)) * 4, #high values mean lower sensitivity (b/c of desc)
+    ownCrop = percent_rank(pctOwnCrop) * 4, 
+    # high ownCrop percentages indicate low sensitivity  
+    wageIncome = percent_rank(pctIncWage) * 4, 
+    # high wage percentages indicate low sensitivity
+    cashCropIncome = percent_rank(desc(pctIncCashCrops)) * 4, 
+    # high cash crop percentages indicate high sensitivity (market exposure)
+    disasterCope = percent_rank(desc(pctDisasterCope)) * 4, 
+    # high disaster coping strategy percentages indicate high sensitivity 
   ) %>%
-  rowwise %>%
   mutate(
-    livelihoodSensitivity_new = sum(
-      ownCrop * 6,
-      wageIncome * 6,
-      cashCropIncome * 4,
-      newDisaster * 4) 
-  ) %>% ungroup
-# livelihood sensitivity range is now 23.529 to 56.000
+    sensitivity = (
+      0.06 * ownCrop +
+      0.06 * wageIncome +
+      0.04 * cashCropIncome +
+      0.04 * disasterCope
+      ) * 25
+  ) 
+# livelihood sensitivity range is 5.88 to 14.00
 # making capacity rasters 
 
-lhz_sensitivity_r = st_rasterize(lhz_sensitivity_v[,'livelihoodSensitivity_new'], blank)
+# can we use select() rather than the brackets?
+lhz_sensitivity_r = st_rasterize(lhz_sensitivity_v[,'sensitivity'], blank)
 
 lhz_v_check <- ggplot() + 
   geom_sf(data = lhz_sensitivity_v, 
-          aes(fill = livelihoodSensitivity_new), size = .2, color = "grey4") +
-  scale_fill_continuous(name = "Livelihood Sensitivity Scores", low="lemonchiffon1", high="lightcoral")
+          aes(fill = sensitivity), size = .2, color = "grey98") +
+  scale_fill_continuous(name = "Livelihood\nSensitivity\nScores", low="lemonchiffon1", high="lightcoral")
 lhz_v_check
 ```
 
@@ -437,6 +461,7 @@ lhz_stats
 ```
 
 ```{r descriptive stats for raster inputs}
+# these stats are not formatted usefully 
 fl_stats <- stat.desc(fl)
 dr_stats <- stat.desc(dr)
 fl_stats
@@ -457,7 +482,11 @@ ta_r = st_rasterize(ta_r[1])
 ta_null <- ta_capacity_v[is.na(ta_capacity_v$vuln),]
 #20 features
 
-st_write(ta_null, here("data", "derived", "public", "ta_null.shp"), append=FALSE)
+st_write(
+  ta_null,
+  here("data", "derived", "public", "ta_null.shp"),
+  append = FALSE,
+  quiet = TRUE)
 ```
 
 ```{r misc. map features}
@@ -478,6 +507,16 @@ ea = lhz_v %>%
 ```
 
 ```{r 2010 adaptive capacity map}
+# create map legend, starting with natural breaks intervals created earlier
+map_2010legend <- c("#333333","#666666","#999999","#CCCCCC")  
+names(map_2010legend) <- ta_int 
+map_2010legend <- append(map_2010legend, c(
+    "Missing Data" = "#FFC389",
+    "National Parks and Reserves" = "#D9EABB",
+    "Major Lakes of Malawi" = "lightblue"
+  ))
+
+# create the map
 map_2010 = ggplot() +
   geom_sf(data = ea,
           aes(fill = EA),
@@ -487,21 +526,9 @@ map_2010 = ggplot() +
     aes(fill = capacity_2010_brks),
     color = "white",
     lwd = .2
-  ) + scale_fill_manual(
-    # unique(ta_capacity_v$capacity_2010_brks) allows you to check breaks
-    # map will not load unless breaks are exact
-    values = list(
-      "Missing Data" = "#FFC389",
-      "National Parks and Reserves" = "#D9EABB",
-      "Major Lakes of Malawi" = "lightblue",
-      "7.43 - 9.82" = "#333333",
-      "9.82 - 11.39" = "#666666",
-      "11.39 - 13.6" = "#999999",
-      "13.6 - 16.68" = "#CCCCCC"
-    )
-  ) +
+  ) + scale_fill_manual(values = map_2010legend) +
   scale_x_continuous(breaks = c(33,34,35,36)) +
-  labs(title = "Adaptive Capacity Scores Based on 2010 DHS Surveys in 222 Traditional Authorities") +
+  labs(title = "Adaptive Capacity Scores of\n222 Traditional Authorities in 2010") +
   theme_minimal() +
   theme(legend.title = element_blank())
 
@@ -509,8 +536,8 @@ map_2010
 ```
 
 ```{r find break & limit values for vulnerability map}
-vuln_max <- max(ta_r[[1]],na.rm = TRUE)
-vuln_min <- min(ta_r[[1]],na.rm = TRUE)
+vuln_max <- max(final[[1]],na.rm = TRUE)
+vuln_min <- min(final[[1]],na.rm = TRUE)
 ``` 
 
 ```{r vulnerability map}
@@ -527,7 +554,7 @@ vuln_map = ggplot() +
   geom_sf(data = ea,
           fill = clrs,
           color = NA) +
-  geom_stars(data = ta_r) +
+  geom_stars(data = final) +
   scale_fill_gradient(
     low = "#FFFF75",
     high = "#CF4611",
@@ -593,14 +620,15 @@ rp_fig4 = ta_capacity_v %>% # prepare our reproduction of figure 4 data
   select(c(ID_2,capacity_2010)) %>%  
   # select only the ID_2 and resilience columns
   # note: geometry columns are 'sticky' -- only way to remove is st_drop_geometry()
-  na.omit()  %>%
+  na.omit() %>%
   # remove records with null values
   mutate(rp_ac = case_when(
-  capacity_2010 <= ta_brks[2] ~ 1,
-  capacity_2010 <= ta_brks[3] ~ 2,
-  capacity_2010 <= ta_brks[4] ~ 3,
-  capacity_2010 >  ta_brks[4] ~ 4
-))
+    capacity_2010 <= ta_brks[2] ~ 1,
+    capacity_2010 <= ta_brks[3] ~ 2,
+    capacity_2010 <= ta_brks[4] ~ 3,
+    capacity_2010 >  ta_brks[4] ~ 4
+    )
+  )
 # code the capacity scores as integers, as we see them classified on the map. 
 #ta_brks was the result of a Jenks classification, as noted on Malcomb et al's maps
 
@@ -640,15 +668,17 @@ orfig5rast = orfig5rast %>%
 )  # or is Re-scaled from 0 to 1 with (value - min)/(max - min)
 # it is also inverted, because higher blue values are less red
 
-ta_r = ta_r %>% 
+final = final %>% 
   mutate(rp =
-           (vuln - min(ta_r[[1]], na.rm= TRUE)) /
-           (max(ta_r[[1]], na.rm= TRUE) -
-            min(ta_r[[1]], na.rm= TRUE)
+           (capacity_2010 - min(final[[1]], na.rm= TRUE)) /
+           (max(final[[1]], na.rm= TRUE) -
+            min(final[[1]], na.rm= TRUE)
         )
 )  # rp is Re-scaled from 0 to 1 with (value - min)/(max - min)
 
-fig5comp = c( select(ta_r,"rp"), select(orfig5rast,"or"))
+# FROM HERE, CODE COMPARING REPRODUCTION TO ORIGINAL DOES NOT WORK
+# ROOT OF PROBLEM APPEARS TO BE RASTER RESOLUTION / RESAMPLING
+fig5comp = c( select(final,"rp"), select(orfig5rast,"or"))
 # combine the original (or) fig 5 and reproduced (rp) fig 5
 
 fig5comp = fig5comp %>% mutate( diff = rp - or )
