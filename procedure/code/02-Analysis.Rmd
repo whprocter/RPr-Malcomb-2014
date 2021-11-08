@@ -655,7 +655,7 @@ orfig5vect =
   mutate(bg_mean = bmean + gmean)
 # load original georeferenced figure 5 data
 
-orfig5rast = st_rasterize(orfig5vect["bg_mean"], template=ta_r)
+orfig5rast = st_rasterize(orfig5vect["bg_mean"], template=blank)
 # convert mean of blue and green values into a raster using ta_final as a reference for raster
 # extent, cell size, CRS, etc.
 
