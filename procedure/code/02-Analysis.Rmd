@@ -95,9 +95,8 @@ dhshh_2010 = readRDS(here(private_r, "datasets", "MWHR61SV.rds")) %>%
 # spatial join traditional authority ID to clusters
 cluster_ta <- dhsclusters_2010 %>% 
   st_join(ta_gref) %>% 
-  rename(ta_id = ID_2, urban_rural = URBAN_RURA) %>%
   st_drop_geometry() %>% 
-  select(DHSCLUST, ta_id, urban_rural)
+  select(DHSCLUST, ta_id = ID_2, urban_rural = URBAN_RURA)
 
 # join traditional authority and urban/rural data to DHS surveys
 # select variables for adaptive capacity analysis
@@ -132,7 +131,8 @@ paste(sum(is.na(cluster_ta$ta_id)),
 ```
 
 ```{r households to remove}
-# create list of households with missing data for adaptive capacity indicators
+# create list of households with inconclusive data for adaptive capacity
+# that is, the household gave a "do not know" answer to a question
 rmv_2010 <- dhshh_2010 %>%  
   filter(
     HV246A == 98 |
@@ -155,7 +155,7 @@ rmv_2010 <- dhshh_2010 %>%
     HV207  == 9 |
     (is.na(HV246A) & is.na(HV246D) & is.na(HV246E) & is.na(HV246G))
   ) 
-paste(nrow(rmv_2010), "household surveys with missing attribute data")
+paste(nrow(rmv_2010), "household surveys with inconclusive attribute data")
 ```
 
 ```{r remove missing data}
@@ -188,36 +188,32 @@ hh_capacity_t <- hh_capacity_t  %>%
     femalehh = percent_rank(desc(HV219)) * 4, # male = 1 and female = 2
     cellphone = percent_rank(desc(HV243A)) * 4,
     radio = percent_rank(HV207) * 4,
-    urbanruralscore = ifelse(urban_rural == "U", 4, 0)
+    urban_rural = ifelse(urban_rural == "U", 1, 0),
+    urbanruralscore = percent_rank(urban_rural) * 4
   ) 
   # percent_rank sets values 0 to 1, then * 4 puts everything on a 0-4 scale
   # default is ascending order, with lower values being more vulnerable
   # desc() option inverts order, with higher values being more vulnerable
 ```
 
+Calculate household-level adaptive capacity scores based on Table 2 weights.
+
 ```{r capacity for traditional authorities 2010 at the household level}
-hh_capacity_t <- hh_capacity_t %>%
-  # calculating capacity scores based on Table 2 in Malcomb et al (2014)
-  rowwise %>%
-  mutate(
-    capacity = sum(
-      livestock * 0.04,
-      sick * 0.03,
-      land * 0.06,
-      wealth * 0.04,
-      orphans * 0.03,
-      water * 0.04,
-      electricity * 0.03,
-      cooking * 0.02,
-      femalehh * 0.02,
-      cellphone * 0.04,
-      radio * 0.03,
-      urbanruralscore * 0.02),
-      # NAs are not removed here to filter out incomplete surveys later on
-      # multiple by ratio that adds everything to 40% of 5 --> max is going to be 2, 2*20 = 40%
-      # values have possible range of 0 to 1.6, 0.071 to 1.054 when adjusted range of 0-4
-      na.rm = F)
-      # 23543 features of 34 variables 
+hh_capacity_t <- mutate(hh_capacity_t, 
+                        capacity = 
+                        0.04 * livestock +
+                        0.03 * sick +
+                        0.06 * land +
+                        0.04 * wealth +
+                        0.03 * orphans +
+                        0.04 * water +
+                        0.03 * electricity +
+                        0.02 * cooking +
+                        0.02 * femalehh +
+                        0.04 * cellphone +
+                        0.03 * radio +
+                        0.02 * urbanruralscore
+                        )
 ```
 
 ``` {r summary stats for tas at hh level before pullings nas}
@@ -226,28 +222,30 @@ hh_stats <- stat.desc(hh_capacity_t[,21:33]) %>%
 hh_stats
 ```
 
-```{r extract traditional authorities without data}
-hh_null <- hh_capacity_t[is.na(hh_capacity_t$capacity),] 
-
-st_write(hh_null, here("data", "derived", "public", "hh_null.csv"), append=FALSE)
-# 3981 features
+```{r households with incomplete capacity data}
+hh_null <- filter(hh_capacity_t, is.na(capacity))
+paste(nrow(hh_null), "household surveys with null data")
+hh_null_stats <- stat.desc(hh_null[,21:32]) %>%
+  mutate_if(is.numeric, round, digits=1)
+hh_null_stats
 ```
 
-```{r remove nulls}
+```{r remove incomplete households}
 hh_capacity_t <- hh_capacity_t %>%
-filter(!is.na(capacity)) %>% # removing incomplete surveys 
-ungroup
-#19562 features (from the initial 23543 --> removed 3981 NA features)
+filter(!is.na(capacity)) 
+paste(nrow(hh_capacity_t), "household surveys with complete adaptive capacity")
 ```
 
-``` {r summary stats for tas at hh level after pullings nas}
+``` {r summary statistics for household adaptive capacity}
 hh_capacity_stats <- stat.desc(hh_capacity_t[,21:33]) %>%
   mutate_if(is.numeric, round, digits=1)
 hh_capacity_stats
+paste(nrow(hh_capacity_stats),
+      "traditional authorities with adaptive capacity data")
 ```
 
-```{r capacity for traditional authorities 2010; aggregates from household level}
-  ta_capacity_t <- hh_capacity_t %>% 
+```{r aggregate adaptive capacity to traditional authorities}
+ta_capacity_t <- hh_capacity_t %>% 
   group_by(ta_id) %>%
   summarize(
     capacity_avg = mean(capacity),
@@ -255,7 +253,7 @@ hh_capacity_stats
     capacity_max = max(capacity),
     capacity_sd = sd(capacity)
   )
-#214 features
+ta_capacity_t
 ```
 
 ```{r joining 2010 capacity to ta and creating breaks for visualization}
@@ -266,9 +264,10 @@ ta_v = left_join(
   by = c("ID_2" = "ta_id")
 )
 
-# making capacity score resemble malcomb et al's work 
+# indicators ranged 0-4 and were multiplied by weights totaling 0.4
+# yielding maximum theoretical score of 1.6; therefore multiply by 25
+# to achieve a maximum score of 40
 ta_v = mutate(ta_v, capacity_2010 = capacity_2010 * 25)
-# 234 features 
 
 # preparing breaks for mapping using natural jenks method
 ta_brks = filter(ta_v, !is.na(capacity_2010)) %>% {classIntervals(.$capacity_2010, 4, style = "jenks")$brks}
@@ -299,9 +298,12 @@ save(
 
 ```{r check final ta_v output before mapping}
 ta_v_check <- ggplot() + 
-  geom_sf(data = ta_v,
-          aes(fill = capacity_2010), size = .1, color = "grey98") + 
-          scale_fill_continuous(name = "Adaptive Capacity Scores", low="lemonchiffon1", high="lightcoral", na.value = "snow3") 
+  geom_sf(data = ta_v, aes(fill = capacity_2010), size = .1, color = "grey98") + 
+  scale_fill_continuous(
+    name = "Adaptive Capacity Scores", 
+    low="lemonchiffon1", 
+    high="lightcoral", 
+    na.value = "snow3") 
 ta_v_check 
 ```
 
@@ -321,11 +323,12 @@ b = st_bbox(
   st_as_sfc()
 
 # where raster = 1, you have flood visualized
+# alternative resolution: 0.083333
 blank = st_as_stars(st_bbox(b), dx = 0.041667, dy = 0.041667)
 blank[[1]][] = NA
 
 # reprojecting, clipping, and resampling rasters to new extent and cell size
-# use bilinear for drought to average continuous population exposure values (resampling?)
+# use bilinear for drought to average continuous population exposure values
 # (object, destination, logical operator, usable b/c of GDAL)
 dr = st_warp(dr, blank, use_gdal = T, method = "bilinear")
 # use nearest neighbor for flood risk to preserve integer values
