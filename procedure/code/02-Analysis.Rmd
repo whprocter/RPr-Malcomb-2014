@@ -380,7 +380,7 @@ to table 2.
 
 ```{R calculate livelihood sensitivity}
 # LHZ Data
-lhz_sensitivity_v  = lhz_v %>%
+lhz_sensitivity_v <- lhz_v %>%
   inner_join(lhz_t, by = ("LZCODE" = "LZCODE")) %>%
   mutate(
     pctOwnCrop = (sof_crop + sof_livestock) * 100, 
@@ -408,16 +408,26 @@ lhz_sensitivity_v  = lhz_v %>%
       0.04 * disasterCope
       ) * 25
   ) 
-# livelihood sensitivity range is 5.88 to 14.00
+# low sensitivity scores indicate low sensitivity
+# high sensitivity scores indicate high sensitivity
 # making capacity rasters 
 
 # can we use select() rather than the brackets?
 lhz_sensitivity_r = st_rasterize(lhz_sensitivity_v[,'sensitivity'], blank)
 
 lhz_v_check <- ggplot() + 
-  geom_sf(data = lhz_sensitivity_v, 
-          aes(fill = sensitivity), size = .2, color = "grey98") +
-  scale_fill_continuous(name = "Livelihood\nSensitivity\nScores", low="lemonchiffon1", high="lightcoral")
+  geom_sf(
+    data = lhz_sensitivity_v, 
+    aes(fill = sensitivity), 
+    size = .2, 
+    color = "grey98"
+  ) +
+  scale_fill_continuous(
+    name = "Livelihood\nSensitivity\nScores", 
+    low="lemonchiffon1", 
+    high="lightcoral"
+  ) +
+  scale_x_continuous(breaks = c(33, 34, 35, 36))
 lhz_v_check
 ```
 
@@ -427,45 +437,50 @@ lhz_stats <- st_drop_geometry(lhz_sensitivity_v[,14:36]) %>%
   mutate_if(is.numeric, round, digits=1)
 lhz_stats
 ```
+```{r flood exposure}
+# creating mask layer
+mask = ta_capacity_r
+mask[mask > 0] = 1
+mask[mask == 0] = NA
 
-```{r function to calculate vulnerability}
-  # creating mask layer
-  mask = ta_capacity_r
-  mask[mask > 0] = 1
-  mask[mask == 0] = NA
-  
-  # masking flood and drought 
-  #reclassify drought & flood already has classification
-  #we want flood to have 20% weight so we multiply by 5, as is the data has a range of 0-4
-  flood = fl * mask * 5
-  drought = dr * mask
-  
-  # makes a list of quintile break points
-  qt = quantile(drought[[1]], probs = seq(0, 1, 0.2), na.rm = T)
-  
-  # reclassifying drought layer using break points from 0 to 4
-  # 4 * 5 = 20, match 20% weighting of exposition to drought events
-  drought = drought %>%
-    mutate(
-      recoded = case_when(
-        drought[[1]] <= qt[[2]] ~ 0,
-        drought[[1]] <= qt[[3]] ~ 1,
-        drought[[1]] <= qt[[4]] ~ 2,
-        drought[[1]] <= qt[[5]] ~ 3,
-        drought[[1]] > qt[[5]] ~ 4
-      )
-    ) %>% select(recoded) * 5
-  
-  # final output (adding component rasters)
-  final = 100 - (ta_capacity_r + lhz_sensitivity_r + (40 - (drought + flood))) # 100 = highest vulnerability, 0 = lowest vulnerability
+# masking flood and drought 
+# reclassify drought & flood already has classification
+# we want flood to have 20% weight so we multiply by 5, 
+# as is the data has a range of 0-4
+flood <- fl * mask * 5
+
+flood
 ```
 
-```{r descriptive stats for raster inputs}
-# these stats are not formatted usefully 
-fl_stats <- stat.desc(fl)
-dr_stats <- stat.desc(dr)
-fl_stats
-dr_stats
+
+```{r drought exposure}
+drought <- dr * mask
+
+# makes a list of quintile break points
+qt <- quantile(drought[[1]], probs = seq(0, 1, 0.2), na.rm = T)
+
+# reclassifying drought layer using break points from 0 to 4
+# 4 * 5 = 20, match 20% weighting of exposition to drought events
+drought = drought %>%
+  mutate(
+    recoded = case_when(
+      drought[[1]] <= qt[[2]] ~ 0,
+      drought[[1]] <= qt[[3]] ~ 1,
+      drought[[1]] <= qt[[4]] ~ 2,
+      drought[[1]] <= qt[[5]] ~ 3,
+      drought[[1]] > qt[[5]] ~ 4
+    )
+  ) %>% select(recoded) * 5
+
+drought
+```
+
+```{r combined vulnerability}
+# final output (adding component rasters)
+final <- (40 - ta_capacity_r) + lhz_sensitivity_r + drought + flood 
+# 100 = highest vulnerability, 0 = lowest vulnerability
+plot(final)
+final
 ```
 
 ```{r creating final vulnerability layers}
@@ -510,7 +525,7 @@ ea = lhz_v %>%
 # create map legend, starting with natural breaks intervals created earlier
 map_2010legend <- c("#333333","#666666","#999999","#CCCCCC")  
 names(map_2010legend) <- ta_int 
-map_2010legend <- append(map_2010legend, c(
+map_2010legend <- map_2010legend %>% append(c(
     "Missing Data" = "#FFC389",
     "National Parks and Reserves" = "#D9EABB",
     "Major Lakes of Malawi" = "lightblue"
@@ -518,19 +533,21 @@ map_2010legend <- append(map_2010legend, c(
 
 # create the map
 map_2010 = ggplot() +
-  geom_sf(data = ea,
-          aes(fill = EA),
-          color = NA) +
+  geom_sf(data = ea, aes(fill = EA), color = NA) +
   geom_sf(
     data = ta_capacity_v,
     aes(fill = capacity_2010_brks),
     color = "white",
-    lwd = .2
-  ) + scale_fill_manual(values = map_2010legend) +
-  scale_x_continuous(breaks = c(33,34,35,36)) +
-  labs(title = "Adaptive Capacity Scores of\n222 Traditional Authorities in 2010") +
-  theme_minimal() +
-  theme(legend.title = element_blank())
+    lwd = .01
+  ) +
+  scale_fill_manual(values = map_2010legend) +
+  scale_x_continuous(breaks = c(33, 34, 35, 36)) +
+  labs(
+    fill = "Adaptive Capacity Score"
+  ) #+
+  #theme_minimal() +
+ # theme(legend.title = element_blank())
+# is the minimal theme required?
 
 map_2010
 ```
@@ -632,23 +649,23 @@ rp_fig4 = ta_capacity_v %>% # prepare our reproduction of figure 4 data
 # code the capacity scores as integers, as we see them classified on the map. 
 #ta_brks was the result of a Jenks classification, as noted on Malcomb et al's maps
 
-fig4compare = inner_join(rp_fig4,or_fig4,by="ID_2") %>%  
+fig4compare <- inner_join(rp_fig4, or_fig4, by = "ID_2") %>%  
   #inner join on field ID_2 keeps only matching records
-  filter(rp_ac>0 & rp_ac<5 & capacity > 0 & capacity < 5)
+  filter(rp_ac > 0 & rp_ac < 5 & capacity > 0 & capacity < 5)
   # keep only records with valid capacity scores
 
-table(fig4compare$capacity,fig4compare$rp_ac)
+table(fig4compare$capacity, fig4compare$rp_ac)
 # crosstabulation with frequencies
 
-cor.test(fig4compare$capacity,fig4compare$rp_ac,method="spearman")
+cor.test(fig4compare$capacity, fig4compare$rp_ac, method = "spearman")
 # Spearman's Rho correlation test
 
-fig4compare = mutate(fig4compare, difference = rp_ac - capacity) 
+fig4compare <- mutate(fig4compare, difference = rp_ac - capacity) 
 # Calculate difference between the maps so that you can create a difference map
 ```
 In order to compare the raster map produced with figure 5 from Malcomb et al (2014), figure 5 was georeferenced creating a ta_capacity.tif, which was then converted into polygons with the raster pixels to polygons tool. The authors used a color ramp of yellow to red in their raster map, so the best way to extract a linear relationship for comparison as we found was to add the blues and greens together in QGIS via zonal stats. After, the georeferenced TA's with color information were exported as a geopackge: georef_bg.gpkg and read into R for analysis.
 
-```{R Sample Code for Comparing Continuous Raster Maps, warning=FALSE}
+```{r compare vulnerability, warning=FALSE, fig.width=4, fig.height=4}
 orfig5vect = 
   read_sf(here("data", "derived", "public", "georef_bg.gpkg"), 
           layer="georef_bg") %>%
@@ -676,8 +693,6 @@ final = final %>%
         )
 )  # rp is Re-scaled from 0 to 1 with (value - min)/(max - min)
 
-# FROM HERE, CODE COMPARING REPRODUCTION TO ORIGINAL DOES NOT WORK
-# ROOT OF PROBLEM APPEARS TO BE RASTER RESOLUTION / RESAMPLING
 fig5comp = c( select(final,"rp"), select(orfig5rast,"or"))
 # combine the original (or) fig 5 and reproduced (rp) fig 5
 
@@ -688,8 +703,19 @@ fig5comp = fig5comp %>% mutate( diff = rp - or )
 fig5comppts = st_as_sf(fig5comp)
 # convert raster to vector points to simplify plotting and correlation testing
 
-plot(fig5comppts$or, fig5comppts$rp, xlab="Original Study", ylab="Reproduction")
-title("Comparing Vulnerability Scores")
+plot(
+  fig5comppts$or,
+  fig5comppts$rp,
+  xlab = "Original Study",
+  ylab = "Reproduction Study",
+  #asp = 1,
+  xlim = c(0, 1),
+  ylim = c(0, 1),
+  col = rgb(0, 0, 0, 0.2),
+  cex = 0.7
+)
+title("Vulnerability Scores")
+abline(lm(fig5comppts$rp ~ fig5comppts$or))
 # create scatterplot of original results and reproduction results
 
 cor.test(fig5comppts$or, fig5comppts$rp, method="spearman")
@@ -721,7 +747,10 @@ ac_diff_map = ggplot() +
     )
   ) +
   scale_x_continuous(breaks = c(33,34,35,36)) +
-  labs(title = "Fig. 4 Replication Comparison") +
+  labs(
+    title = "Fig. 4 Replication Comparison",
+    subtitle = "Reproduction - Original",
+    fill = "Reproduction - \nOriginal"   ) +
   theme_minimal() +
   theme(legend.title = element_blank())
 
@@ -742,9 +771,9 @@ clrs = mutate(
     EA == "Missing Data" ~ "#999999",
     EA == "National Parks and Reserves" ~ "#D9EABB",
     EA == "Major Lakes of Malawi" ~ "lightblue"
-  
   )
 )$colors
+
 vuln_diff_map = ggplot() +
   geom_sf(data = ea,
           fill = clrs,
@@ -753,17 +782,19 @@ vuln_diff_map = ggplot() +
   scale_fill_gradient2(
     low = "#e9a3c9",
     high = "#beaed4",
-    breaks = c(-range,range),
+    breaks = c(-range,0,range),
     labels = c("Negative Difference", "Positive Difference"),
     na.value = "transparent",
     guide = "colourbar",
     limits = c(-range,range) #you want centered around zero, so make larger # the ends
   ) +
   scale_x_continuous(breaks = c(33,34,35,36)) +
-  labs(title = "Fig. 5 Replication Comparison") +
+  labs(
+    title = "Fig. 5 Replication Comparison",
+    fill = "Reproduction -\nOriginal",
+  ) +
   theme_minimal() +
   theme(
-    legend.title = element_blank(),
     axis.title.x = element_blank(),
     axis.title.y = element_blank()
   )
