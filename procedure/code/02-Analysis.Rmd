@@ -43,17 +43,10 @@ sf_use_s2(TRUE)
 
 ```{r save R processing environment}
 # save the R processing environment, including date in file name
-env <- here("procedure", "environment")
-if (!file.exists(here(env, "r_environment.txt"))) {
-  writeLines(
-    capture.output(sessionInfo()), here(env, "r_environment.txt")
+writeLines(
+  capture.output(sessionInfo()),
+  here("procedure", "environment", paste0("r-environment-", Sys.Date(), ".txt"))
   )
-} else {
-  writeLines(
-    capture.output(sessionInfo()),
-    here(env, paste0("r-environment-", Sys.Date(), ".txt"))
-  )
-}
 ```
 
 ```{r define raw data paths}
