@@ -1,6 +1,6 @@
 # Reproduction and Reanalysis of Malcomb et al 2014 Climate Vulnerability Model of Malawi
 
-This is a reproduction of:
+This study is a reproduction of:
 
 > Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004)
 
@@ -14,19 +14,15 @@ This is a reproduction of:
 - [Drew An-Pham](https://daptx.github.io/)
 - [Peter Kedron](https://sgsup.asu.edu/peter-kedron)
 - [Derrick Burt](https://derrickburt.github.io)
-
-Joseph Holler, Kufre Udoh, Drew An-Pham, Peter Kedron, and Middlebury [GEOG0323](https://gis4dev.github.io) Class of Fall 2019.
+- Middlebury [GEOG0323](https://gis4dev.github.io) Class of Fall 2019.
 
 ## Repository Documents
 
-> Link your reports, manuscripts, presentations, publication DOIs, preregistrations, etc. here. Delete this instruction and unused list items from your final repository. Adjust the file names and paths and add additional items as necessary.
-
-- Preregistration: https://osf.io/my_study
-- Publication: https://doi.org/my_study
+- Preregistration: https://osf.io/mgsr4/
+- Publication: ...
 - Pre-analysis plan: [docs/report/preanalysis.pdf](docs/report/preanalysis.pdf)
 - Study report: [docs/report/report.pdf](docs/report/report.pdf)
 - Manuscript: [docs/manuscript/manuscript.pdf](docs/manuscript/manuscript.pdf)
-- Presentation: [docs/presentation/presentation.pdf](docs/presentation/presentation.pdf)
 
 ## Repository Contents
 
