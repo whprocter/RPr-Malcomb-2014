@@ -1,21 +1,4 @@
 cff-version: 1.2.0
-authors:
-- family-names: "Holler"
-  given-names: "Joseph"
-  orcid: "https://orcid.org/0000-0002-2381-2699"
-- family-names: "Udoh"
-  given-names: "Kufre"
-- family-names: "An-Pham"
-  given-names: "Drew"
-- family-names: "Kedron"
-  given-names: "Peter"
-  orcid: "https://orcid.org/0000-0002-1093-3416"
-title: "Reproduction and Reanalysis of Malcomb et al 2014 Climate Vulnerability Model of Malawi"
-version: 0.1
-doi: 10.17605/OSF.IO/MGSR4
-date-released: 2022-03-12
-url: "https://github.com/HEGSRR/HEGSRR-Template"
-license: BSD 3-Clause
 preferred-citation:
   type: generic
   authors:
@@ -32,4 +15,3 @@ preferred-citation:
   title: "Reproduction and Reanalysis of Malcomb et al 2014 Climate Vulnerability Model of Malawi"
   doi: 10.17605/OSF.IO/MGSR4
   year: 2022
-  url: "https://github.com/HEGSRR/HEGSRR-Template"
