@@ -19,6 +19,7 @@ url: "https://github.com/HEGSRR/HEGSRR-Template"
 license: BSD 3-Clause
 preferred-citation:
   type: generic
+  message: "Please cite this research compendium using the following citation."
   authors:
   - family-names: "Holler"
     given-names: "Joseph"
