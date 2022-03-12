@@ -1,66 +1,38 @@
-# RP-Malcomb
+# Reproduction and Reanalysis of Malcomb et al 2014 Climate Vulnerability Model of Malawi
 
-This is an early draft of a research compendium for a Reproduction study of:
-Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004)
+This is a reproduction of:
 
-Replication authors: Joseph Holler, Kufre Udoh, Peter Kedron, and Middlebury [GEOG0323](https://gis4dev.github.io) Class of Fall 2019.
+> Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004)
 
-As of 4/9/2021, the RP-Malcomb.R script needs all path names to be customized to the new compendium folder structure.
+## Abstract
 
-# Template for Reproducible and Replicable Research
-This repository is based on a template that contains a folder structure, template documents, and suggestions for best practices for conducting reproducible geographic research. The folder structure presented here can be used to:
+> The original study is one of the first sub-national geographic vulnerability models for a developing country, Malawi. A main contribution of the study is to establish a replicable methodology for climate change vulnerability modeling in Africa using readily available datasets. At the outset of a larger project on reproducibility and replicability in the human-environment and geographic sciences, we chose this study to reproduce on account of its stated contributions and straightforward multi-criteria analysis methodology. As a reproduction study, we aimed to independently generate identical results from the original publication. We found an exact reproduction to be impossible due to ambiguities in the narrative methodology and undesirable due to conceptual and methodological uncertainties. We therefore complete a reanalysis of the original study with intentional deviations from the original methodology. We also devise a methodology for digitizing and quantitatively comparing choropleth maps of the original study with the reanalysis study.
 
-1. pre-register, document, and share original research, or
-2. document, organize, and share a reproduction and/or replication of original research.
+## Authors
 
-An overview of the folder structure of this repository is provided below. The `README.md` and `index.csv` files contained in each folder provide details about the structure of that folder and suggestions on its use. The `docs/report/` folder contains templates to facilitate 1) the pre-registration of original research, and 2) report the complete details of attempted reproductions and replications of original research.
+- [Joseph Holler](http://www.middlebury.edu/academics/geog/faculty/node/454160)
+- [Drew An-Pham](https://daptx.github.io/)
+- [Peter Kedron](https://sgsup.asu.edu/peter-kedron)
+- [Derrick Burt](https://derrickburt.github.io)
 
-## Repository Overview
+Joseph Holler, Kufre Udoh, Drew An-Pham, Peter Kedron, and Middlebury [GEOG0323](https://gis4dev.github.io) Class of Fall 2019.
 
-    Reproduction of <Study Name>
-    |- docs/           # study documentation
-    |  +- report/      # reproduction plan, reproduction report
-    |  +- manuscript/  # manuscript components
-    |
-    |- data            # raw data, which are not changed once created
-    |  +- raw/         # raw data, will not be altered
-    |  +- derived/     # derived data, will not be altered once created
-    |  +- scratch/     # temporary files that can be safely deleted or lost
-    |  +- metadata/    # documentation of metadata
-    |
-    |-procedure
-    |  +- code/        # any programmatic code, clearly named and commented
-    |  +- protocols/   # any non-computational protocols
-    |
-    |- results         # all output from workflows and analyses
-    |  +- figures/     # graphs, likely designated for manuscript
-    |  +- maps/        # maps, likely designated for manuscript  
-    |  +- other/       # diagrams, images, and other non-graph graphics
-    |
-    |- readme.md       # the top level description of content
-    |- study.Rmd       # executable Rmarkdown , if applicable
-    |- Makefile        # executable Makefile, if applicable
-    |- study.Rproj     # RStudio project, if applicable
+## Repository Documents
 
-## Reproducible Research Practices
-Every research project is different. This repository is designed to serve as a flexible guide capable of structuring work completed throughout the lifecycle of different types of research project. No matter the project type, a few key suggested practices when using this repository include:
+> Link your reports, manuscripts, presentations, publication DOIs, preregistrations, etc. here. Delete this instruction and unused list items from your final repository. Adjust the file names and paths and add additional items as necessary.
 
-- Keeping original, raw data in the `data/raw` folder. Do not alter that file during data analysis.
-- Keeping data derived from the raw data (e.g. subsets) separate from the raw data in the `data/derived` folder.
-- Keeping Exploratory/experimental outputs in the `data/Scratch` folder. *Files in this folder should be able to be deleted without negatively impacting the project*.  
-- Limiting manual changes to data. *Conduct as much data processing and analysis as possible with code*.
-- Keeping code in simple text files that are human readable.
-- Explicitly tying procedural documents or code together so it is clear how things work together
-- Creating a top-level `Makefile` or Rmarkdown file that documents computational work in executable form.
-- Providing a executable electronic research compendia that shares the entire computational environment
-- Keeping a README in each folder, describing the purpose of the directory and its contents.
-- Maintaining a formal metadata descriptor at the root of the package that describes all the important input and output data files.
+- Preregistration: https://osf.io/my_study
+- Publication: https://doi.org/my_study
+- Pre-analysis plan: [docs/report/preanalysis.pdf](docs/report/preanalysis.pdf)
+- Study report: [docs/report/report.pdf](docs/report/report.pdf)
+- Manuscript: [docs/manuscript/manuscript.pdf](docs/manuscript/manuscript.pdf)
+- Presentation: [docs/presentation/presentation.pdf](docs/presentation/presentation.pdf)
 
-## References
-The structure of this repository closely follows the excellent [rr-init](https://github.com/Reproducible-Science-Curriculum/rr-init) repository, which in turn follows Nobel [(2009)](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000424). We have also incorporated structural ideas from [Gandrud (2015)](http://christophergandrud.github.io/RepResR-RStudio/) and Camerer et al. ([2016](https://osf.io/pfdyw/), [2018](https://osf.io/bzm54/)).  Reference information related to the **Pre-registration Template** and **Replication Report Template** is included in the `/docs` folder.
+## Repository Contents
 
-## Repository Template Citation and License
-This research compendium template is in its testing phase. It will eventually be published to the public with an open-source license at
-https://github.com/HEGSRR/RR-Template
-The compendium is the work of Peter Kedron, Joseph Holler, and Zach Hilgendorf. 
-This draft version of the compendium is provided for private use only: not for distribution.
+The contents of this repository are outlined in three tables:
+- Data: [data/data_metadata.csv](data/data_metadata.csv)
+- Procedures: [procedure/procedure_metadata.csv](procedure/procedure_metadata.csv)
+- Results: [results/results_metadata.csv](results/results_metadata.csv)
+
+The [template_readme.md](template_readme.md) file contains more information on structure and rationale of this research template repository, as well as important references and licenses.
