@@ -56,7 +56,7 @@ The DHS website acknowledges the high potential for inconsistent or incomplete d
 | HV243A | “Has a Mobile Telephone”|
 |HV219 | Sex of Head of Household”|
 |HV226 | “Type of Cooking Fuel” |
-| HV206 |"Has electricty” |
+| HV206 |"Has electricity” |
 |HV204 |“Time to get to Water Source”|
 
 **Variable Transformations**
@@ -156,8 +156,8 @@ For each output from the original study (mainly figure 4 and figure 5), present 
 3.	State whether any hypothesis linked to a planned deviation from the original study was supported. Provide key statistics and related reasoning.
 
 Figures to Include:
-- map of resilience by traditional authority in 2010, analagous to figure 4 of the original study
-- map of vulnerability in Malawi, analagous to figure 5 of the original study
+- map of resilience by traditional authority in 2010, analogous to figure 4 of the original study
+- map of vulnerability in Malawi, analogous to figure 5 of the original study
 - map of difference between your figure 4 and the original figure 4
 - map of difference between your figure 5 and the original figure 5
 

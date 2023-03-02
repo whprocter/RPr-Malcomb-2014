@@ -13,7 +13,7 @@ output: html_document
 ### [https://gis4dev.github.io/](https://gis4dev.github.io/)
 
 ```{r libraries, include = F}
-packages = c("downloader", "haven", "dplyr", "rhds", "sf", "readr", "ggplot2", 
+packages = c("downloader", "haven", "dplyr", "rdhs", "sf", "readr", "ggplot2", 
              "here", "s2")
 setdiff(packages, rownames(installed.packages()))
 install.packages(setdiff(packages, rownames(installed.packages())), quietly=TRUE)
@@ -29,22 +29,6 @@ library(ggplot2)
 library(s2)
 
 sf_use_s2(TRUE)
-```
-
-```{r formatting package versions}
-# list of required packages
-packages = c("here")
-
-# load and install required packages
-package.check <- lapply(
-  packages,
-  FUN = function(x) {
-    if (!require(x, character.only = TRUE)) {
-      install.packages(x, dependencies = TRUE)
-      library(x, character.only = TRUE)
-    }
-  }
-)
 
 # save the R processing environment 
 writeLines(capture.output(sessionInfo()),here("procedure","environment","r_environment.txt"))
@@ -53,6 +37,7 @@ writeLines(capture.output(sessionInfo()),here("procedure","environment","r_envir
 # the data frame package_version provides info on the libraries used for this analysis when previewed in the console
 package_version <- read.delim(here("procedure","environment","r_environment.txt"))
 ```
+
 
 ```{r download data}
 # these values allow you to access private and public raw data more efficiently
