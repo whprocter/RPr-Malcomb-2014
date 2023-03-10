@@ -9,3 +9,8 @@ Rufat et al (2015) found that the monotonicity of vulnerability indicators shoul
 Therefore, the one certainty is that the individual and thematic variable directions are uncertain.
 
 Based on the described methodology of a weighted combination of values ranging from zero to five, a negative score is inexplicable. (referring to household adaptive capacity scores)
+
+Original analysis does not seem to mask out areas with no data for any of the inputs, e.g. missing traditional authorities?
+
+acquire all DHS passwords as dlginput?
+what is the story with all the NULL values in the household survey data?

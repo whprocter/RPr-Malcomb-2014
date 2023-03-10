@@ -11,14 +11,14 @@ DOI:[10.1016/j.apgeog.2014.01.004]([https://doi.org/10.1016/j.apgeog.2014.01.004
 
 ### Reproduction Authors
 
-Kufre Udoh, Drew An-Pham, Joseph Holler, and 
+Joseph Holler, Kufre Udoh, Drew An-Pham, and 
 Middlebury College Geography 323 Classes (Fall 2019, Spring 2021, Fall 2021)
 [https://gis4dev.github.io/](https://gis4dev.github.io/)
 
 
 ```{r install packages and load libraries, include = F}
 packages = c("downloader", "haven", "stars", "dplyr", "sf", "rdhs", "classInt", 
-             "readr", "ggplot2", "here", "s2", "pastecs", "cartography")
+             "readr", "ggplot2", "here", "s2", "pastecs", "cartography", "sp")
 
 install.packages(setdiff(packages, rownames(installed.packages())),
                  quietly=TRUE)
@@ -54,7 +54,7 @@ private_r <- here("data","raw","private")
 public_r <- here("data","raw","public")
 ```
 
-```{r load data for analysis, message=FALSE}
+```{r load data for analysis, message=FALSE, warning=FALSE}
 ta_gref <- read_sf(here("data", "derived", "public", "ta_fig4_v.gpkg"), layer = "ta_fig4_v") %>% 
   st_make_valid()
 # This read may need to be changed to match the final output of 01-preanalysis!
@@ -74,13 +74,10 @@ lhz_t <- read.csv(here(public_r, "lhz.csv"))
 ta <- read_sf(here(public_r, "MWI_adm2.shp")) %>%
   st_make_valid() 
 
-# it may be possible to simplify this -- just dissolving lakes into single
-# multi-part feature
+# Load lakes and dissolve into a single multi-part feature
 lakes <- read_csv(here(public_r, "major_lakes.csv")) %>% 
-  select("name", "the_geom") %>% 
   st_as_sf(wkt = "the_geom", crs = 4326) %>%
-  st_geometry %>%
-  st_union %>%
+  st_union(by_feature = FALSE) %>%  # dissolve
   st_sf %>%
   mutate(EA = "Major Lakes of Malawi")
 ```
@@ -430,17 +427,19 @@ lhz_stats <- st_drop_geometry(lhz_sensitivity_v[,14:36]) %>%
   mutate_if(is.numeric, round, digits=1)
 lhz_stats
 ```
+
 ```{r flood exposure}
 # creating mask layer
-mask = ta_capacity_r
+mask <- ta_capacity_r
 mask[mask > 0] = 1
-mask[mask == 0] = NA
 
 # masking flood and drought 
 # reclassify drought & flood already has classification
 # we want flood to have 20% weight so we multiply by 5, 
 # as is the data has a range of 0-4
-flood <- fl * mask * 5
+flood <- fl
+flood[is.na(ta_capacity_r)] = NA
+flood = flood * 5
 
 flood
 ```
