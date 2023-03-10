@@ -1,36 +1,29 @@
-R version 4.0.4 (2021-02-15)
-Platform: x86_64-apple-darwin17.0 (64-bit)
-Running under: macOS Big Sur 10.16
+R version 4.2.1 (2022-06-23 ucrt)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 19044)
 
 Matrix products: default
-BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
-LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
 
 locale:
-[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+[1] LC_COLLATE=English_United States.utf8  LC_CTYPE=English_United States.utf8    LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                           LC_TIME=English_United States.utf8    
 
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] cartography_3.0.0 pastecs_1.3.21    s2_1.0.6          ggplot2_3.3.3    
- [5] readr_1.4.0       rdhs_0.7.2        classInt_0.4-3    here_1.0.1       
- [9] dplyr_1.0.5       stars_0.5-2       abind_1.4-5       sf_1.0-0         
-[13] haven_2.4.0       downloader_0.4   
+[1] s2_1.1.1       ggplot2_3.3.6  readr_2.1.2    here_1.0.1     rdhs_0.7.6     dplyr_1.0.10   sf_1.0-9       haven_2.5.1   
+[9] downloader_0.4
 
 loaded via a namespace (and not attached):
- [1] storr_1.2.5        tidyselect_1.1.0   xfun_0.22          bslib_0.2.5.1     
- [5] purrr_0.3.4        lattice_0.20-41    colorspace_2.0-0   vctrs_0.3.6       
- [9] generics_0.1.0     htmltools_0.5.1.1  yaml_2.2.1         utf8_1.2.1        
-[13] rlang_0.4.10       e1071_1.7-7        jquerylib_0.1.4    pillar_1.6.0      
-[17] withr_2.4.1        glue_1.4.2         DBI_1.1.1          rappdirs_0.3.3    
-[21] sp_1.4-5           wk_0.4.1           lifecycle_1.0.0    stringr_1.4.0     
-[25] rgeos_0.5-5        munsell_0.5.0      gtable_0.3.0       evaluate_0.14     
-[29] knitr_1.32         forcats_0.5.1      parallel_4.0.4     class_7.3-18      
-[33] fansi_0.4.2        Rcpp_1.0.7         KernSmooth_2.23-18 scales_1.1.1      
-[37] lwgeom_0.2-6       jsonlite_1.7.2     hms_1.0.0          digest_0.6.27     
-[41] stringi_1.5.3      grid_4.0.4         rprojroot_2.0.2    tools_4.0.4       
-[45] magrittr_2.0.1     sass_0.4.0         proxy_0.4-26       tibble_3.1.0      
-[49] crayon_1.4.1       pkgconfig_2.0.3    ellipsis_0.3.1     assertthat_0.2.1  
-[53] rmarkdown_2.7      boot_1.3-26        R6_2.5.0           units_0.7-1       
-[57] compiler_4.0.4    
+ [1] Rcpp_1.0.9         getPass_0.2-2      class_7.3-20       assertthat_0.2.1   rprojroot_2.0.3    digest_0.6.29     
+ [7] utf8_1.2.2         R6_2.5.1           evaluate_0.16      e1071_1.7-12       httr_1.4.4         pillar_1.8.1      
+[13] rlang_1.0.5        curl_4.3.2         rstudioapi_0.14    rmarkdown_2.16     bit_4.0.4          munsell_0.5.0     
+[19] proxy_0.4-27       compiler_4.2.1     xfun_0.33          pkgconfig_2.0.3    qdapRegex_0.7.5    htmltools_0.5.3   
+[25] tidyselect_1.1.2   tibble_3.1.8       fansi_1.0.3        crayon_1.5.1       tzdb_0.3.0         withr_2.5.0       
+[31] brio_1.1.3         wk_0.7.0           rappdirs_0.3.3     grid_4.2.1         jsonlite_1.8.0     gtable_0.3.1      
+[37] lifecycle_1.0.2    DBI_1.1.3          magrittr_2.0.3     storr_1.2.5        units_0.8-0        scales_1.2.1      
+[43] KernSmooth_2.23-20 cli_3.4.0          stringi_1.7.8      vroom_1.5.7        farver_2.1.1       xml2_1.3.3        
+[49] ellipsis_0.3.2     generics_0.1.3     vctrs_0.4.1        tools_4.2.1        forcats_0.5.2      bit64_4.0.5       
+[55] glue_1.6.2         purrr_0.3.4        hms_1.1.2          parallel_4.2.1     fastmap_1.1.0      yaml_2.3.5        
+[61] colorspace_2.0-3   classInt_0.4-8     knitr_1.40        

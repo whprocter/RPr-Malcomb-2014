@@ -14,7 +14,7 @@ output: html_document
 
 ```{r libraries, include = F}
 packages = c("downloader", "haven", "dplyr", "rdhs", "sf", "readr", "ggplot2", 
-             "here", "s2")
+             "here", "s2", "rgdal")
 setdiff(packages, rownames(installed.packages()))
 install.packages(setdiff(packages, rownames(installed.packages())), quietly=TRUE)
 
