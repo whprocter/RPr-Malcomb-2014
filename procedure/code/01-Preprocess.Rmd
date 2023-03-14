@@ -2,171 +2,122 @@
 output: html_document
 ---
 
-# Pre-Anlaysis for Reproduction of Malcomb et al (2014)
+# Data Acquisition for Malcomb et al (2014)
 
-#### Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. Applied Geography 48:17-30.
+Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. Applied Geography 48:17-30. [https://doi.org/10.1016/j.apgeog.2014.01.004](%5Bhttps://doi.org/10.1016/j.apgeog.2014.01.004)
 
-#### [https://doi.org/10.1016/j.apgeog.2014.01.004]([https://doi.org/10.1016/j.apgeog.2014.01.004)
+**Script Authors**: Drew An-Pham & Joseph Holler
 
-### Authors: Drew An-Pham & Joseph Holler
+## Computational Environment
 
-### [https://gis4dev.github.io/](https://gis4dev.github.io/)
+Install and load packages
 
 ```{r libraries, include = F}
-packages = c("downloader", "haven", "dplyr", "rdhs", "sf", "readr", "ggplot2", 
-             "here", "s2", "rgdal")
+packages = c("downloader", "here", "rdhs")
 setdiff(packages, rownames(installed.packages()))
 install.packages(setdiff(packages, rownames(installed.packages())), quietly=TRUE)
 
 library(downloader)
-library(haven)
-library(sf)
-library(dplyr)
-library(rdhs)
 library(here)
-library(readr)
-library(ggplot2)
-library(s2)
-
-sf_use_s2(TRUE)
-
-# save the R processing environment 
-writeLines(capture.output(sessionInfo()),here("procedure","environment","r_environment.txt"))
-
-# read in R the processing environment
-# the data frame package_version provides info on the libraries used for this analysis when previewed in the console
-package_version <- read.delim(here("procedure","environment","r_environment.txt"))
+library(rdhs)
 ```
 
+Set up file paths
 
-```{r download data}
+```{r file paths}
 # these values allow you to access private and public raw data more efficiently
-private_r = here("data","raw","private")
-public_r = here("data","raw","public")
+private_r = here("data", "raw", "private")
+public_r = here("data", "raw", "public")
+scratch = here("data", "scratch")
+```
 
-if (!"traditional_authorities" %in% list.files(public_r)){
+## Download Data
+
+If the traditional authorities data `MWI_adm2.shp` are not already in the `data/raw/public` directory, then download from GADM and unzip.
+
+```{r download traditional authorities}
+if (!"MWI_adm2.shp" %in% list.files(public_r)){
   # Malawi administrative areas from GADM version 2.8 https://gadm.org/download_country_v2.html
-  download("https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip", here("data","scratch", "MWI_adm_shp.zip"))
-  unzip(here("data","scratch", "MWI_adm_shp.zip"), exdir = here("data","raw","public"))
+  download("https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip",
+           here(scratch, "MWI_adm_shp.zip"))
+  unzip(here(scratch, "MWI_adm_shp.zip"), exdir = public_r)
+} else {
+  print("Traditional authorites data already downloaded.")
 }
+```
 
-if (!"livelihood_zones" %in% list.files(public_r)){
+If livelihood zones data `MW_LHZ_2009.shp` are not already in the `data/raw/public` directory, then download livelihood zones from FEWSnet and unzip.
+
+```{r download livelihood zones}
+if (!"MW_LHZ_2009.shp" %in% list.files(public_r)){
   # Malawi livelihood zones from FEWS NET Data Center https://fews.net/fews-data/335
-  download("https://fews.net/data_portal_download/download?data_file_path=http%3A//shapefiles.fews.net.s3.amazonaws.com/LHZ/MW_LHZ_2009.zip", here("data","scratch","MW_LHZ_2009.zip"))
-  unzip(here("data","scratch","MW_LHZ_2009.zip"), exdir = here("data","raw","public"))
+  download("https://fews.net/data_portal_download/download?data_file_path=http%3A//shapefiles.fews.net.s3.amazonaws.com/LHZ/MW_LHZ_2009.zip",            here(scratch,"MW_LHZ_2009.zip"))
+  unzip(here(scratch, "MW_LHZ_2009.zip"), exdir = public_r)
+} else {
+  print("Livelihood zones data already downloaded.")
 }
+```
 
+### Lakes
+
+If major lakes data `major_lakes.csv` are not already in the `data/raw/public` directory, then download major lakes from MASDAP and unzip.
+
+```{r download lakes}
 if (!"major_lakes.csv" %in% list.files(public_r)) {
   # major lakes in malawi: http://www.masdap.mw/
   download(
     "http://www.masdap.mw/geoserver/ows?outputFormat=csv&service=WFS&srs=EPSG%3A4326&request=GetFeature&typename=geonode%3Amajor_lakes&version=1.0.0",
-    here("data","raw","public","major_lakes.csv")
+    here(public_r, "major_lakes.csv")
   )
+} else {
+  print("Lakes data already downloaded.")
 }
 ```
 
-```{r load data for pre-analysis, message=FALSE}
-ta = read_sf(here(public_r, "MWI_adm2.shp")) %>%
-  st_make_valid() 
+### Flood and Drought Exposure
 
-lhz_v = read_sf(here(public_r, "MW_LHZ_2009.shp")) %>% st_make_valid()
+The UNEP Global Risk Data Platform used for this research is no longer available online. The data is provided with the research compendium.
 
-lakes = st_as_sf(read_csv(here(public_r, "major_lakes.csv"))[, c("name", "the_geom")],
-                 wkt = "the_geom",
-                 crs = 4326) %>%
-  st_geometry %>%
-  st_union %>%
-  st_sf %>%
-  mutate(EA = "Major Lakes of Malawi")
-```
+### Demographic and Health Survey (DHS)
 
-```{r preprocess traditional authorities, warning=FALSE}
-ta_nature <- subset(ta, ENGTYPE_2 == 'Water body' | ENGTYPE_2 == 'National Park' | ENGTYPE_2 == 'Reserve') %>%
-  filter(ID_2 != 162) %>% 
-  filter(ID_2 != 224)
-#25 features
+#### Access
 
-ta_populated <- subset(ta, ENGTYPE_2 == 'City' | ENGTYPE_2 == 'Headquarter' | ENGTYPE_2 == 'Sub-chief' | ENGTYPE_2 == 'Town' | ENGTYPE_2 == 'Traditional Authority'| ENGTYPE_2 == 'Urban')
-#229 features
+Geographic USAID Demographic and Health Survey (DHS) data requires pre-approved access clearance and login credentials from the DHS Program. You may gain access using the instructions below. Note that the project title and description of study may be altered, and the example title and descriptions were used for this reproduction study.
 
-ta_errors <- ta[c(162, 224), ]
-#2 features
+1.  Go to <https://dhsprogram.com/Data/>
+2.  Create an account, ideally with an education or government e-mail address
+3.  Within the Datasets menu, [Create a new project](https://dhsprogram.com/data/dataset_admin/index.cfm?action=createproject)
+4.  Enter the following information: **Project Title:** Reproducing a Vulnerability Model of Malawi **Description of Study:** The purpose of this study is to reproduce the methods of a published research article: Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. Applied Geography 48:17--30. [DOI:[10.1016/j.apgeog.2014.01.004](DOI:%5B10.1016/j.apgeog.2014.01.004){.uri}](<http://dx.doi.org/10.1016/j.apgeog.2014.01.004>){.uri}. The authors of this paper used geocoded DHS surveys for Malawi in 2004 and 2010, in combination with FEWSnet livelihood data and UNEP flood and drought risk data. Following the author's methodology, we plan to download the data using the rdhs package for R and aggregate the data at Malawi's 2nd administrative level: districts. We will be working with a GitHub repository that stores the raw data locally in a directory ignored by the .gitignore file, and only moves the data into a shared and version-controlled directory once it has been aggregated to the District level. This will ensure that the privacy of survey respondents and requirements of data partners are protected, because all of the data will be aggregated into district polygons, as already shown and published in Malcomb et al (2014).
+5.  Choose Region: Sub-Saharan Africa
+6.  Click **Show GPS Datasets** at the top-left of the country tables
+7.  Check **Survey** and **GPS** data for **Malawi**
+8.  Save selection
+9.  Read and agree to the conditions of use for the DHS Program datasets and save these conditions for your metadata records.
+10. Enter a **Justification for using DHS Program Geographic Datasets:** The research aim is to reproduce Malcomb et al (2014) in which GPS Datasets are used to spatially join DHS Survey data to Malawi's Districts for the purpose of sub-national climate change vulnerability mapping. Therefore, the research will not be reproducible without the geographic datasets.
 
-# creates a buffer around the lakes as a mask to clip two 'outlier' features from the Traditional Authorities
-lake_clip <- lakes %>%
-  st_transform(3395) %>%
-  st_buffer(625) %>%
-  st_transform(4326)
+#### Download
 
-ta_errors <- st_difference(ta_errors, lake_clip) %>%
-  st_cast ("POLYGON", warn=FALSE)
-# 18 features
-
-# lhz_selection extracts the two polygon features that the significant ta_errors intersect with
-lhz_selection <- filter(lhz_v, LZCODE == "MW09" | LZCODE == "MW13")
-
-# set the crs the enable st_filter
-lhz_selection <- st_set_crs(lhz_selection, 4326)
-ta_errors <- st_set_crs(ta_errors, 4326)
-
-# extract the 5 ta_errors that will be joined back into the original ta_v 
-ta_errors <- st_filter(ta_errors, lhz_selection, .predicate = st_intersects)
-
-ta_errors <- ta_errors %>%
-  mutate(ID_2 = ID_2 + row_number() * 1000) %>% #gives unique IDs different values
-  select(-c(EA)) %>%
-  st_cast ("MULTIPOLYGON", warn=FALSE)
-# 5 features
-
-ta_errors_check <- ggplot() + geom_sf(data = ta_errors)
-ta_errors_check
-
-# combines ta_populated and ta_errors to produce the final traditional authorities used for analysis
-ta_v <- bind_rows(ta_populated, ta_errors)
-
-ta_v_check <- ggplot() + geom_sf(data = ta_v)
-ta_v_check 
-
-st_write(ta_v, here("data", "derived", "public", "ta_v.gpkg"), append=FALSE) 
-```
-Once `ta_v.gpkg` is exported, this geopackage was opened in QGIS. These geometries are what you want to use for analysis, as they exclude nature features (forests, reserves, and lakes) and error features (nature features that included household points, thus receiving a capacity score when they shouldn't have). 
-
-These error features were found by pulling in the MWI_adm shapefile (TAs) and MWGE62FL shapefile (DHS Household Survey Cluster points), then using the count points in polygon tool to find which traditional authorities did and did not contain household points.
-The workflow for this troubleshooting process can be found [here](https://github.com/daptx/RP-Malcomb/issues/6).
-Ultimately, this source of error was the reason behind this first notebook, to fix the traditional authority geometries before attempting to replicate the original results of Malcomb et al (2014).
-
-With the new traditional authorities vectors (234 features) in QGIS, a georeferenced shapefile of the figure 4 from Malcomb et al (2014), the adaptive capacity map, was converted into a .csv, then joined to the traditional authorities derived from this code by ID_2 (the column feature used to distinguish TAs).
-The custom prefix `gref_` was used. Once created, a field calculator was used to create a 'capacity' column, turning the `gref_resilience` scores into integers and fixing the naming syntax for the remainder of analysis.
-In Malcomb et al (2014), capacity and resilience were terms used loosely and interchangeably, making it essential to follow one naming schema in this analysis: `adaptive capacity` or `adaptive capacity scores`.
-After, this final polygon layer of 234 features and 23 variables (geometry included) was exported as `ta_fig4_v.gpkg` and is brought in at the start of the `02-Analysis.Rmb`  notebook.
-
-The original figures from Malcomb et al (2014) were 'cloned' using the follow steps: 
-1. Save a digital map image
-2. Georeference the map
-3. Create a vector data layer matching the regions in the study (traditional authorities or raster grids, which can be made with raster pixels to polygons)
-4. Extract values from the map with zonal statistics
-5. Classify and visualize the results'
-More information on georeferencing can be found [here](https://gis4dev.github.io/lessons/2021-04-19-georeference.html)
+The following code will prompt you for your DHS Data account login email and project name in the console. These are saved in the scratch folder. The `rdhs` package will then prompt you with a dialogue pop-up for your password.
 
 ```{r dhs data access configuration}
-# the following prompts could be changed to popups
+# ask user for login email and project name
 email = readline(prompt="Enter DHS Login Email: ")
 project = readline(prompt="Enter Project Name: ")
-rdhs_json = here("data","raw","private","rdhs.json")
+rdhs_json = here(scratch, "rdhs.json")
 
 if (!file.exists(rdhs_json)) file.create(rdhs_json)
 
-# the information here was established through DHS project approval. See dhs-metadata.md in the data/metadata folder for details.
 # running this function will prompt you to enter email and project information in the Console and password in a popup
 set_rdhs_config(
   email = email,
   project = project,
   config_path = rdhs_json,
   global = FALSE,
-  cache_path = here("data","raw","private")
+  cache_path = here(private_r)
 )
-
 ```
+
+Download the Malawi 2010 survey data and geographic points.
 
 ```{r downloading dhs data}
 dhs_downloads = get_datasets(
@@ -174,4 +125,6 @@ dhs_downloads = get_datasets(
   all_lower = FALSE,
   download_option = "rds"
 )
+# If data has already been downloaded, this throws an error:
+# 'names' attribute [1] must be the same length as the vector [0]
 ```
