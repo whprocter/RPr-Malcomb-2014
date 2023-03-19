@@ -13,9 +13,9 @@ Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling f
 Install and load packages
 
 ```{r libraries, include = F}
-packages = c("downloader", "here", "rdhs")
+packages <- c("downloader", "here", "rdhs")
 setdiff(packages, rownames(installed.packages()))
-install.packages(setdiff(packages, rownames(installed.packages())), quietly=TRUE)
+install.packages(setdiff(packages, rownames(installed.packages())), quietly = TRUE)
 
 library(downloader)
 library(here)
@@ -26,32 +26,52 @@ Set up file paths
 
 ```{r file paths}
 # these values allow you to access private and public raw data more efficiently
-private_r = here("data", "raw", "private")
-public_r = here("data", "raw", "public")
-scratch = here("data", "scratch")
+private_r <- here("data", "raw", "private")
+public_r <- here("data", "raw", "public")
+scratch <- here("data", "scratch")
 ```
 
 ## Download Data
 
-If the traditional authorities data `MWI_adm2.shp` are not already in the `data/raw/public` directory, then download from GADM and unzip.
+If the traditional authorities data `MWI_adm2.shp` are not already in the 
+`data/raw/private` directory, then download from GADM version 2.8 at
+https://gadm.org/download_country_v2.html and unzip.
+This data must be downloaded because the GADM license does not permit
+redistribution, and no one responded to a request to do so.
 
 ```{r download traditional authorities}
-if (!"MWI_adm2.shp" %in% list.files(public_r)){
-  # Malawi administrative areas from GADM version 2.8 https://gadm.org/download_country_v2.html
-  download("https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip",
-           here(scratch, "MWI_adm_shp.zip"))
-  unzip(here(scratch, "MWI_adm_shp.zip"), exdir = public_r)
+if (!"MWI_adm2.shp" %in% list.files(private_r)) {
+  download(
+    "https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip",
+    here(scratch, "MWI_adm_shp.zip")
+  )
+
+  # list all the second administrative level (traditional authority) files
+  # (code developed before GADM started offering more useful file types)
+  MWI_adm_files <- unzip(here(scratch, "MWI_adm_shp.zip"), list = TRUE)
+  MWI_adm_files <- MWI_adm_files[grep("adm2", MWI_adm_files$Name), "Name"]
+
+  # unzip the second administrative level (traditional authority)
+  unzip(here(scratch, "MWI_adm_shp.zip"),
+    exdir = private_r,
+    files = MWI_adm_files
+  )
+  rm(MWI_adm_files)
 } else {
   print("Traditional authorites data already downloaded.")
 }
 ```
 
-If livelihood zones data `MW_LHZ_2009.shp` are not already in the `data/raw/public` directory, then download livelihood zones from FEWSnet and unzip.
+If livelihood zones data `MW_LHZ_2009.shp` are not already in the 
+`data/raw/public` directory, then download livelihood zones from FEWS NET Data 
+Center at https://fews.net/fews-data/335 and unzip.
 
 ```{r download livelihood zones}
-if (!"MW_LHZ_2009.shp" %in% list.files(public_r)){
-  # Malawi livelihood zones from FEWS NET Data Center https://fews.net/fews-data/335
-  download("https://fews.net/data_portal_download/download?data_file_path=http%3A//shapefiles.fews.net.s3.amazonaws.com/LHZ/MW_LHZ_2009.zip",            here(scratch,"MW_LHZ_2009.zip"))
+if (!"MW_LHZ_2009.shp" %in% list.files(public_r)) {
+  download(
+    "https://fews.net/data_portal_download/download?data_file_path=http%3A//shapefiles.fews.net.s3.amazonaws.com/LHZ/MW_LHZ_2009.zip",
+    here(scratch, "MW_LHZ_2009.zip")
+  )
   unzip(here(scratch, "MW_LHZ_2009.zip"), exdir = public_r)
 } else {
   print("Livelihood zones data already downloaded.")
@@ -101,9 +121,9 @@ The following code will prompt you for your DHS Data account login email and pro
 
 ```{r dhs data access configuration}
 # ask user for login email and project name
-email = readline(prompt="Enter DHS Login Email: ")
-project = readline(prompt="Enter Project Name: ")
-rdhs_json = here(scratch, "rdhs.json")
+email <- readline(prompt = "Enter DHS Login Email: ")
+project <- readline(prompt = "Enter Project Name: ")
+rdhs_json <- here(scratch, "rdhs.json")
 
 if (!file.exists(rdhs_json)) file.create(rdhs_json)
 
@@ -120,7 +140,7 @@ set_rdhs_config(
 Download the Malawi 2010 survey data and geographic points.
 
 ```{r downloading dhs data}
-dhs_downloads = get_datasets(
+dhs_downloads <- get_datasets(
   c("MWHR61SV", "MWGE62FL"),
   all_lower = FALSE,
   download_option = "rds"

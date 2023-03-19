@@ -14,3 +14,6 @@ Original analysis does not seem to mask out areas with no data for any of the in
 
 acquire all DHS passwords as dlginput?
 what is the story with all the NULL values in the household survey data?
+what is the story with the flood layer? check my test with `flw`
+
+preprocess notebook creates `ta_v.gpkg` but then the georeferencing/coding of 2010 adaptive capacity is in `ta_fig4_v.gpkg` and this is what is loaded into the analysis notebook

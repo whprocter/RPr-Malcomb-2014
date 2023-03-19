@@ -5,7 +5,7 @@ Drew An-Pham, Department of Geography, Middlebury College, Middlebury VT 05753
 Kufre Udoh, Department of Geography, Middlebury College, Middlebury VT 05753
 Peter Kedron, School of Geographical Sciences & Urban Planning, Arizona State University, Tempe AZ 85281
 
-Version 1.0 | Created June 25, 2021 | Last Updated June 25, 2021
+Version 1.0 | Created June 25, 2021 | Last Updated March 13, 2023
 
 ## Abstract
 
