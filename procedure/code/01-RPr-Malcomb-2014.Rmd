@@ -1,86 +1,168 @@
 ---
 title: "Reproduction Analysis of Malcomb et al 2014"
-author: "Joseph Holler, Kufre Udoh, Drew An-Pham, GEOG 0323 Classes"
+author: "Joseph Holler, Kufre Udoh, Drew An-Pham, Middlebury Open GIScience Classes"
 date: "`r Sys.Date()`"
 output: pdf_document
-editor_options: 
-  markdown: 
-    wrap: 72
+editor_options:
+  markdown:
+    wrap: sentence
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../../docs/report") })
 ---
 
-# Reproduction of Malcomb et al (2014)
+# Abstract 
 
-Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability
-modeling for sub-Saharan Africa: An operationalized approach in Malawi.
-*Applied Geography* 48:17-30.
-<https://doi.org/10.1016/j.apgeog.2014.01.004>
+Malcomb, Weaver and Krakowka ([2014](https://doi.org/10.1016/j.apgeog.2014.01.004)) published one of the first sub-national geographic climate change vulnerability models for a developing country (1.4).
+The authors intended for the study to be replicable across space (other African countries with similar data available) (7.1), time (when new survey data is published) (4.5 and 7.1), and vulnerability stimuli (7.1).
+The study's social impacts are to address extreme vulnerability to climate change (1.3) and assisting in the allocation and evaluation of foreign aid (1.2).
+The methodology was designed to be "transparent and easily replicable" (2.1) in its use of "locally derived indicators and granular data" (2.1).
+The study was designed to address critiques of vulnerability models aimed at their uncertainty and sensitivity due to problems of scale and spatial aggregation, normative and subjective modelling decisions, and data availability, and challenges in model comparability (2.1).
+The model uses household adaptive capacity data from the United States Agency for International Development (USAID) Demographic and Health Surveys (DHS) (1.4 and 4.1) available in 44 African countries (7.1), livelihood sensitivity data from the USAID / Famine Early Warning Systems Network (FEWSnet) livelihood zones baseline surveys available in 23 African countries (3.6), and global physical exposure data from the United Nations Environment Programme (UNEP) Global Risk Data Platform.
 
-***Reproduction Analysis Authors***: Joseph Holler, Kufre Udoh, and Drew
-An-Pham. Many insights for the reproduction arose in Middlebury College
-[Geography 323 Classes](https://gis4dev.github.io)
+This replication study is motivated by three factors.
+First, there is an urgent need to evaluate the reproducibility of research in human-environment and geographical sciences (HEGS) and to establish protocols and infrastructure for conducting and publishing reproduction/replication studies and reproducible research in HEGS.
+Second, a fully reproducible publication can be more readily replicated in new geographic, temporal, and thematic contexts, and tested for uncertainty due to data constraints and subjective modelling decisions.
+Third, climate change is causing increasingly severe in Africa.
+Improving the reproducibility and replicability of climate vulnerability research will hopefully enhance the potential for research to inform policy and reduce harm caused by climate change.
 
-## Computational environment
+Malcomb et al (2014) produce two models of interest for Malawi. Figure 4, labelled "Malawi Household Resilience", visualizes the average adaptive capacity score of households in each traditional authority. Figure 5, labelled "Malawi Composite Vulnerability Index", visualizes vulnerability scores by locations (cells) in a continuous raster grid.
+In this study, we will attempt to identically reproduce figure 4 (adaptive capacity by traditional authority) and figure 5 (vulnerability grid) using The R Project for Statistical Computing and the same data sources cited in the original publication.
+We will visually compare our resulting reproduction figures with the original figures.
+Comparison will be aided by digitizing and joining the original figure results to the reproduction results for each model, and then calculating any differences between them.
+Differences will be visualized with thematic maps for both models, a confusion matrix for figure 4 (adaptive capacity by traditional authority), and a scatterplot for figure 5 (vulnerability grid).
+An exact reproduction should produce exact replicas of the rank order of traditional authorities by adaptive capacity and grid cells by vulnerability.
+We will test this with the Spearman's Rho Correlation Coefficient, expecting values of 1 for perfect correlation.
 
-Install and load required packages.
+The original study is a descriptive geographic multi-criteria analysis based on local expert opinion, and therefore has no testable hypotheses or effects.
 
-```{r install packages and load libraries, include = F, warning = F}
-packages = c("here", "dplyr", "haven", "stars", "sf", "sp", "rdhs", "classInt", 
-             "readr", "ggplot2", "s2", "pastecs", "cartography", "rgdal", 
-             "tmap", "units", "knitr")
+The replication study data and code will be made available in a GitHub repository to the greatest extent that licensing and file sizes permit.
+The repository will be made public at [github.com/HEGSRR/RPr-Malcomb-2014](https://github.com/HEGSRR/RPr-Malcomb-2014)
 
-# cartography may not be required anymore
+Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004).
 
-install.packages(setdiff(packages, rownames(installed.packages())),
-                 quietly=TRUE)
+### Keywords
 
-library(here)
-library(dplyr)
-library(haven)
-library(sf)
-library(sp)
-library(stars)
-library(classInt)
-library(rdhs)
-library(readr)
-library(ggplot2)
-library(s2)
-library(pastecs)
-library(cartography)
-library(rgdal)
-library(tmap)
-library(units)
-library(knitr)
+Reproducibility, Vulnerability, GIS, Climate Change, Africa
 
-# Use spherical geometries for SF functions
-sf_use_s2(TRUE)
-```
+## Study design
 
-Save text file listing packages and versions.
+The reproduction study design will first implement the original study as closely as possible to reproduce the 2010 Household Resilience map (F4) and Malawi Vulnerability Map (F5).
+Our two confirmatory hypotheses are that we will be able to independently reproduce results for both maps.
 
-```{r save R processing environment}
-# save the R processing environment, including date in file name
+The working hypotheses are therefore:
+
+> H1: There is no perfect positive correlation between Malcomb et al's ranking of traditional authorities by household resilience and our reproduction study's ranking of traditional authorities by household resilience.
+
+> H2: There is no perfect positive between Malcom et al's ranking of locations by climate vulnerability and our reproduction study's ranking of locations by climate vulnerability.
+
+We will evaluate each of these hypotheses using a Spearman's Rho Correlation. A failure to reject these hypotheses would indicate that our results do not exactly match those of the original authors. A positive correlation approaching 1 would indicate a partial reproduction
+
+### Original study design
+
+The original study is **observational** and **descriptive**, with no hypotheses or effect sizes.
+The study is a multi-criteria analysis using geographic information systems (GIS) to implement a hierarchical geographic model of climate change vulnerability model in Malawi.
+
+The **spatial extent** of the study was the country of Malawi.
+The **spatial scale** of the study was the third administrative level (traditional authorities) and a raster grid of unknown spatial resolution.
+The **temporal extent** of the study was explicitly 2004&mdash;2010 (4.5), but the contains secondary data collected earlier (3.6 and F5).
+
+The model themes, indicators, and weights were selected based upon 70 interviews and 11 village focus groups from field trips to Malawi in March and August of 2011 (1.4, 4.2 and A1).
+Themes and indicators were also contextualized in literature (3.3 through 3.7) and adjusted based on redundancy and representativeness across the country (4.3).
+The model and weights were adjusted through "several iterations of the model using alternative weighting schemes" (4.3) to produce a "final product that reflects Malawi's contextual and perceptual vulnerability" (4.3).
+Each theme was constructed of indicators from a single data provider: adaptive capacity is measured with USAID DHS surveys, livelihood sensitivity is measured with FEWSnet/Malawi Vulnerability Assessment Committee (MVAC) livelihood zones baseline data, and physical exposure is measured with UNEP Global Risk Data Platform data (T1 and T2).
+Although the authors emphasize a grounded local evidence-based selection of indicators and weights (2.1, 4.2, 5.1 and 7.1), other evidence in the publication suggests a model design based on a more pragmatic combination of factors including expert local opinion, deductive theory, and the availability and characteristics of data.
+
+The study did not use any **randomization**.
+
+The original study was conducted using STATA&trade; (4.4) and ArcGIS&trade; (4.6, F3 and F4) with unspecified software versions, by 2012 according to creation dates on map figures (F3, F4 and F5).
+
+# Computational environment
+
+The study was originally conducted using ArcGIS and unspecified statistical software.
+This reproduction study uses R, including the rdhs package for DHS survey data, the sf package for vector analysis, the stars package for raster analysis, and the tmap package for cartography.
+
+```{r setup, include = FALSE}
+# list of required packages
+packages = c("downloader", "rdhs", "haven", "readr", "tidyverse", "pastecs",
+             "stars", "sf", "sp", "classInt", 
+             "tmap", "units", "knitr", "rgdal")
+
+# removed s2, pastecs, cartography, rgdal
+# replaced dplyr and ggplot2 with tidyverse
+
+# load and install required packages
+if(!require(groundhog)){
+  install.packages("groundhog")
+  require(groundhog)
+}
+
+if(!require(here)){
+  install.packages("here")
+  require(here)
+}
+
+groundhog.day <- "2023-09-01"
+set.groundhog.folder(here("data", "scratch", "groundhog"))
+
+groundhog.library(packages, groundhog.day)
+# you may need to...
+# install a correct version of R
+# install the rstudioapi package with install.packages("rstudioapi")
+# respond OK in the console to permit groundhog to install packages
+# restart the R session and rerun this code to load installed packages
+# In RStudio, restart r with Session -> Restart Session
+
+# non-groundhog method for installing packages:
+# lapply(packages, library, character.only = TRUE)
+
+# save the R processing environment
 writeLines(
   capture.output(sessionInfo()),
   here("procedure", "environment", paste0("r-environment-", Sys.Date(), ".txt"))
 )
 ```
 
-Set up data paths
 
-```{r define raw data paths}
+```{r file-paths}
+# set up default knitr parameters
+knitr::opts_chunk$set(
+  echo = FALSE,
+  fig.width = 8,
+  fig.path = paste0(here("results", "figures"), "/")
+)
+
+# these values allow you to access private and public raw data more efficiently
 private_r <- here("data", "raw", "private")
 public_r <- here("data", "raw", "public")
 public_d <- here("data", "derived", "public")
+scratch <- here("data", "scratch")
 ```
 
-## Data
+# Data
 
-### Lakes
+## Lakes
 
-Load lakes from a `csv` file and create a single dissolved feature with
-one field `EA` containing the value `Lake`
+Major lakes were downloaded from MASDAP, the Malawi Spatial Data Platform.
 
-```{r load lakes, message = F}
+```{r download-lakes, include = FALSE}
+# if Major lakes do not exist, then download from www.masdap.mw/
+# caution: the MASDAP server is often offline.
+
+if (!"major_lakes.csv" %in% list.files(public_r)) {
+  download(
+    "http://www.masdap.mw/geoserver/ows?outputFormat=csv&service=WFS&srs=EPSG%3A4326&request=GetFeature&typename=geonode%3Amajor_lakes&version=1.0.0",
+    here(public_r, "major_lakes.csv")
+  )
+} else {
+  message("Lakes data already downloaded.")
+}
+```
+
+### Lakes data transformations
+
+Dissolve lakes into a single multi-part feature with one field `EA` containing the value `Lake`.
+
+```{r load-lakes, message = F}
 lakes_v <- st_as_sf(read_csv(here(public_r, "major_lakes.csv"))[, c("name", "the_geom")],
                  wkt = "the_geom",
                  crs = 4326) %>%
@@ -89,32 +171,76 @@ lakes_v <- st_as_sf(read_csv(here(public_r, "major_lakes.csv"))[, c("name", "the
   mutate(EA = "Lake")
 ```
 
-### Livelihood zones
+## Livelihood zones
 
-Load livelihood zone geographic data, fix geometry data, remove national
-parks, and transform to EPSG:4326 (WGS 1984) geographic coordinates.
+Livelihood zones geographic data may be downloaded from the FEWS NET Data Center at https://fews.net/fews-data/335.
 
-Load livelihood zone tabular data and join to geographic data. This
-tabular data is not freely available online. We summarized this table
-from a series of excel workbooks provided by a contact at FEWS NET. Each
-workbook corresponds to a single livelihood zone and contains three
-sheets: `poor`, `middle`, and `rich`. Each sheet describes livelihoods
-for typical households in each of the three classes based on a focus
-group with stakeholders in the livelihood zone. Data in `lhz.csv` is
-based on the `poor` households.
+```{r download-livelihood-zones, eval = FALSE}
+# if livelihood zones geographic data does not exist, the download and unzip it
+if (!"MW_LHZ_2009.shp" %in% list.files(public_r)) {
+  download(
+    "https://fews.net/data_portal_download/download?data_file_path=http%3A//shapefiles.fews.net.s3.amazonaws.com/LHZ/MW_LHZ_2009.zip",
+    here(scratch, "MW_LHZ_2009.zip")
+  )
+  unzip(here(scratch, "MW_LHZ_2009.zip"), exdir = public_r)
+} else {
+  message("Livelihood zones data already downloaded.")
+}
+```
 
-```{r load livelihood zones, fig.height = 2}
+Livelihood zones attribute data was provided by FEWS NET in the form of one three spreadsheets describing typical livelihood profiles for each zone, with one sheet for `poor` households, one for `middle` income households, and one for `rich` households.
+This data was based on focus groups with stakeholders in each livelihood zone.
+The authors have summarized the individual `poor` household spreadsheets into one comprehensive table of variables relevant to the study.
+
+```{r load-livelihood-attributes}
+lhz_t <- read.csv(here(public_r, "lhz.csv"))
+```
+
+### Livelihood zone data transformations
+
+In order to prepare geographic livelihood zone data for analysis, geometry errors are fixed, national parks are removed, and the coordinate reference system is transformed to EPSG:4326 (WGS 1984) geographic coordinates.
+Livelihood zone attribute data is then joined to the geographic data by livelihood zone code `LZCODE`.
+
+```{r load-livelihood-zones}
 lhz_v <- read_sf(here(public_r, "MW_LHZ_2009.shp")) %>% 
   st_make_valid() %>% 
   filter(LZNAMEEN != "National Parks") %>% 
   st_transform(4326)
 
-lhz_t <- read.csv(here(public_r, "lhz.csv"))
 lhz_v <- lhz_v %>% inner_join(lhz_t, by = ("LZCODE" = "LZCODE"))
 rm(lhz_t)
 ```
 
-### Traditional authorities (TAs)
+## Traditional authorities
+
+Traditional authorities (TAs) data can be downloaded from Database of Global Administrative Areas (GADM) version 2.8 at https://gadm.org/download_country_v2.html and unzipped.
+This data must be downloaded directly from GADM.
+While the data license permits free use of data for research purposes and publication, it does not permit redistribution.
+
+```{r download-traditional-authorities, message = FALSE}
+if (!"MWI_adm2.shp" %in% list.files(private_r)) {
+  download(
+    "https://biogeo.ucdavis.edu/data/gadm2.8/shp/MWI_adm_shp.zip",
+    here(scratch, "MWI_adm_shp.zip")
+  )
+
+  # list all the second administrative level (traditional authority) files
+  # (code developed before GADM started offering more useful file types)
+  MWI_adm_files <- unzip(here(scratch, "MWI_adm_shp.zip"), list = TRUE)
+  MWI_adm_files <- MWI_adm_files[grep("adm2", MWI_adm_files$Name), "Name"]
+
+  # unzip the second administrative level (traditional authority)
+  unzip(here(scratch, "MWI_adm_shp.zip"),
+    exdir = private_r,
+    files = MWI_adm_files
+  )
+  rm(MWI_adm_files)
+} else {
+  message("Traditional authorites data already downloaded.")
+}
+```
+
+## Traditional authorities (TAs)
 
 Load traditional authorities (TA) data, fix geometry data, and count
 types of areas.
@@ -123,52 +249,56 @@ types of areas.
 ta_v <- read_sf(here(private_r, "MWI_adm2.shp")) %>% st_make_valid() 
 
 # count types of features in traditional authorities
-ta_v %>% st_drop_geometry() %>% count(ENGTYPE_2) %>% kable()
+ta_v %>% st_drop_geometry() %>% 
+  count(ENGTYPE_2) %>% 
+  kable(col.names = c("Type", "N"), align = "c")
 ```
 
-Interactive map of TAs, Livelihood Zones, and Lakes.
+### Visualize Lakes, Livelihood Zones, and TAs
 
-```{r interactive map of layers, message = F}
+```{r vizualize-input-data, message = F}
 # map results
 tmap_mode("view")
-tmta <- tm_basemap("OpenStreetMap.HOT") +
-  tm_shape(ta_v) + tm_polygons(col = "ENGTYPE_2", alpha = 0.7) + 
-  tm_layout(legend.text.size = 0.5) +
+tmap_options(basemaps = "OpenStreetMap.HOT")
+tmta <- 
+  tm_shape(ta_v) + tm_polygons(col = "ENGTYPE_2", alpha = 0.7, title = "") + 
+  tm_layout(legend.text.size = 0.3) +
+  tm_shape(lakes_v) + tm_fill(col = "blue", alpha = 0.5, title = "Lakes") +
+  tm_view(text.size.variable = TRUE)  +
+  tm_layout(title = "Traditional Authorities")
+tmlhz <-
+  tm_shape(lhz_v) + 
+    tm_fill(col = "MAP_COLORS", id = "LZNAMEEN", alpha = 0.7, legend.show = FALSE) + 
+    tm_borders(col="white") +
   tm_shape(lakes_v) + tm_fill(col = "blue", alpha = 0.5) +
-  tm_view(text.size.variable = TRUE)
-tmlhz <- tm_basemap("OpenStreetMap.HOT") +
-  tm_shape(lhz_v) + tm_fill(col = "red", alpha = 0.5) + tm_borders(col="white") +
-  tm_shape(lakes_v) + tm_fill(col = "blue", alpha = 0.5) 
+  tm_layout(title = "Livelihood Zones")
 tmap_arrange(tmta, tmlhz, ncol=2, nrow=1, sync=TRUE)
 rm("tmta", "tmlhz")
 ```
 
-TA data includes conservation areas (reserves and national parks) and
-water bodies which do not contain populated villages. Extract
-conservation areas (forests and parks) to a new `ta_cons_v` layer.
+### TA data transformations
 
-```{r extract conservation areas}
+TA data includes conservation areas (reserves and national parks) and water bodies which do not contain populated villages.
+Extract conservation areas (forests and parks) to a new `ta_cons_v` layer.
+
+```{r extract-conservation-areas, message = FALSE}
 # extract conservation areas
 ta_cons_v <- ta_v %>% filter(ENGTYPE_2 == "National Park" | 
                                ENGTYPE_2 == "Reserve")
-ta_cons_v %>% select(ENGTYPE_2) %>% plot()
+ta_cons_v %>% qtm(fill = "darkgreen", title = "TA Conservation Areas")
 ```
 
-Several of the Lake Malawi water body features in TA data erroneously
-include populated areas of land. Extract these features as
-`ta_lake_malawi`. Likoma island is incorrectly labelled as Lake Malawi,
-so do not include it as an error for extraction. Remove water bodies
-from TAs.
+Several of the Lake Malawi water body features in TA data erroneously include populated areas of land.
+Extract these features as `ta_lake_malawi`.
+Likoma island is incorrectly labelled as Lake Malawi, so do not include it as an error for extraction.
 
 ```{r extract lake Malawi errors, warning = F}
 # copy Lake Malawi features
 ta_lake_malawi <- ta_v %>% filter(NAME_2 == "Lake Malawi" & NAME_1 != "Likoma")
-ta_lake_malawi %>%
-  select(NAME_2) %>%
-  plot()
+ta_lake_malawi %>% qtm(fill="blue", title = "TA Lake Malawi")
 ```
 
-Remove conservation areas and water bodies from traditional authorities
+Remove conservation areas and water bodies from TAs.
 
 ```{r remove natural areas}
 paste(nrow(ta_v), "features in original traditional authorities")
@@ -181,12 +311,11 @@ ta_v <- ta_v %>%
 paste(nrow(ta_v), "features after removing conservation areas and water bodies")
 ```
 
-Clip the erroneous features with lakes, resulting in many "splinter"
-polygons. Calculate new unique second level ID's as 1000 times the row
-number. Select those over 4 km\^2 with centroids intersecting livelihood
-zones. Visualize the results.
+Find areas of Lake Malawi features that are actually land by buffering lakes by 500 meters and clipping the Lake Malawi TA features.
+Calculate new unique second level ID's as 1000 times the row number.
+Remove splinter polygons by selecting polygons over 4 km\^2 with centroids intersecting livelihood zones.
 
-```{r extract lake Malawi errors, warning = F, message = F}
+```{r extract-lake-Malawi-errors, warning = F, message = F}
 # create a buffer around the lakes to clip out water from error TAs
 lake_buffer <- lakes_v %>%
   st_transform(32736) %>%
@@ -216,50 +345,91 @@ ta_errors <- ta_errors %>% st_buffer(500) %>% st_difference(st_union(ta_v))
   
 # map results
 tmap_mode("view")
-tm_basemap("OpenStreetMap.HOT") +
-  tm_shape(ta_errors) + tm_borders(col="red") + tm_fill(alpha=0.3, col="red")
+tm_shape(ta_errors, title = "TA Land from Lake Malawi Features") + 
+  tm_borders(col="red") + 
+  tm_fill(alpha=0.3, col="red")
 ```
 
-Merge fixed TA errors back into TA data and save results as `ta_v.gpkg`.
-Output a summary of the changes to traditional authorities.
+Merge fixed TA errors back into TA data and save results as derived `ta_v.gpkg`.
 
-```{r merge fixed TA errors, warning = F, message = F}
+```{r merge-fixed-TA-errors, warning = F, message = F}
 
-paste(nrow(ta_errors), "features created by fixing errors on Lake Malawi shore")
+paste(nrow(ta_errors),
+      "features created by fixing errors on Lake Malawi shore") %>% noquote()
 
 # merge fixed TA errors
 ta_v <- ta_v %>% bind_rows(ta_errors)
 
-paste(nrow(ta_v), "features in final corrected traditional authorites")
+paste(nrow(ta_v), "features in final corrected traditional authorites") %>%
+  noquote()
 
-st_write(ta_v, here(public_d, "ta_v.gpkg"), append=FALSE)
+st_write(ta_v, here(public_d, "ta_v.gpkg"), append=FALSE, quiet = TRUE)
 rm(list = c("ta_errors", "ta_lake_malawi"))
 ```
 
-### Drought risk and flood risk
+## Drought risk and flood risk
 
-Load drought risk and flood risk data.
+The UNEP Global Risk Data Platform used for this research is no longer available online.
+The data is provided with the research compendium.
 
-```{r load data for analysis, message=FALSE, warning=FALSE}
+```{r load data for analysis, warning=FALSE}
 dr <- read_stars(here(public_r, "dr1010ipeykx.tif")) %>% 
   st_set_crs(4326) 
 
-fl <- read_stars(here(public_r, "fl1010irmt.tif")) %>% 
+# Note: read_stars failed to find the original flood layer, fl1010irmt.tif
+# But the file could be opened in QGIS 3.26 and saved as flood.tif
+
+fl <- read_stars(here(public_r, "flood.tif")) %>% 
   st_set_crs(4326) 
 ```
 
-### Household DHS data
+## Household DHS data
 
-Load geographic data of household survey clusters. As seen in the graph
-below, some household survey is erroneously placed outside of Malawi.
+Geographic USAID Demographic and Health Survey (DHS) data requires pre-approved access clearance and login credentials from the DHS Program.
+For this reproduction study, the following procedure was used to gain access:
 
-```{r load DHS geographic data, messages=FALSE, warnings=FALSE, fig.height=2}
-dhsclusters <- readRDS(here(private_r, "datasets", "MWGE62FL.rds")) %>%
-  as("sf") # convert to simple features
+1.  Go to <https://dhsprogram.com/Data/>
+2.  Create an account, ideally with an education or government e-mail address
+3.  Within the Datasets menu, [Create a new project](https://dhsprogram.com/data/dataset_admin/index.cfm?action=createproject)
+4.  Enter the following information: **Project Title:** Reproducing a Vulnerability Model of Malawi **Description of Study:** The purpose of this study is to reproduce the methods of a published research article: Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. Applied Geography 48:17--30. <https://doi.org/10.1016/j.apgeog.2014.01.004>. The authors of this paper used geocoded DHS surveys for Malawi in 2004 and 2010, in combination with FEWSnet livelihood data and UNEP flood and drought risk data. Following the author's methodology, we plan to download the data using the rdhs package for R and aggregate the data at Malawi's 2nd administrative level: districts. We will be working with a GitHub repository that stores the raw data locally in a directory ignored by the .gitignore file, and only moves the data into a shared and version-controlled directory once it has been aggregated to the District level. This will ensure that the privacy of survey respondents and requirements of data partners are protected, because all of the data will be aggregated into district polygons, as already shown and published in Malcomb et al (2014).
+5.  Choose Region: Sub-Saharan Africa
+6.  Click **Show GPS Datasets** at the top-left of the country tables
+7.  Check **Survey** and **GPS** data for **Malawi**
+8.  Save selection
+9.  Read and agree to the conditions of use for the DHS Program datasets and save these conditions for your metadata records.
+10. Enter a **Justification for using DHS Program Geographic Datasets:** The research aim is to reproduce Malcomb et al (2014) in which GPS Datasets are used to spatially join DHS Survey data to Malawi's Districts for the purpose of sub-national climate change vulnerability mapping. Therefore, the research will not be reproducible without the geographic datasets.
 
-plot(dhsclusters$geometry)
+The `rdhs` package can be used to download the data, provided a login email and project name via console and password via pop-up dialogue. 
+
+```{r dhs-config, eval = FALSE}
+# ask user for login email and project name
+email <- readline(prompt = "Enter DHS Login Email: ")
+project <- readline(prompt = "Enter Project Name: ")
+rdhs_json <- here(scratch, "rdhs.json")
+
+if (!file.exists(rdhs_json)) file.create(rdhs_json)
+
+# running this function will prompt you to enter email and project information in the Console and password in a popup
+set_rdhs_config(
+  email = email,
+  project = project,
+  config_path = rdhs_json,
+  global = FALSE,
+  cache_path = here(private_r)
+)
 ```
 
+Download the Malawi 2010 survey data and geographic points.
+
+```{r downloading-dhs-data, eval = FALSE}
+dhs_downloads <- get_datasets(
+  c("MWHR61SV", "MWGE62FL"),
+  all_lower = FALSE,
+  download_option = "rds"
+)
+# If data has already been downloaded, this throws an error:
+# 'names' attribute [1] must be the same length as the vector [0]
+```
 Load tabular data of household surveys
 
 ```{r load DHS survey data, messages=FALSE, warnings=FALSE}
@@ -268,31 +438,44 @@ dhshh <- readRDS(here(private_r, "datasets", "MWHR61SV.rds")) %>%
 head(dhshh)
 ```
 
-## Analysis
+Load geographic data of household survey clusters. 
+Some household survey points are erroneously placed at the WGS 1984 coordinate reference system origin (Equator and Prime Meridian).
 
-### Adaptive Capacity
+```{r load-DHS-geog-data, fig.height = 2}
+dhsclusters <- readRDS(here(private_r, "datasets", "MWGE62FL.rds")) %>%
+  as("sf") # convert to simple features
 
-This section requires access to DHS data (see 01-Data-acquisition.Rmd).
-If the data cannot be acquired, do not execute the code blocks until the
-final block of this section, Load TA adaptive capacity.
+dhsclusters %>% qtm()
+```
 
-#### Spatial join households to traditional authorities
+### DHS Data Transformations
 
-Adaptive capacity is ultimately mapped by traditional authority, but the
-data comes from household-level surveys. Surveys are grouped into
-clusters with one geographic point. Therefore, the traditional authority
-to which each survey will be assigned must be spatially joined to the
-cluster point, and then joined by attribute to the household survey. The
-adaptive capacity calculation at the household level also requires
-urban/rural status, which is stored in the cluster.
+In order to simultaneously maximize reproducibility while avoiding direct redistribution of DHS GPS data, we spatially join the GPS data to the Traditional Authority enumeration areas. 
+Adaptive capacity is ultimately mapped by traditional authority, but the data comes from household-level surveys.
+Surveys are grouped into clusters with one geographic point.
+Therefore, the traditional authority to which each survey will be assigned must be spatially joined to the cluster point, and then joined by attribute to the household survey.
+The adaptive capacity calculation at the household level also requires urban/rural status, which is stored in the cluster.
 
-```{r join traditional authority and cluster data to households}
-# spatial join traditional authority ID to clusters
+```{r join-clusters-to-tas}
+# spatial join traditional authority ID to clusters and drop geometry
+# study may be reanalyzed by buffering GPS points to account for 
+# GPS location randomization
+
 cluster_ta <- dhsclusters %>% 
   st_join(ta_v) %>% 
   st_drop_geometry() %>% 
   select(DHSCLUST, ta_id = ID_2, urban_rural = URBAN_RURA)
 
+cluster_ta %>% saveRDS(here(public_d, "cluster_ta.rds"))
+```
+
+```{r load-cluster-ta}
+cluster_ta <- readRDS(here(public_d, "cluster_ta.rds"))
+paste(sum(is.na(cluster_ta$ta_id)),
+  "of", nrow(cluster_ta), 
+  "clusters did not spatially join to a populated traditional authority") %>% noquote()
+```
+```{r join-clusterta-to-surveys}
 # join traditional authority and urban/rural data from DHS clusters to each DHS survey
 # select variables for adaptive capacity analysis
 dhshh <- dhshh %>%
@@ -323,24 +506,19 @@ paste("Starting with",
       nrow(dhsclusters),
       "total clusters and",
       nrow(dhshh),
-      "total household surveys...")
+      "total household surveys...") %>% noquote()
 paste(sum(is.na(cluster_ta$ta_id)),
       "clusters did not join to a Traditional Authority, affecting",
       sum(is.na(dhshh$ta_id)),
-      "household surveys")
+      "household surveys") %>% noquote()
+
+paste(sum(is.na(dhshh$ta_id)), "out of", nrow(dhsclusters), "households missing data due to failed spatial join" )
 ```
+Many household surveys contain inconclusive answers (e.g. "I don't know") or are missing data for survey questions used in the adaptive capacity calculation.
+The livestock variable will be calculated as a sum of four livestock types, so we remove any household with uncertain answers about any of the livestock types and remove households with missing data for all livestock types.
+Households with answers about some livestock types and missing data for others are still included in the data.
 
-#### Missing survey data
-
-List households with inconclusive answers (e.g. "I don't know") or
-missing data for survey questions used in the adaptive capacity
-calculation. Livestock will be calculated as a sum of four livestock
-types, so remove any household with uncertain answers about any of the
-livestock types and remove households with missing data for all
-livestock types. Households with answers about some livestock types and
-missing data for others are still included in the data.
-
-```{r households to remove}
+```{r find-missing-hh-data}
 incomplete <- dhshh %>%  
   filter(
     HV246A >= 98  |
@@ -356,38 +534,38 @@ incomplete <- dhshh %>%
     HV226  >= 95  | is.na(HV226) |
     HV207  == 9   | is.na(HV207)
   ) 
-paste(nrow(incomplete), "household surveys with incomplete attribute data")
+paste(nrow(incomplete), "household surveys with incomplete attribute data") %>% 
+  noquote()
 ```
 
-Remove incomplete household surveys
+We remove incomplete household surveys.
 
-```{r remove missing data}
+```{r remove-missing-hh-data}
 paste(nrow(dhshh), "total household surveys")
 
 hh_capacity_t <- dhshh %>%
   anti_join(incomplete, by = "HHID") %>% 
   filter(!is.na(ta_id))
 
-paste(nrow(hh_capacity_t), "surveys with complete data")
+paste(nrow(hh_capacity_t), "surveys with complete data") %>% noquote()
 paste(nrow(dhshh)-nrow(hh_capacity_t),
-      "surveys with missing attribute data or failed spatial join")
+      "surveys with missing attribute data or failed spatial join") %>% 
+    noquote()
 rm(incomplete)
 ```
 
-#### Rescale adaptive capacity indicators
+# Analysis
 
-Calculate percent rank for each component of household adaptive
-capacity. We had to make many assumptions about calculating individual
-components, e.g. about how to aggregate different forms of livestock,
-and which values to invert such that high numbers correspond to low
-capacity (e.g. number of orphans or sick members of the household).
-Rescaling to a quintile rank as described in the original study is
-unclear, especially considering the number of discrete or even binary
-inputs. We have made a judgement call to do this by calculating percent
-rank and multiplying by 4, producing a theoretical domain of 0 to 4
-similar to that of quintiles.
+## Adaptive Capacity
 
-```{r capacity in households 2010}
+### Rescale adaptive capacity indicators
+
+Calculate percent rank for each component of household adaptive capacity.
+We had to make many assumptions about calculating individual components, e.g. about how to aggregate different forms of livestock, and which values to invert such that high numbers correspond to low capacity (e.g. number of orphans or sick members of the household).
+Rescaling to a quintile rank as described in the original study is unclear, especially considering the number of discrete or even binary inputs.
+We have made a judgement call to do this by calculating percent rank and multiplying by 4, producing a theoretical domain of 0 to 4 similar to that of quintiles.
+
+```{r rescale-capacity-vars}
 hh_capacity_t <- hh_capacity_t  %>%
   # sum livestock, including HH with some missing values
   rowwise() %>%
@@ -417,14 +595,13 @@ hh_capacity_t <- hh_capacity_t  %>%
 head(hh_capacity_t[,20:32])
 ```
 
-#### Household adaptive capacity
+### Household adaptive capacity
 
-Calculate household-level adaptive capacity scores based on Table 2
-weights. The indicators have already been rescaled to a possible domain
-of `0` to `4`, and the weights sum to `0.4`, giving a possible domain of
+Calculate household-level adaptive capacity scores based on original study Table 2 weights.
+The indicators have already been rescaled to a possible domain of `0` to `4`, and the weights sum to `0.4`, giving a possible domain of
 adaptive capacity scores from `0.0` to `1.6`.
 
-```{r capacity at the household level}
+```{r hh-capacity}
 hh_capacity_t <- mutate(hh_capacity_t, capacity = 
                         0.04 * livestock +
                         0.03 * sick +
@@ -443,79 +620,79 @@ hh_capacity_t <- mutate(hh_capacity_t, capacity =
 head(hh_capacity_t[,c(33,21:32)])
 ```
 
-Summary statistics of adaptive capacity and its components at the
-household level.
+Summary statistics of adaptive capacity and its components at the household level.
 
-```{r summary stats for capacity at the household level}
+```{r hh-capacity-summary}
 hh_stats <- stat.desc(hh_capacity_t[,c(33,21:32)]) %>%
   mutate_if(is.numeric, round, digits=2)
-hh_stats[-c(2,7,10:12,14),] # brackets remove unnecessary statistics from output
+hh_stats[-c(1:3, 7, 10:12, 14),] %>% t() %>% kable() # brackets remove unnecessary statistics from output
 rm(hh_stats)
 ```
 
-#### Traditional authority adaptive capacity
+### Traditional authority adaptive capacity
 
 Aggregate household adaptive capacity scores to traditional authorities.
-The original paper found adaptive capacity scores for 203 TAs, of which
-we found 6 TAs were conservation areas, leaving 197 meaningful TA
-scores. We created an additional 9 TAs from errors from three features
-on Lake Malawi, so if the original authors did not notice those errors,
-we could expect scores for 206 TAs.
+The original paper found adaptive capacity scores for 203 TAs, of which we found 6 TAs were conservation areas, leaving 197 meaningful TA scores.
+We created an additional 9 TAs from errors from three features on Lake Malawi, so if the original authors did not notice those errors, we could expect scores for 206 TAs.
 
-```{r aggregate adaptive capacity to traditional authorities}
+```{r aggregate-capacity-to-tas}
 ta_capacity_t <- hh_capacity_t %>% 
   group_by(ta_id) %>%
   summarize(
     capacity_avg = mean(capacity),
     capacity_min = min(capacity),
     capacity_max = max(capacity),
-    capacity_sd = sd(capacity)
+    capacity_sd = sd(capacity),
+    n_hh = n(),
+    livestock_avg = mean(livestock),
+    sick_avg = mean(sick), 
+    land_avg = mean(land), 
+    wealth_avg = mean(wealth), 
+    orphans_avg = mean(orphans), 
+    water_avg = mean(water), 
+    electricity_avg = mean(electricity), 
+    cooking_avg = mean(cooking), 
+    femalehh_avg = mean(femalehh), 
+    cellphone_avg = mean(cellphone), 
+    radio_avg = mean(radio), 
+    urban_avg = mean(urban), 
   )
-head(ta_capacity_t)
-paste(nrow(ta_capacity_t),
-      "TAs with adaptive capacity data")
 ```
 
-Finding scores for 215 traditional authorities is surprising, and most
-likely relates to differences in discovery and treatment of geometry
-errors and missing data. These differences cannot be determined with the
-content of the original manuscript.
-
-#### Save TA adaptive capacity
-
-Now that household adaptive capacity scores have been aggregated to
-traditional authorities, they may be saved to the `data\derived\public`
+Now that household adaptive capacity data has been aggregated, they may be saved to the `data\derived\public`
 directory.
 
-```{r save TA adaptive capacity}
+```{r save-TA-adaptive-capacity}
 ta_capacity_t %>% saveRDS(here(public_d, "adaptive_capacity.RDS"))
 rm(list=c("dhsclusters", "dhshh", "cluster_ta", "hh_capacity_t", "ta_capacity_t"))
 ```
 
-#### Load public adaptive capacity data
+Load aggregated public adaptive capacity data.
 
-In case the raw household data cannot be accessed, the code can
-optionally be run from here by loading adaptive capacity scores
-aggregated to the traditional authority.
-
-```{r load TA adaptive capacity}
+```{r load-TA-adaptive-capacity}
 ta_capacity_t <- readRDS(here(public_d, "adaptive_capacity.RDS"))
 ta_v <- st_read(here(public_d, "ta_v.gpkg" ))
+head(ta_capacity_t)
 ```
 
-#### Mapping adaptive capacity
+Count TAs with adaptive capacity data.
 
-Join adaptive capacity data to geographic TAs and rescale in attempt to
-match original publication. The original publication figure 4 shows
-ranges from 11.48 to 25.77, but after rescaling indicators to domains of
-0 to 4 and multiplying by percentages in table 2 (which sum to 0.4), the
-theoretical domain is only 0 to 1.6. We might suppose that the authors
-had rescaled adaptive capacity to a possible domain of 0 to 40 in
-accordance with the 40% weight of adaptive capacity in the overall
-vulnerability model. Therefore, we may multiply our possible domain of 0
-to 1.6 by 25 to achieve a possible domain of 0 to 40.
+```{r count-tas}
+paste(nrow(ta_capacity_t),
+      "TAs have adaptive capacity data") %>% noquote()
+```
 
-```{r join adaptive capacity, warning = F}
+Finding scores for 215 traditional authorities is surprising, and most likely relates to differences in discovery and treatment of geometry errors and missing data. The reason(s) for these differences cannot be determined with the content of the original manuscript.
+
+### Mapping adaptive capacity
+
+Join adaptive capacity data to geographic TAs and rescale in attempt to match original publication.
+The original publication figure 4 shows ranges from 11.48 to 25.77, but after rescaling indicators to domains of 0 to 4 and multiplying by percentages in table 2 (which sum to 0.4), the theoretical domain is only 0 to 1.6.
+We might suppose that the authors had rescaled adaptive capacity to a possible domain of 0 to 40 in accordance with the 40% weight of adaptive capacity in the overall
+vulnerability model.
+Therefore, we may multiply our possible domain of 0 to 1.6 by 25 to achieve a possible domain of 0 to 40.
+
+```{r join-adaptive-capacity, warning = F}
 # join adaptive capacity table to traditional authorities vector
 ta_v <- left_join(
   ta_v,
@@ -538,7 +715,7 @@ rm(ta_stats, ta_capacity_t)
 The original publication uses the Jenks Natural Breaks method to
 classify the data.
 
-```{r classify adaptive capacity, warning = F}
+```{r classify-adaptive-capacity, warning = F}
 # calculate breaks for four Jenks natural breaks classes
 rpac_brks <- classIntervals(ta_v$rpac, 4, style = "jenks")$brks
 rpac_brks_fig4 <- c(7.406, 15.46, 18.07, 21.09, 25.77)
@@ -556,11 +733,11 @@ ta_v <- mutate(ta_v, rpac_class = case_when(
 ta_v %>% st_drop_geometry() %>% count(rpac_class) %>% kable()
 ```
 
-#### Reproduction figure 4
+### Reproduction figure 4
 
 Map reproduction results for comparison to figure 4.
 
-```{r reproduction figure 4, message = F}
+```{r reproduction-figure-4-map, message = F}
 tmap_mode("plot")
 tm_shape(lakes_v, bbox="Malawi") +
   tm_fill(col="lightblue") +
@@ -572,7 +749,7 @@ tm_layout(legend.width=3, legend.text.size = .6, legend.title.size = 1, asp=0.8)
 
 ```
 
-#### Digitize original study figure 4
+### Digitize original study figure 4
 
 Ordinal data from figure 4 was digitized in QGIS with the following
 procedure:
@@ -616,13 +793,13 @@ procedure:
 |  4   |             highest adaptive capacity              |
 
 
-#### Original study figure 4
+### Original study figure 4
 
 Load digitized figure 4 data and display counts of results.
 Convert all forms of missing data to `NA` to be excluded from mapping and statistics. 
 Join original figure 4 adaptive capacity results to `ta_v`.
 
-```{r load fig4}
+```{r load-fig4}
 ta_fig4 <- read_sf(here(public_d, "ta_v_fig4.gpkg"), layer = "ta_v_fig4")
 
 # summary counts
@@ -639,7 +816,7 @@ rm(ta_fig4, ta_fig4_t)
 
 Map original figure 4.
 
-```{r reproduction figure 4, message=F}
+```{r map-original-fig4, message=F}
 tmap_mode("plot")
 tm_shape(lakes_v, bbox="Malawi") +
   tm_fill(col="lightblue") +
@@ -650,11 +827,11 @@ tm_shape(ta_v) +
 tm_layout(legend.width=3, legend.text.size = .7, legend.title.size = 1, asp=0.8)
 ```
 
-#### Compare adaptive capacity result
+### Compare adaptive capacity result
 
 Calculate and map difference between the two maps.
 
-```{r fig4 difference map, message=F}
+```{r fig4-difference-map, message=F}
 # difference = reproduction - original
 ta_v <- ta_v %>% mutate(diffac = rpac_class - orac)
 
@@ -673,7 +850,7 @@ tm_layout(legend.width=3, legend.text.size = .7, legend.title.size = 1, asp=0.8)
 
 ```
 
-```{r crosstab fig4, warning=F}
+```{r crosstab-fig4, warning=F}
 table(ta_v$rpac_class, ta_v$orac)
 # crosstabulation with frequencies
 
@@ -681,15 +858,15 @@ cor.test(ta_v$rpac_class, ta_v$orac, method = "spearman", alternative="greater")
 # Spearman's Rho correlation test
 ```
 
-### Vulnerability
+## Vulnerability
 
-#### Extent and spatial resolution
+### Extent and spatial resolution
 
 Create bounding box representing the spatial extent of Malawi.
 Create a raster grid frame matching the extent of the bounding box and the spatial resolution of the drought exposure raster, which is `0.041667` decimal degrees.
 Although the flood risk raster has a coarser spatial resolution, visual inspection of the original figure 5 suggests that the finer spatial resolution of drought exposure was used for the original analysis.
 
-```{r extent and resolution}
+```{r spatial-support}
 # creating blank raster extent to match Malawi
 # units used for bounding box = decimal degrees, long-lat
 b = st_bbox(
@@ -708,21 +885,21 @@ blank = st_as_stars(b, dx = 0.041667, dy = 0.041667)
 blank[[1]][] = NA
 ```
 
-#### Adaptive capacity
+### Adaptive capacity
 
 Convert adaptive capacity to raster grid.
 
-```{r rasterizing geometries, warning=FALSE}
+```{r rasterizing-geometries, warning=FALSE}
 # making capacity rasters 
 capacity_r = st_rasterize(ta_v[, 'rpac'], blank)
 plot(capacity_r)
 ```
 
-#### Drought exposure
+### Drought exposure
 
 Clip and warp drought exposure to match our extent and spatial resolution.
 
-```{r clip and map drought exposure, warning = F}
+```{r clip-map-drought-exposure, warning = F}
 # use bilinear resampling to average continuous population exposure values
 drw = dr %>% st_warp(blank, use_gdal = T, method = "bilinear")
 names(drw) <- "dre" # rename band to acronym for drought exposure
@@ -732,7 +909,7 @@ Create a mask with the adaptive capacity results so that lakes, conservation are
 Apply this mask to drought exposure.
 Masking is our own decision based on intuition: it is not specified in the original publication.
 
-```{r create mask}
+```{r create-mask}
 # creating mask layer
 mask <- capacity_r
 mask[mask > 0] <- 1
@@ -743,31 +920,33 @@ plot(drw)
 Classify drought exposure into quintile classes (0 to 4)
 Then rescale to 20% by multiplying by 4.
 
-```{r drought rescale}
+```{r drought-rescale}
 # quintile break points
 qt <- quantile(drw[[1]], probs = seq(0, 1, 0.2), na.rm = T)
 
-# reclassifying drought layer using break points from 0 to 4
+# function to reclassify drought layer using break points from 0 to 4
 # 4 * 5 = 20, match 20% weighting of exposition to drought events
-drought_r = drw %>%
-  mutate(
-    drought_exposure = case_when(
-      drw[[1]] <= qt[[2]] ~ 0,
-      drw[[1]] <= qt[[3]] ~ 1,
-      drw[[1]] <= qt[[4]] ~ 2,
-      drw[[1]] <= qt[[5]] ~ 3,
-      drw[[1]] > qt[[5]] ~ 4
-    ) * 5
-  ) %>% select(drought_exposure)
+drought_risk <- function(x) {
+  case_when(
+     x <= qt[[2]] ~ 0,
+     x <= qt[[3]] ~ 1,
+     x <= qt[[4]] ~ 2,
+     x <= qt[[5]] ~ 3,
+     x > qt[[5]] ~ 4
+     ) * 5
+}
+
+# apply reclassification function to x:y dimensions of drw 
+drought_r <- st_apply(drw, 1:2, drought_risk)
 
 plot(drought_r)
 ```
 
-#### Flood risk
+### Flood risk
 
 Clip and warp flood risk to match our extent and spatial resolution.
 
-```{r clip and map drought exposure, warning = F}
+```{r clip-map-drought-exposure, warning = F}
 names(fl) <- "fl"
 # convert from factors to numeric
 fl$fl <- fl$fl %>% as.character() %>% as.numeric() %>% matrix(dim(fl)[1])
@@ -779,16 +958,16 @@ plot(flw)
 Mask and rescale flood.
 Since flood is already on scale from 0 to 4, simply multiply by 5 to achieve the 20% weight.
 
-```{r mask and rescale flood}
+```{r mask-and-rescale-flood}
 flood_r <- flw * mask * 5
 plot(flood_r, breaks="pretty")
 ```
 
-#### Livelihood sensitivity
+### Livelihood sensitivity
 
 Calculate livelihood sensitivity indicators from FEWSnet livelihood zone baseline profiles of poor households according to table 2.
 
-```{r livelihood sensitivity indicators}
+```{r livelihood-sensitivity-indicators}
 # LHZ Data
 lhz_v <- lhz_v %>%
   mutate(
@@ -803,8 +982,8 @@ lhz_v <- lhz_v %>%
 
 Rescale livelihood sensitivity indicators into quantiles.
 
-```{r rescale livelihood sensitivity}
-lhz_v <- lhz_sensitivity_v %>%
+```{r rescale-livelihood-sensitivity}
+lhz_v <- lhz_v %>%
   mutate(
     ownCrop = percent_rank(pctOwnCrop) * 4, 
     # high ownCrop percentages indicate low sensitivity  
@@ -816,7 +995,7 @@ lhz_v <- lhz_sensitivity_v %>%
     # high disaster coping strategy percentages indicate high sensitivity 
   ) 
 
-lhz_sensitivity_v[,28:35] %>% 
+lhz_v[,28:35] %>% 
   st_drop_geometry() %>%
   stat.desc() %>%
   mutate_if(is.numeric, round, digits=1)
@@ -824,8 +1003,8 @@ lhz_sensitivity_v[,28:35] %>%
 
 Calculate aggregate livelihood sensitivity score
 
-```{r calculate livelihood sensitivity}
-lhz_v <- lhz_sensitivity_v %>%
+```{r calculate-livelihood-sensitivity}
+lhz_v <- lhz_v %>%
   mutate(
     sensitivity = (
       0.06 * ownCrop +
@@ -838,6 +1017,7 @@ lhz_v <- lhz_sensitivity_v %>%
 # high sensitivity scores indicate high sensitivity
 # making capacity rasters 
 
+# why not change this to tmap from ggplot2!
 ggplot() + 
   geom_sf(
     data = lhz_v, 
@@ -862,14 +1042,14 @@ lhz_v %>%
 
 Convert livelihood sensitivity into raster grid
 
-```{r sensitivity to raster}
+```{r sensitivity-raster}
 # can we use select() rather than the brackets?
 sensitivity_r = st_rasterize(lhz_v[,'sensitivity'], blank)
 
 plot(sensitivity_r)
 ```
 
-#### Vulnerability score
+### Vulnerability score
 
 Calculate an aggregated vulnerability score by adding low adaptive capacity (invert adaptive capacity by subtracting from the maximum score of 40), livelihood sensitivity, drought exposure, and flood risk.
 
@@ -877,7 +1057,7 @@ $$
 Vulnerability = (40 - Adaptive Capacity) + Livelihood Sensitivity + Drought Exposure + Flood Risk
 $$
 
-```{r combined vulnerability}
+```{r combined-vulnerability}
 # final output (adding component rasters)
 vulnerability_r <- (40 - capacity_r) + sensitivity_r + drought_r + flood_r 
 # 100 = highest vulnerability, 0 = lowest vulnerability
@@ -890,9 +1070,9 @@ vuln_max <- max(vulnerability_r[[1]],na.rm = TRUE)
 vuln_min <- min(vulnerability_r[[1]],na.rm = TRUE)
 ```
 
-#### Reproduction figure 5
+### Reproduction figure 5
 
-```{r vulnerability map}
+```{r vulnerability-map}
 vuln_map = ggplot() +
   geom_stars(data = vulnerability_r) +
   scale_fill_gradient(
@@ -916,17 +1096,17 @@ vuln_map
 ```
 
 ```{r saving spatial data outputs}
-results = here("data","derived","public","results.gpkg")
+write_stars(capacity_r, here("data","derived","public","ta_capacity.tif"))
 
-write_stars(ta_r, here("data","derived","public","ta_capacity.tif"))
+results = here("data", "derived", "public", "results.gpkg")
 
-write_sf(ta_capacity_v, here(results, "ta_capacity_v"))
+write_sf(ta_v, here(results), "ta")
 
-write_sf(lhz_v, here(results, "lhz"))
+write_sf(lhz_v, here(results), "lhz")
 ```
 
 
-#### Original study figure 5
+### Original study figure 5
 
 Comparing the reproduction of figure 5 with the original figure 5 requires first digitizing the original figure 5 (unclassified choropleth map with yellow to red gradient) in QGIS as follows:
 
@@ -940,14 +1120,14 @@ Comparing the reproduction of figure 5 with the original figure 5 requires first
 
 To approximate data values from the yellow to red gradient of the original map, the blue and green bands are then added, inverted, and rescaled to a range from 0 to 100.
 
-```{r load original fig5, warning=FALSE, fig.width=4, fig.height=4}
+```{r load-original-fig5, warning=FALSE, fig.width=4, fig.height=4}
 orfig5vect = 
   read_sf(here(public_d, "georef_bg.gpkg"), 
           layer="georef_bg") %>%
   mutate(bg_mean = bmean + gmean)
 # load original georeferenced figure 5 data
 
-orfig5rast = st_rasterize(orfig5vect["bg_mean"], template=blank)
+orfig5rast <- st_rasterize(orfig5vect["bg_mean"], template=blank)
 # convert mean of blue and green values into a raster using ta_final as a reference for raster
 # extent, cell size, CRS, etc.
 
@@ -960,21 +1140,22 @@ orfig5rast <- orfig5rast %>%
 rm(orvmin, orvmax)
 ```
 
-#### Compare vulnerability result
+### Compare vulnerability result
 
-```{r compare fig5, warning=FALSE, fig.width=4, fig.height=4}
+```{r compare-fig5, warning=FALSE, fig.width=4, fig.height=4}
 rpvmin <- min(vulnerability_r$vulnerability, na.rm= TRUE)
 rpvmax <- max(vulnerability_r$vulnerability, na.rm= TRUE)
 vulnerability_r = vulnerability_r %>% 
   mutate(rpv = (vulnerability - rpvmin) / (rpvmax - rpvmin) * 100)
- # rp is Re-scaled from 0 to 100 with (value - min)/(max - min)
+ # rpv is Re-scaled from 0 to 100 with (value - min)/(max - min)
 rm(rpvmin, rpvmax)
 
-vulnerability_r = vulnerability_r %>% mutate( diffv = rpv - orv )
+vulnerability_r$orv <- orfig5rast$orv 
+vulnerability_r$diffv <- vulnerability_r$rpv - vulnerability_r$orv
 # calculate difference between the original and reproduction,
 # for purposes of mapping
 
-vulnerability_p = st_as_sf(vulnerability_r)
+vulnerability_p <- st_as_sf(vulnerability_r)
 # convert raster to vector points to simplify plotting and correlation testing
 
 plot(
@@ -994,23 +1175,19 @@ abline(lm(vulnerability_p$rpv ~ vulnerability_p$orv))
 
 cor.test(vulnerability_p$orv, vulnerability_p$rpv, method="spearman")
 # Spearman's Rho correlation test
-
-# Hint for mapping raster results: refer to the diff raster attribute
-# in the fig5comp stars object like this: fig5comp["diff"]
 ```
 
 Map differences in Figure 5
 
-```{r find break & limit values for vulnerability difference map}
-range <- max(abs(max(vulnerability_r$diffv, na.rm = TRUE)),
-             abs(min(vulnerability_r$diffv, na.rm = TRUE)))
-# takes the greatest value and makes it the range for a divergent color scheme
-```
-
-```{r vulnerability difference map}
+```{r vulnerability-difference-map}
+# find range of values for divergent color scheme
 range <- ceiling(max(abs(max(vulnerability_r$diffv, na.rm = TRUE)),
              abs(min(vulnerability_r$diffv, na.rm = TRUE))))
 
+# map can be improved by:
+# switch colors to a Colorbrewer divergent scale
+# use grey for lat / long labels
+# switch to using tmap package
 vuln_diff_map = ggplot() +
   geom_stars(data = vulnerability_r["diffv"]) +
   scale_fill_gradient2(
@@ -1033,10 +1210,8 @@ vuln_diff_map = ggplot() +
 vuln_diff_map
 ```
 
-
-
-```{r exporting comparison as geotiff}
-write_stars(fig5comp, here(public_d, "fig5diff.tif"), layer = "diff")
-write_stars(fig5comp, here(public_d, "fig5or.tif"), layer = "or")
-write_stars(fig5comp, here(public_d, "fig5rp.tif"), layer = "rp")
+```{r save-fig5-comparison-data}
+write_stars(vulnerability_r, here(public_d, "fig5diff.tif"), layer = "diffv")
+write_stars(vulnerability_r, here(public_d, "fig5or.tif"), layer = "orv")
+write_stars(vulnerability_r, here(public_d, "fig5rp.tif"), layer = "rpv")
 ```
