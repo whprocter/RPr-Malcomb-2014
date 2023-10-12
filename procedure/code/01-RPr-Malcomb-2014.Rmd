@@ -1,6 +1,6 @@
 ---
 title: "Reproduction Analysis of Malcomb et al 2014"
-author: "Joseph Holler, Kufre Udoh, Drew An-Pham, Middlebury Open GIScience Classes"
+author: "Joseph Holler, Kufre Udoh, Drew An-Pham, Middlebury Open GIScience Classes, William Procter"
 date: "`r Sys.Date()`"
 output: pdf_document
 editor_options:
@@ -9,6 +9,7 @@ editor_options:
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_dir = "../../docs/report") })
 ---
+# October 2023 Reproduction - William Procter
 
 # Abstract 
 
