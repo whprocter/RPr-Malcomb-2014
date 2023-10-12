@@ -238,6 +238,7 @@ if (!"MWI_adm2.shp" %in% list.files(private_r)) {
 } else {
   message("Traditional authorites data already downloaded.")
 }
+
 ```
 
 ## Traditional authorities (TAs)
