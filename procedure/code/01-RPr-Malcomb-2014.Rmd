@@ -1334,92 +1334,35 @@ ta_vuln_map <- mean_vulnerability %>%
       color = "grey98") +
       scale_fill_continuous(
       name = "Vulnerability\nBy\nTA", 
-      low="lemonchiffon1", 
-      high="lightcoral") +
-    geom_sf(data = lakes_v, fill = "lightblue", color = "grey98")
+      low="#FFFF75", 
+      high="#CF4611") +
+    geom_sf(data = lakes_v, fill = "lightblue", color = "grey98") + 
+    geom_sf(data = ta_cons_v, fill = "darkgreen", color = "grey98") +
+  scale_y_continuous(breaks=seq(-17,-10,1)) +
+  scale_x_continuous(breaks=seq(33,36,1))
 
 ta_vuln_map
 
+#   tm_shape(lakes_v, bbox="Malawi") +
+#   tm_fill(col="lightblue") +
+# tm_shape(ta_cons_v) +
+#   tm_fill(col="TYPE_2", palette=hcl.colors(4, "greens"), alpha=0.7, title="")
 
 
-
-
-  
-  
-  
-  tm_shape(lakes_v, bbox="Malawi") +
-  tm_fill(col="lightblue") +
-tm_shape(ta_cons_v) +
-  tm_fill(col="TYPE_2", palette=hcl.colors(4, "greens"), alpha=0.7, title="")
-  
-  
-  
-  
-  scale_y_continuous(breaks=seq(-17,-10,1)) +
-  scale_x_continuous(breaks=seq(33,36,1))
-
-
-
-# Create a ggplot object
-p <- ggplot(data = mean_vulnerability) +
-  geom_polygon(aes(fill = vulnerability)) +
-  scale_fill_gradient(low = "lightblue", high = "darkred", name = "Average Vulnerability") +
-  labs(title = "Average Vulnerability Scores by TA (State)") +
-  theme_minimal()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Customize the map and display it
-p <- p +
-  labs(title = "Your Map Title") +
-  theme_minimal()
-
-print(p)
-
-
-#+
-  #coord_map() +  # Ensures a suitable map projection
-  #scale_fill_gradient(low = "lightblue", high = "darkred", name = "Average Vulnerability") +
-  #labs(title = "Average Vulnerability Scores by State") +
-  #theme_minimal()
-
-
-ta_map <- 
-  ggplot() +
-  geom_polygon()
-
-
-
-
-
-
-ggplot() + 
-  geom_sf(
-    data = lhz_v, 
-    aes(fill = sensitivity), 
-    size = .2, 
-    color = "grey98"
-  ) +
-  scale_fill_continuous(
-    name = "Livelihood\nSensitivity\nScores", 
-    low="lemonchiffon1", 
-    high="lightcoral"
-  ) +
-  scale_y_continuous(breaks=seq(-17,-10,1)) +
-  scale_x_continuous(breaks=seq(33,36,1))
-
-
+# ggplot() + 
+#   geom_sf(
+#     data = lhz_v, 
+#     aes(fill = sensitivity), 
+#     size = .2, 
+#     color = "grey98"
+#   ) +
+#   scale_fill_continuous(
+#     name = "Livelihood\nSensitivity\nScores", 
+#     low="lemonchiffon1", 
+#     high="lightcoral"
+#   ) +
+#   scale_y_continuous(breaks=seq(-17,-10,1)) +
+#   scale_x_continuous(breaks=seq(33,36,1))
 
 ```
 
@@ -1447,7 +1390,7 @@ Comparing the reproduction of figure 5 with the original figure 5 requires first
 
 To approximate data values from the yellow to red gradient of the original map, the blue and green bands are then added, inverted, and rescaled to a range from 0 to 100.
 
-```{r load-original-fig5, warning=FALSE, fig.width=4, fig.height=4}
+```{r load-original-fig5, warning=FALSE}
 orfig5vect = 
   read_sf(here(public_d, "georef_bg.gpkg"), 
           layer="georef_bg") %>%
@@ -1565,6 +1508,122 @@ write_stars(vulnerability_r, here(public_d, "fig5rp.tif"), layer = "rpv")
 ```
 
 # Discussion
+### Data collection and spatial sampling
+
+The original study included over 70 qualitative semi-structured interviews with officials from development agencies, government, and non-governmental organizations (1.4).
+47 specific interviewee titles are listed in a "full list of the interviews" (A1), leaving uncertainty around the remaining 23 (or more) interviewees.
+The study included 11 village focus groups (1.4).
+The interviews and focus groups were selected to focus on villages and organizations connected at different levels of organization to "externally designed adaptation projects" (3.2).
+We presume that the interviewees and focus groups were selected based upon their association with externally designed and funded climate change adaptation projects, which are neither equally nor justly distributed (Barrett 2014).
+No minimum sample size or stopping criteria were defined.
+
+The original authors used exclusively secondary data for the vulnerability models and did not subset or sample from the secondary data.
+The published results based on DHS surveys include data 203 traditional authorities in 2010 (F4), whereas the authors state that there are more than 250 populated traditional authorities in Malawi (4.4).
+The 2010 household resilience data is based upon 24,850 DHS household surveys (5.2).
+Furthermore, "not every traditional authority had surveys conducted within its administrative boundaries" (5.2).
+This suggests possible spatial sampling problems in the DHS survey data in the context of its application in this study.
+The authors' rationales for using the third level administrative units of traditional authorities include matching the political level at which many projects are planned and assessed, and identifying hotspots of vulnerability that are lost in the aggregation to second level districts (4.4).
+The original paper does not contain any further detail on the spatial sampling or distribution of DHS surveys *vis a vis* traditional authorities.
+
+##### Aggregate thematic concepts
+
+
+
+
+The authors use the terms and definitions of "adaptive capacity", "vulnerability" and "resilience" inconsistently in the paper.
+Depending on context, both "vulnerability" and "resilience" may refer only to the assets and access portion of the model or to the full model inclusive of adaptive capacity (assets and access), livelihood sensitivity, and exposure.
+In some sections and formulas, "adaptive capacity" is used, while in others it appears as its components (assets and access) or even as "household resilience".
+The data mapped in figures 3 and 4 are described in different sections of the original paper as resilience, adaptive capacity, and/or vulnerability.
+The data mapped in figure 5 are described in different sections of the article as vulnerability or resilience.
+Confounding matters further, the authors' definition for resilience is typical for resilience theory, but the formula for resilience is more typical of the well-known Intergovernmental Panel on Climate Change (IPCC) operationalization of "vulnerability" (Gallopín 2006, Smit and Wandel 2006).
+
+For the purposes of the reproduction study, the data visualized in figure 4 of the original study and referred to as 40% Adaptive Capacity in table 2 will be referred to as **adaptive capacity** while the data visualized in figure 5 of the original study and referred to as 100% Household Resilience in table 2 will be referred to as **vulnerability**.
+
+#### Attribute variable transformations
+
+The original study's description of attribute variable transformations is confusing, and we attempt to present all of the evidence in the original study clearly below.
+All variables are normalized between zero and five (4.3 and 5.6) with zero representing the worst or poorest condition and five representing the best or richest condition (4.3).
+The normalization method is not described, but the poorest and richest conditions are described as "quintiles" with values of zero and five (4.3).
+"Quintiles" suggests classification into five classes with equal counts or frequencies.
+"Normalization" suggests transforming each variable into a normal distribution.
+A minimum of zero and maximum of five suggests rescaling the data to a range from zero to five or classifying the data into six quantiles assigned integer values zero through five.
+Four variables were described as (Y/N) nominal data (T1), for which it is not clear how to transform the data into ordinal data with more than two classes.
+A similar concern arises for the market access variable with three classes (Rural, Peri-urban, and Urban).
+Regardless, there is ambiguity in the method of normalizing, scaling, or classifying each variable.
+
+Adaptive capacity is analyzed with the weighted combination of all asset theme indicators and access theme indicators.
+Weights are given in the Variables section.
+The formula for this combination is not specified.
+For 2004, the authors report a minimum household adaptive capacity score of -0.80 and maximum of 39.33 (5.2).
+A maximum score near 40 is intuitive as a theoretical maximum of 40% for the adaptive capacity category.
+It is not clear whether the calculation should be a weighted average, weighted sum, weighted combination specified to achieve a maximum of 40%, or some other form of weighted combination.
+Results of the average adaptive capacity score for traditional authorities in 2010 are visualized in figure 4.
+
+Livelihood sensitivity is presumably calculated with the weighted combination of its four indicators.
+Weights are given in the Variables section.
+The formula for this combination is not specified.
+Results for this theme are not presented.
+
+Physical exposure may be calculated with the weighted combination of its two indicators.
+Weights are given in the Variables section.
+The formula for this combination is not specified.
+It is not specified whether any geographic transformation is required to combine these two variables.
+Results for this theme are not presented.
+
+#### Geographic transformations
+
+Adaptive capacity is analyzed in the spatial units of traditional authorities (4.4, 5.2, F3 and F4).
+This aggregation from households to traditional authorities is accomplished with a spatial join (5.2) with an average of the individual household resilience scores (5.2, 6.3, F3 and F4), and classified into four classes with the Natural Breaks Jenks classification method (F3 and F4).
+In the methodology section, the authors state that "DHS Indicators were disaggregated to the village level" (4.4).
+Since the DHS data is described as using the household level of aggregation, it is not clear how or why the data would be "disaggregated" to the village level.
+
+Vulnerability is analyzed in the spatial units of gridded cells (F5).
+Each theme was converted to the raster grid data format (4.6).
+The paper does not specify the parameters for raster conversion, including the relationship between vector polygons and raster grid cells or the spatial resolution of the grid cells.
+Presumably, only adaptive capacity and livelihood sensitivity were converted, since physical exposure is already in a raster grid format.
+The paper does not specify if or how any geographic transformation is required for the biophysical risk grids from the UNEP Global Risk Data Platform.
+It may be possible to infer the resolution and methods from close inspection of the final climate vulnerability map (F5).
+
+## Analyses
+
+The final climate vulnerability analysis is calculated with map algebra on a raster grid for each theme using the formula:
+
+`household resilience = adaptive capacity + livelihood sensitivity - physical exposure` (4.6).
+
+The results are presented as a continuous raster grid with a continuous color gradient.
+No descriptive statistics of the results are provided.
+
+### Geographical characteristics
+
+The **coordinate reference system(s)** used in the original study are not specified.
+However, the study does not appear to include any distance or area calculations: therefore the analysis should not be sensitive to the coordinate reference system used as long as each layer is stored or reprojected into one consistent system.
+
+
+
+### Temporal characteristics
+
+The **temporal extent** of the original study was stated as "2004&ndash;2010 based on the availability of the Malawi DHS datasets with GPS data" (4.5).
+The study also references Dartmouth Flood Observatory Data from 1999 to 2007 (F5) used to indicate flood risk and a Malawi Vulnerability Assessment Committee (MVAC) Household Economy Approach (HEA) baseline survey conducted between May and July 2003 used to indicate livelihood sensitivity (3.6).
+Therefore, it appears that the 2004&ndash;2010 temporal extent applies strictly to the household resilience analysis, and not to the climate vulnerability analysis.
+
+The **temporal support** for the household resilience analysis was longitudinal DHS Survey data collected in 2004 and 2010.
+The **temporal support** for the climate vulnerability analysis is an aggregation of data from different sources, ranging from 1999 to 2010 (F5).
+**Temporal effects** are not measured or accounted for, although the authors discuss differences between household resilience in 2004 and 2010 (5.3 and 5.4)
+
+### Data exclusion
+
+Some traditional authorities are **missing data** for DHS surveys because no DHS surveys were conducted within their administrative boundaries.
+These traditional authorities were excluded from the analysis of household resilience and labelled as 'Areas Missing DHS Data' (5.2).
+No **inferences** were made to fill the missing data (5.2).
+Some traditional authorities are clearly symbolized with the diagonal hashmarks representing missing data for household resilience (F4), and appear to be similarly excluded from the analysis of climate vulnerability (F5).
+However, several other traditional authorities appear white&mdash;not one of the four categories of household resilience (F4).
+Some of these areas appear to be excluded from the climate vulnerability analysis while others are not (F5).
+
+The study does not analyze the presence of **outliers** or exclude them.
+The study does not **weight samples**.
+
+
+
 
 # Conclusions
 
@@ -1602,6 +1661,206 @@ Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling f
 - F5 Malawi Composite Vulnerability Index
 - A1 Appendix 1
 - R References
+
+**Replication of**
+# Vulnerability modeling for sub-Saharan Africa
+
+Original study *by* Malcomb, D. W., E. A. Weaver, and A. R. Krakowka. 2014. Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi. *Applied Geography* 48:17–30. DOI:[10.1016/j.apgeog.2014.01.004](https://doi.org/10.1016/j.apgeog.2014.01.004)
+
+Replication Authors:
+Your Name, Joseph Holler, Kufre Udoh, Open Source GIScience students of fall 2019 and Spring 2021
+
+Replication Materials Available at: [Forked RP-Malcomb Repository](https://github.com/daptx/RP-Malcomb)
+
+Created: `14 April 2021`
+Revised: `27 April 2021`
+
+## Abstract
+
+The original study is a multi-criteria analysis of vulnerability to Climate Change in Malawi, and is one of the earliest sub-national geographic models of climate change vulnerability for an African country. The study aims to be replicable, and had 40 citations in Google Scholar as of April 8, 2021.
+
+## Original Study Information
+
+The study region is the country of Malawi. The spatial support of input data includes DHS survey points, Traditional Authority boundaries, and raster grids of flood risk (0.0833 degree resolution) and drought exposure (1/24 = 0.0416 degree resolution).
+
+The original study was published without data or code, but has detailed narrative description of the methodology. The methods used are feasible for undergraduate students to implement following completion of one introductory GIS course. The study states that its data is available for replication in 23 African countries.
+
+
+### Data Description and Variables
+
+###*Access & Assets Data*
+
+Demographic and Health Survey data are a product of the United States Agency for International Development (USAID). Variables contained in this dataset are used to represent adaptive capacity (access + assets) in the Malcomb et al.’s (2014) study. These data come from survey questionnaires with large sample sizes.
+The DHS data used in our study were collected in 2010. In Malawi, the provenance of the DHA data dates back as far as 1992, but has not been collected consistently every year. Each point in the household dataset represents a cluster of households with each cluster corresponding to some form of census enumeration units, such as villages in rural areas or city blocks in urban areas [DHS GPS Manual](/data/metadata/DHS_GPS_Manual_English_A4_24May2013_DHSM9.pdf). This means that each household in each cluster has the same GPS data. This data is collected by trained [USAID](https://www.usaid.gov/) staff using GPS receivers.
+Missing data is a common occurrence in this dataset as a result of negligence or incorrect naming. However, according to the [DHS GPS Manual](/data/metadata/DHS_GPS_Manual_English_A4_24May2013_DHSM9.pdf), these issues are easily rectified and typically sites for which data does not exist are recollected. Sometimes, however, missing information is coded in as such or assigned a proxy location.
+The DHS website acknowledges the high potential for inconsistent or incomplete data in such broad and expansive survey sets. Missing survey data (responses) are never estimated or made up; they are instead coded as a special response indicating the absence of data. As well, there are clear policies in place to ensure the data’s accuracy. More information about data validity can be found on the [DHS’s Data Quality and Use site](https://www.dhsprogram.com/data/Data-Quality-and-Use.cfm). In this analysis, we use the variables listed in **Table 1** to determine the average adaptive capacity of each TA area. Data transformations are outlined below.
+
+**Table 1:** DHS Variables used in Analysis
+
+| Variable Code | Definition |
+| ------------- | ------------- |
+| HHID | "Case Identification" |
+| HV001 | "Cluster number" |
+|HV002 | Household number |
+| HV246A |"Cattle own" |
+|HV246D | "Goats own"|
+|HV246E | "Sheep own" |
+|HV246G | "Pigs own" |
+| HV248 |"Number of sick people 18-59"|
+| HV245 | "Hectares for agricultural land"|
+|HV271 | "Wealth index factor score (5 decimals)"|
+|HV251 | "Number of orphans and vulnerable children"|
+|HV207 | “Has Radio” |
+| HV243A | “Has a Mobile Telephone”|
+|HV219 | Sex of Head of Household”|
+|HV226 | “Type of Cooking Fuel” |
+| HV206 |"Has electricity” |
+|HV204 |“Time to get to Water Source”|
+
+**Variable Transformations**
+
+1. Eliminate households with null and/or missing values
+2. Join TA and LHZ ID data to the DHS clusters
+3. Eliminate NA values for livestock
+4. Sum counts of all different kinds of livestock into a single variable
+5. Apply weights to normalized indicator variables to get scores for each category (assets, access)
+6. find the stats of the capacity of each TA (min, max, mean, sd)
+7. Join ta_capacity to TA based on ta_id
+8. Prepare breaks for mapping
+9. Class intervals based on capacity_2010 field
+10. Take the values and round them to 2 decimal places
+11. Put data in 4 classes based on break values
+
+###*Livelihood Zones Data*
+
+The Livelihood zone data is created by aggregating general regions where similar crops are grown and similar ecological patterns exist. This data exists originally at the household level and was aggregated into Livelihood Zones. To construct the aggregation used for “Livelihood Sensitivity” in this analysis, we use these household points from the FEWSnet data that had previously been aggregated into livelihood zones. The four Livelihood Sensitivity categories are 1) Percent of food from own farm (6%); 2) Percent of income from wage labor (6%); 3) Percent of income from cash crops (4%); and 4) Disaster coping strategy (4%). In the original R script, household data from the DHS survey was used as a proxy for the specific data points in the livelihood sensitivity analysis (transformation: Join with DHS clusters to apply LHZ FNID variables). With this additional FEWSnet data at the household level, we can construct these four livelihood sensitivity categories using existing variables (Table 1).
+
+**Table 2:** Constructing Livelihood Sensitivity Categories
+
+| Livelihood Sensitivity Category (LSC)  | Percent Contributing  | How LSC was constructed  |
+| ------------- | ------------- | ------------- |
+| Percent of food from own farm  |  6%  | Sources of food: crops + livestock  |
+| Percent of income from wage labor  | 6%  | Sources of cash: labour etc. / total * 100  |
+| Percent of income from cash crops  | 4%  | sources of cash (Crops): (tobacco + sugar + tea + coffee) + / total sources of cash * 100  |
+| Disaster coping strategy  | 4%  | Self-employment & small business and trade: (firewood + sale of wild food + grass + mats + charcoal) / total sources of cash * 100  |
+
+**Variable Transformations**
+
+1. Join with DHS clusters to apply LHZ FNID variables
+2. Clip TA boundaries to Malawi (st_buffer of LHZ to .01 m)
+3. Create ecological areas: LHZ boundaries intersected with TA boundaries to clip out park/conservation boundaries and rename those park areas with the park information from TA data), combined with lake data to remove environmental areas from the analysis
+
+###*Physical Exposure: Floods + Droughts*
+
+**Floods:**This dataset stems from work collected by multiple agencies and funneled into the PREVIEW Global Risk Data Platform, “an effort to share spatial information on global risk from natural hazards.” The dataset was designed by UNEP/GRID-Europe for the Global Assessment Report on Risk Reduction (GAR), using global data. A flood estimation value is assigned via an index of 1 (low) to 5 (extreme).
+**Drought:** This dataset uses the Standardized Precipitation Index to measure annual drought exposure across the globe. The Standardized Precipitation Index draws on data from a “global monthly gridded precipitation dataset” from the University of East Anglia’s Climatic Research Unit, and was modeled in GIS using methodology from Brad Lyon at Columbia University. The dataset draws on 2010 population information from the LandScanTM Global Population Database at the Oak Ridge National Laboratory.  Drought exposure is reported as the expected average annual (2010) population exposed. The data were compiled by UNEP/GRID-Europe for the Global Assessment Report on Risk Reduction (GAR). The data use the WGS 1984 datum, span the years 1980-2001, and are reported in raster format with spatial resolution 1/24 degree x 1/24 degree.
+
+### Analytical Specification
+
+The original study was conducted using ArcGIS and STATA, but does not state which versions of these software were used.
+The replication study will use R.
+
+## Materials and Procedure
+
+*Process Adaptive Capacity*
+
+1. Bring in DHS Data [Households Level] (vector)
+2. Bring in TA (Traditional Authority boundaries) and LHZ (livelihood zones) data
+3. Get rid of unsuitable households (eliminate NULL and/or missing values)
+4. Join TA and LHZ ID data to the DHS clusters
+5. Pre-process the livestock data Filter for NA livestock data Update livestock data (summing different kinds)
+6. FIELD CALCULATOR: Normalize each indicator variable and rescale from 1-5 (real numbers) based on percent rank
+7. FIELD CALCULATOR / ADD FIELD: Apply weights to normalized indicator variables to get scores for each category (assets, access)
+8. SUMMARIZE/AGGREGATE: find the stats of the capacity of each TA (min, max, mean, sd)
+9. Join ta_capacity to TA based on ta_id (Multiply by 20--meaningless??) I have a question about this (so do I) ln.216
+10. Prepare breaks for mapping Class intervals based on capacity_2010 field Take the values and round them to 2 decimal places Put data in 4 classes based on break values
+11. Save the adaptive capacity scores
+
+*Process Livelihood Sensitivity*
+
+1. Load in LHZ geometries into R
+2. Join LHZ sensitivity data into R code
+3. Read in processed LHZ dataset
+4. Join the data to the LHZ geometries
+5. Put LHZ data into quintiles
+6. Calculate capacity score based on values in Malcomb et al. (2014)
+
+*Process Physical Exposure*
+
+1. Load in UNEP rasterSet CRS for drought
+2. Set CRS for flood
+3. Clean and reproject rasters
+4. Create a bounding box at extent of Malawi Where does this info come from
+5. For Drought: use bilinear to avg continuous population exposure values
+6. For Flood: use nearest neighbor to preserve integer values
+7. CLIP the traditional authorities with the LHZs to cut out the lake
+8. RASTERIZE the ta_capacity data with pixel data corresponding to capacity_2010 field
+9. RASTERIZE the livelihood sensitivity score with pixel data corresponding to capacity_2010 field
+
+*Raster Calculations*
+
+1. Create a mask
+2. Reclassify the flood layer (quintiles, currently binary)
+3. Reclassify the drought values (quantile [from 0 - 1 in intervals of 0.2 =5])
+4. AGGREGATE: Create final vulnerability layer using environmental vulnerability score and ta_capacity.
+
+We then georeferenced maps from the original study using QGIS in order to compare the results generated by our R script to those found in Malcomb et al. (2014). We ran a Spearman's Rho correlation test between the two maps of Figs. 4 and 5 to determine the differences in results.
+
+## Replication Results
+
+For each output from the original study (mainly figure 4 and figure 5), present separately the results of the replication attempt.
+
+2.	State whether the original study was or was not supported by the replication
+3.	State whether any hypothesis linked to a planned deviation from the original study was supported. Provide key statistics and related reasoning.
+
+Figures to Include:
+- map of resilience by traditional authority in 2010, analogous to figure 4 of the original study
+- map of vulnerability in Malawi, analogous to figure 5 of the original study
+- map of difference between your figure 4 and the original figure 4
+- map of difference between your figure 5 and the original figure 5
+
+## Unplanned Deviations from the Protocol
+
+Summarize changes and uncertainties between
+- your interpretation and plan for the workflow based on reading the paper
+- your final workflow after accessing the data and code and completing the code
+
+## Discussion
+
+Provide a summary and interpretation of the key findings of the replication *vis-a-vis* the original study results. If the attempt was a failure, discuss possible causes of the failure. In this replication, any failure is probably due to practical causes, which may include:
+- lack of data
+- lack of code
+- lack of details in the original analysis
+- uncertainties due to manner in which data has been used
+
+## Conclusion
+
+Restate the key findings and discuss their broader societal implications or contributions to theory.
+Do the research findings suggest a need for any future research?
+
+## References
+
+Include any referenced studies or materials in the [AAG Style of author-date referencing](https://www.tandf.co.uk//journals/authors/style/reference/tf_USChicagoB.pdf).
+
+####  Report Template References & License
+
+This template was developed by Peter Kedron and Joseph Holler with funding support from HEGS-2049837. This template is an adaptation of the ReScience Article Template Developed by N.P Rougier, released under a GPL version 3 license and available here: https://github.com/ReScience/template. Copyright © Nicolas Rougier and coauthors. It also draws inspiration from the pre-registration protocol of the Open Science Framework and the replication studies of Camerer et al. (2016, 2018). See https://osf.io/pfdyw/ and https://osf.io/bzm54/
+
+Camerer, C. F., A. Dreber, E. Forsell, T.-H. Ho, J. Huber, M. Johannesson, M. Kirchler, J. Almenberg, A. Altmejd, T. Chan, E. Heikensten, F. Holzmeister, T. Imai, S. Isaksson, G. Nave, T. Pfeiffer, M. Razen, and H. Wu. 2016. Evaluating replicability of laboratory experiments in economics. Science 351 (6280):1433–1436. https://www.sciencemag.org/lookup/doi/10.1126/science.aaf0918.
+
+Camerer, C. F., A. Dreber, F. Holzmeister, T.-H. Ho, J. Huber, M. Johannesson, M. Kirchler, G. Nave, B. A. Nosek, T. Pfeiffer, A. Altmejd, N. Buttrick, T. Chan, Y. Chen, E. Forsell, A. Gampa, E. Heikensten, L. Hummer, T. Imai, S. Isaksson, D. Manfredi, J. Rose, E.-J. Wagenmakers, and H. Wu. 2018. Evaluating the replicability of social science experiments in Nature and Science between 2010 and 2015. Nature Human Behaviour 2 (9):637–644. http://www.nature.com/articles/s41562-018-0399-z.
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Other References
 
