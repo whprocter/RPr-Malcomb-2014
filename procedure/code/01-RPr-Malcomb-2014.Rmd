@@ -1345,6 +1345,48 @@ ta_vuln_map <- mean_vulnerability %>%
 
 ta_vuln_map
 
+
+
+library(tmap)
+
+
+library(tmap)
+
+tmap_mode("plot")
+
+# Create a continuous map layer
+continuous_layer <- tm_shape(mean_vulnerability) +
+  tm_fill(col = "vulnerability", palette = c("#FFFF75", "#CF4611")) +
+  tm_borders(col = "grey98") +
+  tm_layout(title = "Vulnerability\nBy\nTA")  # Use `title` for legend title
+
+# Create a discrete map layer
+discrete_layer <- tm_shape(ta_cons_v) +
+  tm_fill(col = "TYPE_2", palette = hcl.colors(4, "greens"), alpha = 0.7, title = "") +
+  tm_borders(col = "grey98")
+
+# Create additional map layers for lakes_v and ta_v (assuming they exist)
+lakes_layer <- tm_shape(lakes_v) +
+  tm_fill(col = "lightblue") +
+  tm_borders(col = "grey98")
+
+ta_v_layer <- tm_shape(ta_v) +
+  tm_polygons(col = "orac", title = "Adaptive Capacity", palette = "-YlOrBr", lwd = 0.5, border.col = "lightgrey")
+
+# Combine all layers
+map <- continuous_layer + lakes_layer + discrete_layer + ta_v_layer
+
+map
+
+
+
+
+ta_vuln_map
+
+
+
+
+
 #   tm_shape(lakes_v, bbox="Malawi") +
 #   tm_fill(col="lightblue") +
 # tm_shape(ta_cons_v) +
@@ -1529,9 +1571,6 @@ The original paper does not contain any further detail on the spatial sampling o
 
 ##### Aggregate thematic concepts
 
-
-
-
 The authors use the terms and definitions of "adaptive capacity", "vulnerability" and "resilience" inconsistently in the paper.
 Depending on context, both "vulnerability" and "resilience" may refer only to the assets and access portion of the model or to the full model inclusive of adaptive capacity (assets and access), livelihood sensitivity, and exposure.
 In some sections and formulas, "adaptive capacity" is used, while in others it appears as its components (assets and access) or even as "household resilience".
@@ -1616,6 +1655,9 @@ The **temporal support** for the climate vulnerability analysis is an aggregatio
 
 Some traditional authorities are **missing data** for DHS surveys because no DHS surveys were conducted within their administrative boundaries.
 These traditional authorities were excluded from the analysis of household resilience and labelled as 'Areas Missing DHS Data' (5.2).
+Additionally, some subjective decisions were made in the context of survey responses to the "cattle" question in particular.  Many household surveys contain inconclusive answers (e.g. "I don't know") or are missing data for survey questions used in the adaptive capacity calculation.  The livestock variable ("assets") is calculated as a sum of four livestock types, and they remove any household with uncertain answers about any of the livestock types and remove households with missing data for all livestock types.
+Households with answers about some livestock types and missing data for others are still included in the data.
+
 No **inferences** were made to fill the missing data (5.2).
 Some traditional authorities are clearly symbolized with the diagonal hashmarks representing missing data for household resilience (F4), and appear to be similarly excluded from the analysis of climate vulnerability (F5).
 However, several other traditional authorities appear white&mdash;not one of the four categories of household resilience (F4).
@@ -1625,9 +1667,19 @@ The study does not analyze the presence of **outliers** or exclude them.
 The study does not **weight samples**.
 
 
+# Discussion of specific contributions to this reproduction study
+This reproduction study was chocked full of frictions to reproduction.
+
+In addition to some minute formatting, commenting, and typo correction, there were two primary additions to this reproduction study.
+The first included a way of visualizing the imported original figure 5 into R Studio.
+
+The second was to amend the Figure 5 output (vulnerability map) to show vulnerability by TA, rather than just a raster grid.  Showing vulnerability by TA allows us to easily include natural parks/wildlife refuges, as well as identify areas where there was missing data for the TAs (stemming from HH surveys).
+
 
 
 # Conclusions
+
+
 
 
 # Integrity Statement
@@ -1851,16 +1903,6 @@ This template was developed by Peter Kedron and Joseph Holler with funding suppo
 Camerer, C. F., A. Dreber, E. Forsell, T.-H. Ho, J. Huber, M. Johannesson, M. Kirchler, J. Almenberg, A. Altmejd, T. Chan, E. Heikensten, F. Holzmeister, T. Imai, S. Isaksson, G. Nave, T. Pfeiffer, M. Razen, and H. Wu. 2016. Evaluating replicability of laboratory experiments in economics. Science 351 (6280):1433–1436. https://www.sciencemag.org/lookup/doi/10.1126/science.aaf0918.
 
 Camerer, C. F., A. Dreber, F. Holzmeister, T.-H. Ho, J. Huber, M. Johannesson, M. Kirchler, G. Nave, B. A. Nosek, T. Pfeiffer, A. Altmejd, N. Buttrick, T. Chan, Y. Chen, E. Forsell, A. Gampa, E. Heikensten, L. Hummer, T. Imai, S. Isaksson, D. Manfredi, J. Rose, E.-J. Wagenmakers, and H. Wu. 2018. Evaluating the replicability of social science experiments in Nature and Science between 2010 and 2015. Nature Human Behaviour 2 (9):637–644. http://www.nature.com/articles/s41562-018-0399-z.
-
-
-
-
-
-
-
-
-
-
 
 
 
