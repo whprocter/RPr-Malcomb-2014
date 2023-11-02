@@ -1314,7 +1314,8 @@ write_sf(lhz_v, here(results), "lhz")
 # Polygonize Figure 5 Reproduction to show vulnerability by TAs
 
 ```{r}
-
+library(ggplot2)
+library(tmap)
 
 # TA boundary polygons
 ta_v <- ta_v
@@ -1322,13 +1323,11 @@ ta_v <- ta_v
 # Vulnerability raster layer
 vulnerability_r <- vulnerability_r
 
+#Uses zonal stats to find mean vulnerability values within each TA
 mean_vulnerability <- aggregate(vulnerability_r, ta_v, FUN = mean) %>%
   st_as_sf()
 
-# Create the map using ggplot2
-# Load required libraries
-library(ggplot2)
-
+#Static map (no variation b/w national park and reserves)
 ta_vuln_map <- mean_vulnerability %>%
     ggplot() + 
     geom_sf(aes(fill = vulnerability),
@@ -1347,66 +1346,61 @@ ta_vuln_map
 
 
 
-library(tmap)
 
-
-library(tmap)
+#Create an interactive map for stakeholders to use to identify specific TAs with high levels of vulnerability
 
 tmap_mode("plot")
-
-# Create a continuous map layer
+# Create a continuous map layer for vulnerability
 continuous_layer <- tm_shape(mean_vulnerability) +
   tm_fill(col = "vulnerability", palette = c("#FFFF75", "#CF4611")) +
   tm_borders(col = "grey98") +
   tm_layout(title = "Vulnerability\nBy\nTA")  # Use `title` for legend title
-
-# Create a discrete map layer
+# Create a discrete map layer for parks
 discrete_layer <- tm_shape(ta_cons_v) +
   tm_fill(col = "TYPE_2", palette = hcl.colors(4, "greens"), alpha = 0.7, title = "") +
   tm_borders(col = "grey98")
-
-# Create additional map layers for lakes_v and ta_v (assuming they exist)
+# Create additional map layers for lakes_v and ta_v 
 lakes_layer <- tm_shape(lakes_v) +
   tm_fill(col = "lightblue") +
   tm_borders(col = "grey98")
-
-ta_v_layer <- tm_shape(ta_v) +
-  tm_polygons(col = "orac", title = "Adaptive Capacity", palette = "-YlOrBr", lwd = 0.5, border.col = "lightgrey")
-
 # Combine all layers
-map <- continuous_layer + lakes_layer + discrete_layer + ta_v_layer
+map <- continuous_layer + lakes_layer + discrete_layer
 
 map
-
-
-
-
 ta_vuln_map
 
 
 
+# Extract TA names and vulnerability values
+ta_vulnerability_table <- data.frame(
+  TA = mean_vulnerability$TA_Name,
+  Vulnerability = mean_vulnerability$vulnerability
+)
 
 
-#   tm_shape(lakes_v, bbox="Malawi") +
-#   tm_fill(col="lightblue") +
-# tm_shape(ta_cons_v) +
-#   tm_fill(col="TYPE_2", palette=hcl.colors(4, "greens"), alpha=0.7, title="")
 
 
-# ggplot() + 
-#   geom_sf(
-#     data = lhz_v, 
-#     aes(fill = sensitivity), 
-#     size = .2, 
-#     color = "grey98"
-#   ) +
-#   scale_fill_continuous(
-#     name = "Livelihood\nSensitivity\nScores", 
-#     low="lemonchiffon1", 
-#     high="lightcoral"
-#   ) +
-#   scale_y_continuous(breaks=seq(-17,-10,1)) +
-#   scale_x_continuous(breaks=seq(33,36,1))
+
+# Assuming you have 'mean_vulnerability' with TA geometries and vulnerability values
+# and 'ta_v' with the 'name_2' column
+
+# Add the 'name_2' column to 'mean_vulnerability' by matching geometries
+mean_vulnerability_with_names <- st_join(mean_vulnerability, ta_v[, "NAME_2"], join = st_intersects)
+
+# Create a dataframe with two columns
+ta_vulnerability_dataframe <- data.frame(
+  TA = mean_vulnerability_with_names$NAME_2,  # Use the 'name_2' column as the TA name
+  Mean_Vulnerability = mean_vulnerability_with_names$vulnerability
+)
+
+# Sort the dataframe in descending order of vulnerability
+ta_vulnerability_dataframe <- ta_vulnerability_dataframe[order(-ta_vulnerability_dataframe$Mean_Vulnerability), ]
+
+# Display the sorted dataframe
+print(ta_vulnerability_dataframe)
+
+
+
 
 ```
 
@@ -1473,6 +1467,24 @@ orfig5rast_map = ggplot() +
   ) +   coord_quickmap()
 
 orfig5rast_map
+
+# Create a histogram of the 'diffv' variable
+orfig5_histogram <- ggplot(as.data.frame(orfig5rast["orv"]), aes(x = (orv - mean(orv, na.rm = TRUE)) / sd(orv, na.rm = TRUE)
+                                                                   
+                                                                   
+                                                                   )) +
+  geom_histogram(
+    bins = 30,  # You can adjust the number of bins as needed
+    fill = "#3182bd",  # Adjust fill color
+    color = "#6baed6"  # Adjust border color
+  ) +
+  labs(
+    x = "Vulnerability",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+orfig5_histogram
 ```
 
 #### Compare vulnerability result
@@ -1543,6 +1555,28 @@ vuln_diff_map = ggplot() +
   )
 
 vuln_diff_map
+
+
+library(ggplot2)
+library(dplyr)
+
+
+# Create a histogram of the 'diffv' variable
+vuln_diff_histogram <- ggplot(as.data.frame(vulnerability_r["diffv"]), aes(x = diffv)) +
+  geom_histogram(
+    bins = 30,  # You can adjust the number of bins as needed
+    fill = "#3182bd",  # Adjust fill color
+    color = "#6baed6"  # Adjust border color
+  ) +
+  labs(
+    x = "Difference in Vulnerability",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+vuln_diff_histogram
+
+
 ```
 
 ```{r save-fig5-comparison-data}
