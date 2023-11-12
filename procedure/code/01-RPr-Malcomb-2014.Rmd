@@ -1669,7 +1669,7 @@ The study does not **weight samples**.
 
 # Discussion of specific contributions to this reproduction study
 
-This reproduction study was chocked full of frictions to reproduction.
+This reproduction study was chocked full of frictions and barriers to reproduction.  
 
 In addition to some minute formatting, commenting, and typo correction, there were two primary additions to this reproduction study.
 The first included a way of visualizing the imported original figure 5 into R Studio.
@@ -1677,9 +1677,15 @@ The first included a way of visualizing the imported original figure 5 into R St
 The second was to amend the Figure 5 output (vulnerability map) to show vulnerability by TA, rather than just a raster grid.  I polygonized/aggregated the vulnerability raster grid and joined with TA names to produce this new map is titled `ta_vuln_map`.
 Showing vulnerability by TA allows us to easily include natural parks/wildlife refuges, as well as identify areas where there was missing data for the TAs (stemming from HH surveys).
 
-Additionally, since I managed to join TA name to the vulnerability by TA layer, I created a sorted data frame that shows lists the names of TAs in decending order of their vulnerability scores.  This allows policymakers and stakeholders to see the most vulnerable TAs and could be useful in terms of directing aid.
+Additionally, since I managed to join TA name to the vulnerability by TA layer, I created a sorted data frame that shows lists the names of TAs in decending order of their vulnerability scores.  This provides policymakers and stakeholders with a direct list to see the most vulnerable TAs and could be useful in terms of directing aid.
 
-Things that I did:
+I actually visualized the original figure 5 in the R script.  Figure 5 (original vulnerability raster layer) was brought in as a data object and was correctly used in creating the difference raster layer in the prior reproduction, but it was never visualized for the user to see.
+
+I believe I found a possible error in the code for calculating the adaptive score and weights.  In the existing code, number of orphans and number of sick people in the HH are positive contributions to the adaptive capacity scire...I switched the sign to negative to accurately reflect the fact that more sick people and more orphans does not increase one's "adaptive capacity"
+
+Lastly, I added Added z-scored histograms to several of the raster figure outputs (maps) to better visualize the vulnerability raster's spread of values, as well as the reproduction - original vulnerability (difference) raster's spread of values.
+
+Things that this updated reproduction/replication/reannalysis accomplishes:
 - Actually visualized original figure 5 in the R script.  Figure 5 (original vulnerability raster layer) was brought in as a data object and was correctly used in creating the difference raster layer, but it was never visualized for the user to see.
 - Polygonized/aggregated the vulnerability raster grid to get vulnerability scores by TA, and mapped them (both an interactive and a static map)
 - Sorted TA vulnerability table
@@ -1947,6 +1953,8 @@ Provide a summary and interpretation of the key findings of the replication *vis
 If the attempt was a failure, discuss possible causes of the failure.
 In this replication, any failure is probably due to practical causes, which may include: - lack of data - lack of code - lack of details in the original analysis - uncertainties due to manner in which data has been used
 
+The lack of access to the DHS data posed a major road block.
+
 ## Conclusion
 
 Restate the key findings and discuss their broader societal implications or contributions to theory.
@@ -1954,11 +1962,19 @@ Do the research findings suggest a need for any future research?
 
 The outputs from Figures 4 and 5 are certainly relevant.  Both the original and the reproduction figures indicate high levels of vulnerability in the central and south regions of Malawi.
 
+There is clear evidence of spatial diffusion of vulnerability across TA borders, as well as spatial clustering of high-vulnerability areas.
+
 Diffusion over borders?
 
 ## References
+Malcomb, D. W., E. A. Weaver, and A.
+R. Krakowka.
+2014.
+Vulnerability modeling for sub-Saharan Africa: An operationalized approach in Malawi.
+*Applied Geography* 48:17--30.
+[DOI:[10.1016/j.apgeog.2014.01.004](DOI:%5B10.1016/j.apgeog.2014.01.004){.uri}](https://doi.org/10.1016/j.apgeog.2014.01.004)
 
-Include any referenced studies or materials in the [AAG Style of author-date referencing](https://www.tandf.co.uk//journals/authors/style/reference/tf_USChicagoB.pdf).
+
 
 #### Report Template References & License
 
