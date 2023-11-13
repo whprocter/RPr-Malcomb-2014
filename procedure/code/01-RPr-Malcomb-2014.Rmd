@@ -2,7 +2,7 @@
 title: "Reproduction Analysis of Malcomb et al 2014"
 author: "Joseph Holler, Kufre Udoh, Drew An-Pham, Middlebury Open GIScience Classes, William Procter"
 date: "`r Sys.Date()`"
-output: pdf_document
+output: html_document
 editor_options:
   markdown:
     wrap: sentence
@@ -1099,7 +1099,7 @@ plot(capacity_r)
 
 Clip and warp drought exposure to match our extent and spatial resolution.
 
-```{r clip-map-drought-exposure, warning = F}
+```{r clip-map-drought-exposure-1, warning = F}
 # use bilinear resampling to average continuous population exposure values
 drw = dr %>% st_warp(blank, use_gdal = T, method = "bilinear")
 names(drw) <- "dre" # rename band to acronym for drought exposure
@@ -1146,7 +1146,7 @@ plot(drought_r)
 
 Clip and warp flood risk to match our extent and spatial resolution.
 
-```{r clip-map-drought-exposure, warning = F}
+```{r clip-map-drought-exposure-2, warning = F}
 names(fl) <- "fl"
 # convert from factors to numeric
 fl$fl <- fl$fl %>% as.character() %>% as.numeric() %>% matrix(dim(fl)[1])
