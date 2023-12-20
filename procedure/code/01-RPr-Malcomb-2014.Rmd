@@ -1836,7 +1836,7 @@ This reproduction study was chocked full of frictions and barriers to reproducti
 
 In addition to some minute formatting, commenting, and typo correction, there are a handful additions to this reproduction study.
 
-The first included visualized the original figure 5 in the R script.  Figure 5 (original vulnerability raster layer) was brought in as a data object and was correctly used in creating the difference raster layer in the prior reproduction, but it was never visualized for the user to see.
+The first included visualizing the original figure 5 in the R script.  Figure 5 (original vulnerability raster layer) was brought in as a data object and was correctly used in creating the difference raster layer in the prior reproduction, but it was never visualized for the user to see.
 
 The second was to amend the Figure 5 output (vulnerability map) to show vulnerability by TA, rather than just a raster grid.  I polygonized/aggregated the vulnerability raster grid and joined with TA names to produce this new map is titled `ta_vuln_map`.
 Showing vulnerability by TA allows us to easily include natural parks/wildlife refuges, as well as identify areas where there was missing data for the TAs (stemming from HH surveys).
